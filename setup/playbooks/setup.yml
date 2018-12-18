@@ -1,0 +1,11 @@
+---
+### DOC ### author: olivier perriot
+### DOC ### state: dev
+### DOC ### description: |
+### DOC ###   Deploy wsgi application
+
+- hosts: localhost
+  roles:
+    - setup
+
+...

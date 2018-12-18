@@ -1,0 +1,55 @@
+---
+
+- name: Insall dependencies
+  dnf:
+    name:
+      - httpd
+      - python3-mod_wsgi
+    state: latest
+
+- name: Update permission to allow apache reach wsgi
+  file:
+    path: /home/{{ wsgi_user }}
+    state: directory
+    mode: 0755
+
+- name: Deploy apache configuration
+  template:
+    src: httpd.conf
+    dest: /etc/httpd/conf.d/{{ repo_name }}.conf
+
+- name: Get selinux state
+  command: getenforce
+  register: getenforce
+
+- name: Manage selinux
+  when: getenforce.stdout == "Enforcing"
+  block:
+
+    - name: Set selinux boolean to use home
+      command: setsebool -P {{ item }} on
+      loop:
+        - httpd_enable_homedirs
+        - httpd_read_user_content
+
+    - name: Create empty log file
+      file:
+        path: "{{ wsgi_logfile }}"
+        state: touch
+        owner: "{{ wsgi_user }}"
+        group: "{{ wsgi_user }}"
+
+    - name: Set context for log file
+      sefcontext:
+        target: "{{ wsgi_logfile }}"
+        setype: httpd_sys_rw_content_t
+        state: present
+
+    - name: Apply new SELinux file context to log file
+      command: restorecon -iv {{ wsgi_logfile }}
+
+- name: Reload apache config
+  systemd:
+    name: httpd
+    state: reloaded
+    enabled: yes
