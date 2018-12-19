@@ -13,7 +13,7 @@ SWGI application to request ansible inventory (hosts and groups)
 As root on your server
 
 ~~~~
-dnf instal ansible
+dnf install ansible
 git clone https://github.com/vengaar/ansible-ws.git
 ansible-playbook ansible-ws/setup/playbooks/setup.yml -v
 ~~~~
