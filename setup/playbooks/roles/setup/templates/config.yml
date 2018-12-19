@@ -1,0 +1,24 @@
+#
+# {{ ansible_managed }}
+#
+---
+parameters:
+  groups:
+    desc: "The ansible groups to used to select hosts"
+    require: true
+    format: "List of groups separated by comma or group pattern"
+  sources:
+    desc: "List of folder or ansible inventories files to request"
+    require: false
+    default:
+        - "/etc/ansible/hosts"
+examples:
+  - desc: "To have help"
+    url: "{{ wsgi_url }}"
+  - desc: "To get all hosts"
+    url: "{{ wsgi_url }}?groups=all"
+  - desc: "To get hosts in groups database_app1_prod and database_app2_dev"
+    url: "{{ wsgi_url }}?groups=database_app1_prod,database_app3_prod"
+  - desc: "To get hosts wich name groups match pattern database_.*_prod"
+    url: "{{ wsgi_url }}?groups=database_.*_prod"
+...

@@ -5,7 +5,7 @@ import ansible
 from ansible.inventory.manager import InventoryManager
 from ansible.parsing.dataloader import DataLoader
 
-def get_ansible_host_by_group(query, sources):
+def request_ansible_inventory(query, sources):
 
     loader = DataLoader()
     inventory = InventoryManager(loader=loader, sources=sources)
@@ -24,15 +24,3 @@ def get_ansible_host_by_group(query, sources):
             if re.match(query, group_name)
         )
     return response
-
-# if __name__ == '__main__':
-#
-#     sources = ['/etc/ansible/hosts']
-#
-#     query = 'database_app1_prod,database_app3_prod'
-#     response = get_ansible_host_by_group(query, sources)
-#     pprint.pprint(response)
-#
-#     query = '^database_.*_prod$'
-#     response = get_ansible_host_by_group(query, sources)
-#     pprint.pprint(response)
