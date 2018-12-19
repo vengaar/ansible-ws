@@ -2,6 +2,6 @@
 repo_name: ansible-ws
 wsgi_user: liftree
 #wsgi_user: deploy
-wsgi_port: 80
+wsgi_port: 8081
 wsgi_logfile: /home/{{ wsgi_user }}/{{ repo_name }}.log
 ...

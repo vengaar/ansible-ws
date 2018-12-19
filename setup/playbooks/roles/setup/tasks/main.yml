@@ -13,6 +13,13 @@
     state: directory
     mode: 0755
 
+- name: Manage firewalld
+  firewalld:
+    port: "{{ wsgi_port }}/tcp"
+    permanent: yes
+    state: enabled
+    immediate: yes
+
 - name: Deploy apache configuration
   template:
     src: httpd.conf
