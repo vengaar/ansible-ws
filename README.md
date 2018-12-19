@@ -21,7 +21,9 @@ ansible-playbook ansible-ws/setup/playbooks/setup.yml -v
 ## Test
 Test url:
 
-* http:8081://{your_ip}/ansible-inventory
+* http://{your_ip}:8081/ansible-inventory
+
+
 
 
 <!--
