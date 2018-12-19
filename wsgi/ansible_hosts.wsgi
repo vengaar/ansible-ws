@@ -1,10 +1,12 @@
 import sys
 import traceback
 import json
+import yaml
+import logging
 from cgi import parse_qs
 from http import HTTPStatus
 
-from ansible_inventory_helper import get_ansible_host_by_group
+from ansible_inventory_helper import request_ansible_inventory
 
 HTTP_200 = f'{HTTPStatus.OK.value} {HTTPStatus.OK.phrase}'
 HTTP_500 = f'{HTTPStatus.INTERNAL_SERVER_ERROR.value} {HTTPStatus.INTERNAL_SERVER_ERROR.phrase}'
@@ -13,62 +15,44 @@ HTTP_400 = f'{HTTPStatus.BAD_REQUEST.value} {HTTPStatus.BAD_REQUEST.phrase}'
 def application(environ, start_response):
 
     try:
+        logger = logging.getLogger(__name__)
+        try:
+            config_file = '/etc/ansible-ws/config.yml'
+            with open(config_file) as f:
+                ansible_ws_config = yaml.load(f)
+                logger.info(f'Configuration file {config_file} LOADED')
+        except Exception:
+            logger.error(f'Not possible to load configuration file {config_file}')
+
+        examples = ansible_ws_config['examples']
+        config_parameters = ansible_ws_config['parameters']
+
         qs = parse_qs(environ['QUERY_STRING'])
         debug = dict(
-            qs=qs
+            config_file=config_file,
+            config=ansible_ws_config,
+            qs=qs,
         )
-        debug_mode = qs.get('debug', ['false'])[0]
-        protocol = environ['REQUEST_SCHEME']
-        server = environ['SERVER_NAME']
-        _port = environ['SERVER_PORT']
-        debug['_port'] = str(type(_port))
-        port = '' if _port == '80' else f':{_port}'
-        path = environ['SCRIPT_NAME']
-        uri = f'{protocol}://{server}{port}{path}'
-
-        parameters = dict(
-            groups = dict(
-                desc = 'The ansible groups to used to select hosts',
-                require = True,
-                format = 'List of groups separated by comma or group pattern'
-            ),
-            sources = dict(
-                desc = 'The folder or to use as ansible inventory',
-                require = False,
-                default = '/etc/ansible/hosts',
-                format = 'List of path separated by comma'
-            )
-        )
-        examples = [
-            dict(
-                desc = 'To get hosts in groups database_app1_prod and database_app2_dev',
-                url = f'{uri}?groups=database_app1_prod,database_app3_prod'
-            ),
-            dict(
-                desc = 'To get hosts wich name groups match pattern database_.*_prod',
-                url = f'{uri}?groups=database_.*_prod'
-            )
-        ]
+        debug_mode = qs.get('debug', ['false'])[0] == 'true'
 
         output = dict()
         if debug_mode:
             output['debug'] = debug
-            output['examples'] = examples
 
+        # Write generic function to provide dict from qs and config_parameters
         groups = qs.get('groups', [None])[0]
-        sources = qs.get('source', ['/etc/ansible/hosts'])[0]
+        default_sources = config_parameters['sources']['default']
+        sources = qs.get('sources', default_sources)
 
         if groups is None:
             status = HTTP_400
             content_type = 'application/json'
-            output['usage'] = dict(
-                parameters=parameters,
-                examples=examples
-            )
+            output['usage'] = debug
             output = json.dumps(output)
             output = output.encode('utf-8')
         else:
-            output['result'] = get_ansible_host_by_group(groups, sources)
+            logger.error(sources)
+            output['result'] = request_ansible_inventory(groups, sources)
             status = HTTP_200
             content_type = 'application/json'
             output = json.dumps(output)

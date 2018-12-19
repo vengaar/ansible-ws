@@ -7,11 +7,39 @@
       - python3-mod_wsgi
     state: latest
 
+- name: Create user
+  user:
+    name: "{{ wsgi_user }}"
+    comment: User for wsgi {{ repo_name }}
+
+- name: Clone git repo on user home
+  become: true
+  become_user: "{{ wsgi_user }}"
+  git:
+    repo: "{{ git_repo }}"
+    dest: /home/{{ wsgi_user }}/{{ repo_name }}
+  when: git_update
+
 - name: Update permission to allow apache reach wsgi
   file:
     path: /home/{{ wsgi_user }}
     state: directory
     mode: 0755
+
+
+- name: Deploy configuraation file
+  block:
+
+    - name: Create configuration folders
+      file:
+        path: /etc/{{ repo_name }}
+        state: directory
+
+    - name: Create configuration file
+      template:
+        src: config.yml
+        dest: /etc/{{ repo_name }}/config.yml
+
 
 - name: Manage firewalld
   firewalld:
@@ -60,3 +88,6 @@
     name: httpd
     state: reloaded
     enabled: yes
+
+- name: Display wsgi service
+  debug: msg="{{ wsgi_url }}"

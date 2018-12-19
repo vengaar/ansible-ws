@@ -5,6 +5,7 @@
 ### DOC ###   Deploy wsgi application
 
 - hosts: localhost
+  gather_facts: true
   roles:
     - setup
 
