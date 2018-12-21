@@ -1,0 +1,32 @@
+---
+
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: task11
+      debug: var=inventory_hostname
+      tags:
+        - tag1
+    - name: task21 with log name
+      debug: var=inventory_hostname
+      tags:
+        - tag1
+        - tag2
+    - name: task23
+      debug: var=inventory_hostname
+    - debug: var=inventory_hostname
+
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: task21
+      debug: var=inventory_hostname
+      tags:
+        - tag22
+    - name: task4
+      debug: var=inventory_hostname
+      tags:
+        - tag2
+        - tag3
+
+...

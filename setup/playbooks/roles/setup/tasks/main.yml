@@ -35,11 +35,15 @@
         path: /etc/{{ repo_name }}
         state: directory
 
+    - debug: var=wsgi_services
+
     - name: Create configuration file
       template:
-        src: config.yml
-        dest: /etc/{{ repo_name }}/config.yml
-
+        src: services/{{ service.name }}.yml
+        dest: /etc/{{ repo_name }}/{{ service.name }}.yml
+      loop: "{{ wsgi_services }}"
+      loop_control:
+        loop_var: service
 
 - name: Manage firewalld
   firewalld:
@@ -74,11 +78,12 @@
         owner: "{{ wsgi_user }}"
         group: "{{ wsgi_user }}"
 
-    - name: Set context for log file
+    - name: Set context for files
       sefcontext:
-        target: "{{ wsgi_logfile }}"
+        target: "{{ item }}"
         setype: httpd_sys_rw_content_t
         state: present
+      loop: "{{ selinux.files }}"
 
     - name: Apply new SELinux file context to log file
       command: restorecon -iv {{ wsgi_logfile }}
@@ -90,4 +95,7 @@
     enabled: yes
 
 - name: Display wsgi service
-  debug: msg="{{ wsgi_url }}"
+  debug: msg="{{ wsgi_base_url }}/{{ service. name }}"
+  loop: "{{ wsgi_services }}"
+  loop_control:
+    loop_var: service

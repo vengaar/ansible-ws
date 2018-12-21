@@ -5,17 +5,20 @@ import ansible
 from ansible.inventory.manager import InventoryManager
 from ansible.parsing.dataloader import DataLoader
 
-def request_ansible_inventory(query, sources):
+TYPE_LIST = "list"
+TYPE_REGEX = "regex"
+
+def request_ansible_inventory(query, type, sources):
 
     loader = DataLoader()
     inventory = InventoryManager(loader=loader, sources=sources)
     groups_dict = inventory.get_groups_dict()
 
-    if ',' in query:
+    if type == TYPE_LIST:
         response = dict(
             (group_name, groups_dict[group_name])
             for group_name in inventory.groups
-            if group_name in query.split(',')
+            if group_name in query
         )
     else:
         response = dict(
