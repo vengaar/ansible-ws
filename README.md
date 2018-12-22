@@ -1,10 +1,11 @@
 # ansible-ws
 
-Set of SWGI application to request ansible
+Set of SWGI application to request ansible.
+According case, use ansible python module or ansible cli.
 
-* To get hosts defined in inventories according to the groups name
-* To get tags for a playbook 
-* To get tasks for a playbook
+* (IN PROGRESS) - To get hosts defined in inventories according to the groups name
+* (IN PROGRESS) - To get tags for a playbook (wrap command `ansible-playbook --list-tags`) 
+* (TODO) - To get tasks for a playbook (wrap command `ansible-playbook --list-tags`)
 
 # Setup
 
@@ -24,8 +25,8 @@ ansible-playbook ansible-ws/setup/playbooks/setup.yml -v
 
 ### Issues
 
-* Pb with SELinux
-   * workaround1, disable selinx `setenforce 0`
+* Pb with SELinux, 2 possible workaround 
+   * Disable selinx `setenforce 0`
    * Update ansible.cfg to put `local_tmp = /tmp/.ansible/tmp`
 
 ## Test
@@ -48,9 +49,7 @@ Example to request
 
 ## Howto define a default list on inventories files to use
 
-To avoid to always define the same inventories files, define them in `/etc/ansible-ws/config.yml` as default of `sources`
-
-
+To avoid to always define the same inventories files, define them in `/etc/ansible-ws/ansible_hosts.yml` as default of `sources`
 
 
 <!--
