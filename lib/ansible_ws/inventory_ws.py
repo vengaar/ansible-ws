@@ -28,6 +28,6 @@ class AnsibleWebServiceHosts(AnsibleWebService):
         response = dict(
             (group_name, sorted(groups_dict[group_name]))
             for group_name in inventory.groups
-            if re.match(pattern, group_name)
+            if re.match(pattern, group_name) is not None
         )
         self.result = response
