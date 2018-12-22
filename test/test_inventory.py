@@ -15,15 +15,25 @@ class TestAnsibleHostsRequest(unittest.TestCase):
     ]
     config_file = '/etc/ansible-ws/ansible_hosts.yml'
 
-    def test_list(self):
+    def test_default(self):
         expected = dict(
-            database_app1_prod=['server_prod_11', 'server_prod_12', 'server_prod_13'],
-            database_app2_dev=['server_dev_21', 'server_dev_22', 'server_dev_23']
+            all=[
+                'server_dev_11',
+                'server_dev_12',
+                'server_dev_13',
+                'server_dev_21',
+                'server_dev_22',
+                'server_dev_23',
+                'server_prod_11',
+                'server_prod_12',
+                'server_prod_13',
+                'server_prod_21',
+                'server_prod_22',
+                'server_prod_23',
+            ],
         )
         query_strings = dict(
             sources=self.sources,
-            type=['list'],
-            groups=['database_app1_prod', 'database_app2_dev'],
         )
         service = AnsibleWebServiceHosts(self.config_file, query_strings)
         data = service.get_result()
@@ -37,13 +47,27 @@ class TestAnsibleHostsRequest(unittest.TestCase):
         )
         query_strings = dict(
             sources=self.sources,
-            type=['regex'],
-            groups=['database_.*_prod'],
+            groups=['^database_.*_prod$'],
         )
         service = AnsibleWebServiceHosts(self.config_file, query_strings)
         data = service.get_result()
         # pprint.pprint(data)
         self.assertEqual(data['results'], expected)
+
+    def test_list(self):
+        expected = dict(
+            database_app1_dev=['server_dev_11', 'server_dev_12', 'server_dev_13'],
+            database_app2_prod=['server_prod_21', 'server_prod_22', 'server_prod_23'],
+        )
+        query_strings = dict(
+            sources=self.sources,
+            groups=['^(database_app1_dev|database_app2_prod)$'],
+        )
+        service = AnsibleWebServiceHosts(self.config_file, query_strings)
+        data = service.get_result()
+        # pprint.pprint(data)
+        self.assertEqual(data['results'], expected)
+
 
 if __name__ == '__main__':
     unittest.main()

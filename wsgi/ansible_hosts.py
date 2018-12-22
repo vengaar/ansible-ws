@@ -23,8 +23,12 @@ def application(environ, start_response):
         query_strings = parse_qs(environ['QUERY_STRING'])
         config_file = '/etc/ansible-ws/ansible_hosts.yml'
         service = AnsibleWebServiceHosts(config_file, query_strings)
-        output = service.get_result()
+        if service.parameters_valid:
+            status = HTTP_200
+        else:
+            status = HTTP_400
 
+        output = service.get_result()
         format = service.get_param('format')
         if format == 'sui':
             disabled = service.get_param('groups_selection') == 'no'
@@ -37,7 +41,6 @@ def application(environ, start_response):
                     ]
             output['results'] = sui_result
 
-        status = HTTP_200
         content_type = 'application/json'
         output = json.dumps(output)
         output = output.encode('utf-8')

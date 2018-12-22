@@ -18,8 +18,12 @@ def application(environ, start_response):
         query_strings = parse_qs(environ['QUERY_STRING'])
         config_file = '/etc/ansible-ws/playbook_tags.yml'
         service = AnsibleWebServiceTags(config_file, query_strings)
-        output = service.get_result()
+        if service.parameters_valid:
+            status = HTTP_200
+        else:
+            status = HTTP_400
 
+        output = service.get_result()
         format = service.get_param('format')
         if format == 'sui':
             sui_results = [
@@ -30,7 +34,6 @@ def application(environ, start_response):
 
         output = json.dumps(output)
         output = output.encode('utf-8')
-        status = HTTP_200
         content_type = 'application/json'
     except:
         status = HTTP_500

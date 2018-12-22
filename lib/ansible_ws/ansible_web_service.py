@@ -60,12 +60,16 @@ class AnsibleWebService(object):
         self.parameters_valid = parameters_valid
         self.debug = dict()
         self.result = dict()
-        self.meta = dict(config_file=self.config_file,
+        self.meta = dict(
+          config_file=self.config_file,
           config=self.config,
           query_stringq=self.query_strings,
           parameters=self.parameters,
-          parameters_valid=self.parameters_valid)
-        self.run()
+          parameters_valid=self.parameters_valid
+        )
+
+        if self.parameters_valid:
+          self.run()
 
     def get_param(self, name):
         return self.parameters.get(name)
@@ -75,7 +79,8 @@ class AnsibleWebService(object):
 
     def get_result(self):
         output = dict(results=self.result)
+        if not self.parameters_valid or self.mode_debug:
+          output['meta'] = self.meta
         if self.mode_debug:
-            output['meta'] = self.meta
             output['debug'] = self.debug
         return output

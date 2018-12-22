@@ -5,18 +5,12 @@
 parameters:
   groups:
     desc: "The ansible groups to used to select hosts"
-    format: "List of groups separated by comma or group pattern"
-  type:
-    desc: "The type of search"
-    choices:
-      - "list"
-      - "regex"
-    default: "list"
+    format: "A regex to match groups name"
+    default: "^all$"
   sources:
     desc: "List of folder or ansible inventories files to request"
     default:
       - "/etc/ansible/hosts"
-#       - "/home/liftree/ansible-ws/test/data/inventories"
   format:
     desc: "The output format of json results"
     choices:
