@@ -1,10 +1,18 @@
 ---
 repo_name: ansible-ws
 git_repo: "https://github.com/vengaar/{{ repo_name }}.git"
-git_update: true
-wsgi_alias: "{{ repo_name }}"
-wsgi_user: "{{ repo_name }}"
+git_update: false
 wsgi_port: 8081
 wsgi_logfile: /home/{{ wsgi_user }}/{{ repo_name }}.log
-wsgi_url: http://{{ ansible_default_ipv4.address }}:{{ wsgi_port }}/{{ wsgi_alias }}
+wsgi_user: "{{ repo_name }}"
+wsgi_base_url: http://{{ ansible_default_ipv4.address }}:{{ wsgi_port }}
+
+wsgi_services:
+  - name: ansible_hosts
+  - name: playbook_tags
+
+selinux:
+  files:
+    - "{{ wsgi_logfile }}"
+    - "/home/{{ wsgi_user }}/.ansible/tmp(/.*)?"
 ...
