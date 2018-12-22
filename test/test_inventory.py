@@ -1,14 +1,12 @@
+import os
 import unittest
 import pprint
 
-import sys, os
-ANSIBLE_WS_PATH_TEST = os.path.dirname(os.path.realpath(__file__))
-ANSIBLE_WS_PATH_ROOT = os.path.dirname(ANSIBLE_WS_PATH_TEST)
-ANSIBLE_WS_PATH_LIB = os.path.join(ANSIBLE_WS_PATH_ROOT, 'lib')
-sys.path.append(ANSIBLE_WS_PATH_LIB)
+import path_test
+from path_test import ANSIBLE_WS_PATH_TEST
 
 import ansible_ws
-from ansible_ws.ansible_web_service import AnsibleWebServiceHosts
+from ansible_ws.inventory_ws import AnsibleWebServiceHosts
 
 class TestAnsibleHostsRequest(unittest.TestCase):
 

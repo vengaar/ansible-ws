@@ -7,7 +7,7 @@ def get_parameters(qs, config_parameters):
     parameters = dict()
     type = None
     for name, desc in config_parameters.items():
-        print(name, desc)
+        # print(name, desc)
         type = 'text'
         default = None
         attributes = desc.get('attributes', [])
@@ -18,7 +18,7 @@ def get_parameters(qs, config_parameters):
             default = desc.get('default')
             if isinstance(default, list):
                 type = 'list'
-        print(name, default, type)
+        # print(name, default, type)
         if type == 'list':
             value = qs.get(name, default)
             if 'choices' in desc:
@@ -36,7 +36,7 @@ def get_parameters(qs, config_parameters):
                 if value is None:
                     validation = False
         parameters[name] = value
-        print(name, value)
+        # print(name, value)
 
     return (validation, parameters)
 
@@ -79,64 +79,3 @@ class AnsibleWebService(object):
             output['meta'] = self.meta
             output['debug'] = self.debug
         return output
-
-
-class AnsibleWebServiceHosts(AnsibleWebService):
-    TYPE_LIST = 'list'
-    TYPE_REGEX = 'regex'
-
-    def __init__(self, config_file, query_strings):
-        super().__init__(config_file, query_strings)
-
-    def run(self):
-        type = self.parameters['type']
-        sources = self.parameters['sources']
-        if type == self.TYPE_LIST:
-            groups = self.query_strings.get('groups', None)
-        else:
-            if type == self.TYPE_REGEX:
-                groups = self.query_strings.get('groups', [None])[0]
-        loader = DataLoader()
-        inventory = InventoryManager(loader=loader,
-          sources=sources)
-        groups_dict = inventory.get_groups_dict()
-        if type == self.TYPE_LIST:
-            response = dict(((group_name, groups_dict[group_name]) for group_name in inventory.groups if group_name in groups))
-        else:
-            pattern = re.compile(groups)
-            response = dict(((group_name, groups_dict[group_name]) for group_name in inventory.groups if re.match(pattern, group_name)))
-        self.result = response
-
-
-class AnsibleWebServiceTags(AnsibleWebService):
-
-    def __init__(self, config_file, query_strings):
-        super().__init__(config_file, query_strings)
-
-    def run(self):
-        playbook = self.get_param('playbook')
-        command = ['ansible-playbook', '--list-tags', playbook]
-        p = subprocess.run(command, capture_output=True)
-        out = p.stdout.decode('utf-8')
-        tags = []
-        line_refused = []
-        line_accepted = []
-        pattern = re.compile('^.*\\[(?P<string_tags>.+)\\].*$')
-        for line in out.split('\n'):
-            match = re.match(pattern, line)
-            if match is not None:
-                line_accepted.append(line)
-                string_tags = match.group('string_tags')
-                for tag in string_tags.split(','):
-                    tag = tag.strip()
-                    if tag not in tags:
-                        tags.append(tag)
-
-            else:
-                line_refused.append(line)
-
-        self.debug['line_refused'] = line_refused
-        self.debug['line_accepted'] = line_accepted
-        sorted(tags)
-        self.result = tags
-# okay decompiling ansible_web_service.cpython-37.pyc

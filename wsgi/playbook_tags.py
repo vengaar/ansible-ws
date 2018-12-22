@@ -10,7 +10,7 @@ HTTP_500 = f'{HTTPStatus.INTERNAL_SERVER_ERROR.value} {HTTPStatus.INTERNAL_SERVE
 HTTP_400 = f'{HTTPStatus.BAD_REQUEST.value} {HTTPStatus.BAD_REQUEST.phrase}'
 
 import ansible_ws
-from ansible_ws.ansible_web_service import AnsibleWebServiceTags
+from ansible_ws.playbooks_ws import AnsibleWebServiceTags
 
 def application(environ, start_response):
 

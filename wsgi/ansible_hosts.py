@@ -7,7 +7,7 @@ from cgi import parse_qs
 from http import HTTPStatus
 
 import ansible_ws
-from ansible_ws.ansible_web_service import AnsibleWebServiceHosts
+from ansible_ws.inventory_ws import AnsibleWebServiceHosts
 
 HTTP_200 = f'{HTTPStatus.OK.value} {HTTPStatus.OK.phrase}'
 HTTP_500 = f'{HTTPStatus.INTERNAL_SERVER_ERROR.value} {HTTPStatus.INTERNAL_SERVER_ERROR.phrase}'
