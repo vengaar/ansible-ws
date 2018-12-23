@@ -2,7 +2,7 @@
 repo_name: ansible-ws
 git_repo: "https://github.com/vengaar/{{ repo_name }}.git"
 git_update: false
-wsgi_port: 8081
+wsgi_port: 80
 wsgi_logfile: /home/{{ wsgi_user }}/{{ repo_name }}.log
 wsgi_user: "{{ repo_name }}"
 wsgi_base_url: http://{{ ansible_default_ipv4.address }}:{{ wsgi_port }}

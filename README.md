@@ -32,9 +32,9 @@ ansible-playbook ansible-ws/setup/playbooks/setup.yml -v
 ## Test
 Test url:
 
-* http://{your_ip}:8081/ansible_hosts
-* http://{your_ip}:8081/plabooks_tags
-* http://{your_ip}:8081/playbooks_tasks
+* http://{your_ip}/ansible_hosts
+* http://{your_ip}/plabooks_tags
+* http://{your_ip}/playbooks_tasks
 
 # FAQ
 
