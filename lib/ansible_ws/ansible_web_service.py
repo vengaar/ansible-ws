@@ -50,9 +50,9 @@ class AnsibleWebService(object):
         try:
             with open(self.config_file) as (f):
                 self.config = yaml.load(f)
-                self.logger.info(f'''Configuration file {(self.config_file)} LOADED''')
+                self.logger.info(f'Configuration file {self.config_file} LOADED')
         except Exception:
-            self.logger.error(f'''Not possible to load configuration file {config_file}''')
+            self.logger.error(f'Not possible to load configuration file {config_file}')
 
         self.mode_debug = query_strings.get('debug', ['false'])[0] == 'true'
         parameters_valid, parameters = get_parameters(self.query_strings, self.config['parameters'])

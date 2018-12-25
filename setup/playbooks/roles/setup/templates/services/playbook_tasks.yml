@@ -1,0 +1,18 @@
+#
+# {{ ansible_managed }}
+#
+---
+parameters:
+  playbook:
+    desc: "The playbook from gather tasks"
+    attributes:
+      - required
+#     default: /home/liftree/ansible-ws/test/data/playbooks/tags.yml
+  format:
+    desc: "The output format of json results"
+    choices:
+      - "sui"
+      - "raw"
+    default: "sui"
+examples: []
+...
