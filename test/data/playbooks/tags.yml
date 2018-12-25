@@ -7,12 +7,12 @@
       debug: var=inventory_hostname
       tags:
         - tag1
-    - name: task21 with log name
+    - name: task12 with long name
       debug: var=inventory_hostname
       tags:
         - tag1
         - tag2
-    - name: task23
+    - name: task13
       debug: var=inventory_hostname
     - debug: var=inventory_hostname
 
@@ -23,7 +23,7 @@
       debug: var=inventory_hostname
       tags:
         - tag22
-    - name: task4
+    - name: task22
       debug: var=inventory_hostname
       tags:
         - tag2

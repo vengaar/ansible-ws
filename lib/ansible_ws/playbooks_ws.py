@@ -34,3 +34,35 @@ class AnsibleWebServiceTags(AnsibleWebService):
         self.debug['line_accepted'] = line_accepted
         sorted(tags)
         self.result = tags
+
+
+class AnsibleWebServiceTasks(AnsibleWebService):
+
+    def __init__(self, config_file, query_strings):
+        super().__init__(config_file, query_strings)
+
+    def run(self):
+        playbook = self.get_param('playbook')
+        command = ['ansible-playbook', '--list-tasks', playbook]
+        p = subprocess.run(command, capture_output=True)
+        out = p.stdout.decode('utf-8')
+        tasks = []
+        line_refused = []
+        line_accepted = []
+        pattern = re.compile('^(?P<task_name>.*)TAGS.*$')
+        for line in out.split('\n'):
+            # re.MULTILINE
+            match = re.match(pattern, line)
+            if match is not None:
+                task_name = match.group('task_name').strip()
+                if not task_name.startswith('play #'):
+                  line_accepted.append(line)                    
+                  tasks.append(task_name)
+                else:
+                  line_refused.append(line)
+            else:
+                line_refused.append(line)
+
+        self.debug['line_refused'] = line_refused
+        self.debug['line_accepted'] = line_accepted
+        self.result = tasks
