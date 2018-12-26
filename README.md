@@ -3,9 +3,10 @@
 Set of SWGI application to request ansible.
 According case, use ansible python module or ansible cli.
 
-* (IN PROGRESS) - To get hosts defined in inventories according to the groups name
-* (IN PROGRESS) - To get tags for a playbook (wrap command `ansible-playbook --list-tags`) 
-* (TODO) - To get tasks for a playbook (wrap command `ansible-playbook --list-tags`)
+* (beta) - To get hosts defined in inventories according to the groups name
+* (beta) - To get tags for a playbook (wrap command `ansible-playbook --list-tags`) 
+* (beta) - To get tasks for a playbook (wrap command `ansible-playbook --list-tags`)
+* (todo) - To lanuch playbook
 
 # Setup
 
