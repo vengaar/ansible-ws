@@ -5,8 +5,8 @@ According case, use ansible python module or ansible cli.
 
 * (beta) - To get hosts defined in inventories according to the groups name
 * (beta) - To get tags for a playbook (wrap command `ansible-playbook --list-tags`) 
-* (beta) - To get tasks for a playbook (wrap command `ansible-playbook --list-tags`)
-* (todo) - To lanuch playbook
+* (beta) - To get tasks for a playbook (wrap command `ansible-playbook --list-tasks`)
+* (todo) - To launch playbook
 
 # Setup
 
