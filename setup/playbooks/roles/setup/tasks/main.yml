@@ -51,6 +51,7 @@
     permanent: yes
     state: enabled
     immediate: yes
+  ignore_errors: true
 
 - name: Deploy apache configuration
   template:
