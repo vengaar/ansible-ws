@@ -5,8 +5,8 @@ According case, use ansible python module or ansible cli.
 
 * (beta) - To get hosts defined in inventories according to the groups name
 * (beta) - To get tags for a playbook (wrap command `ansible-playbook --list-tags`) 
-* (beta) - To get tasks for a playbook (wrap command `ansible-playbook --list-tags`)
-* (todo) - To lanuch playbook
+* (beta) - To get tasks for a playbook (wrap command `ansible-playbook --list-tasks`)
+* (todo) - To launch playbook
 
 # Setup
 
@@ -33,9 +33,9 @@ ansible-playbook ansible-ws/setup/playbooks/setup.yml -v
 ## Test
 Test url:
 
-* http://{your_ip}/ansible_hosts
-* http://{your_ip}/plabooks_tags
-* http://{your_ip}/playbooks_tasks
+* http://localhost/ansible_hosts
+* http://localhost/plabooks_tags
+* http://localhost/playbooks_tasks
 
 # FAQ
 
@@ -51,10 +51,3 @@ Example to request
 ## Howto define a default list on inventories files to use
 
 To avoid to always define the same inventories files, define them in `/etc/ansible-ws/ansible_hosts.yml` as default of `sources`
-
-
-<!--
-
-ansible-playbook /home/liftree/ansible-ws/setup/playbooks/setup.yml -v -e '{ "git_update": false, "wsgi_user": "liftree"}'
-
--->
