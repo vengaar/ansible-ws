@@ -25,7 +25,7 @@
   become: true
   become_user: root
   block:
-    - name: Insall dependencies
+    - name: Install dependencies
       dnf:
         name:
           - httpd
@@ -105,7 +105,7 @@
     - name: Deploy apache configuration
       template:
         src: httpd.conf
-        dest: /etc/httpd/conf.d/{{ repo_name }}.conf
+        dest: /etc/httpd/conf.d/{{ git_name }}.conf
 
     - name: Get selinux state
       command: getenforce
