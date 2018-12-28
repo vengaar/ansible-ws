@@ -63,7 +63,7 @@ class AnsibleWebService(object):
         self.meta = dict(
           config_file=self.config_file,
           config=self.config,
-          query_stringq=self.query_strings,
+          query_string=self.query_strings,
           parameters=self.parameters,
           parameters_valid=self.parameters_valid
         )

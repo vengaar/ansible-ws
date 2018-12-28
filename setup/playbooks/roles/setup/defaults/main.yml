@@ -1,17 +1,15 @@
 ---
-repo_name: ansible-ws
-git_repo: "https://github.com/vengaar/{{ repo_name }}.git"
-git_update: false
+git_name: ansible-ws
+git_repo: "https://github.com/vengaar/{{ git_name }}.git"
+git_clone: false
+wsgi_logfile: /home/{{ wsgi_user }}/{{ git_name }}.log
+wsgi_user: "{{ git_name }}"
 wsgi_port: 80
-wsgi_logfile: /home/{{ wsgi_user }}/{{ repo_name }}.log
-wsgi_user: "{{ repo_name }}"
 wsgi_base_url: http://{{ ansible_default_ipv4.address }}:{{ wsgi_port }}
-
 wsgi_services:
   - name: ansible_hosts
   - name: playbook_tags
   - name: playbook_tasks
-
 selinux:
   files:
     - "{{ wsgi_logfile }}"

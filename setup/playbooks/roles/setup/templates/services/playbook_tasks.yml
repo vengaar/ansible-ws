@@ -1,18 +1,21 @@
 #
 # {{ ansible_managed }}
 #
+{% set url = wsgi_base_url + "/" + service.name %}
+{% set playbook = "/home/" + wsgi_user + "/ansible-ws/test/data/playbooks/tags.yml" %}
 ---
 parameters:
   playbook:
     desc: "The playbook from gather tasks"
     attributes:
       - required
-#     default: /home/liftree/ansible-ws/test/data/playbooks/tags.yml
   format:
     desc: "The output format of json results"
     choices:
       - "sui"
       - "raw"
     default: "sui"
-examples: []
+examples:
+  - desc: "To get tasks for playbook {{ playbook }}"
+    url: "{{ url }}?playbook={{ playbook }}"
 ...

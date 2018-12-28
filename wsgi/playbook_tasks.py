@@ -16,7 +16,7 @@ def application(environ, start_response):
 
     try:
         query_strings = parse_qs(environ['QUERY_STRING'])
-        config_file = '/etc/ansible-ws/playbook_tags.yml'
+        config_file = '/etc/ansible-ws/playbook_tasks.yml'
         service = AnsibleWebServiceTasks(config_file, query_strings)
         if service.parameters_valid:
             status = HTTP_200
