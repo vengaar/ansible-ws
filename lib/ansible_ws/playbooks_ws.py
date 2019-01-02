@@ -2,6 +2,62 @@ import re, subprocess
 
 import ansible_ws
 from ansible_ws.ansible_web_service import AnsibleWebService
+from ansible_ws.launch import PlaybookContextLaunch, PlaybookContext
+    
+import uuid
+import os
+import json
+
+
+class AnsibleWebServiceRun(AnsibleWebService):
+
+    def __init__(self, config_file, query_strings):
+        super().__init__(config_file, query_strings)
+
+    def run(self):
+        runid = self.get_param("runid")
+        pcr = PlaybookContext(runid)
+        run = dict(
+            status=pcr.status,
+            output=pcr.out
+        )
+        self.result = run
+
+
+class AnsibleWebServiceLaunch(AnsibleWebService):
+
+    def __init__(self, config_file, query_strings):
+        super().__init__(config_file, query_strings)
+
+    def run(self):
+        context = dict(
+            playbook='/home/vengaar/ansible-ws/test/data/playbooks/tags.yml',
+            # extra_vars=dict(
+            # toto='toto',
+            # foo='bar'
+            # ),
+            # options=['-v', '--diff'],
+            # inventorie= [
+            #   '/tmp/toto',
+            #   '/tmp/titi'
+            # ],
+            # task='plop',
+            # tags=dict(
+            #   to_apply=['foo', 'bar']
+            # )
+        )
+        print("AnsibleWebServiceLaunch", self.parameters)
+        print("AnsibleWebServiceLaunch", self.query_strings)
+        context = dict(
+            (key.decode("utf-8") , value[0].decode("utf-8"))
+            for key, value in self.query_strings.items()
+        )
+        print(context)
+
+        pcl = PlaybookContextLaunch(**context)
+        pcr = PlaybookContext(pcl.runid)
+        pcl.launch()
+        self.result = pcr.status
 
 class AnsibleWebServiceTags(AnsibleWebService):
 

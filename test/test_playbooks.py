@@ -45,7 +45,7 @@ class TestAnsibleHostsRequest(unittest.TestCase):
         )
         service = AnsibleWebServiceTasks(self.config_file, query_strings)
         data = service.get_result()
-        pprint.pprint(data)
+        # pprint.pprint(data)
         self.assertEqual(data['results'], expected)
 
 

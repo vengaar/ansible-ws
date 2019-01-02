@@ -10,6 +10,8 @@ wsgi_services:
   - name: ansible_hosts
   - name: playbook_tags
   - name: playbook_tasks
+  - name: playbook_launch
+  - name: playbook_run
 selinux:
   files:
     - "{{ wsgi_logfile }}"

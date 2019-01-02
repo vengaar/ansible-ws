@@ -1,0 +1,22 @@
+#
+# {{ ansible_managed }}
+#
+{% set url = wsgi_base_url + "/" + service.name %}
+{% set playbook = "/home/" + wsgi_user + "/ansible-ws/test/data/playbooks/wait.yml" %}
+---
+parameters:
+  playbook:
+    desc: "The playbook to launch"
+    default: "{{ playbook }}"
+    attributes:
+      - required
+  format:
+    desc: "The output format of json results"
+    choices:
+      - "sui"
+      - "raw"
+    default: "sui"
+examples:
+  - desc: "To get tags for playbook {{ playbook }}"
+    url: "{{ url }}?playbook={{ playbook }}"
+...
