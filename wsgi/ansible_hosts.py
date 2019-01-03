@@ -1,19 +1,10 @@
-import sys
 import traceback
 import json
-import yaml
 import logging
 from cgi import parse_qs
-from http import HTTPStatus
 
 import ansible_ws
 from ansible_ws.inventory_ws import AnsibleWebServiceHosts
-
-HTTP_200 = f'{HTTPStatus.OK.value} {HTTPStatus.OK.phrase}'
-HTTP_500 = f'{HTTPStatus.INTERNAL_SERVER_ERROR.value} {HTTPStatus.INTERNAL_SERVER_ERROR.phrase}'
-HTTP_400 = f'{HTTPStatus.BAD_REQUEST.value} {HTTPStatus.BAD_REQUEST.phrase}'
-
-# http://192.168.1.19:8081/ansible_hosts?groups=.*prod&type=regex&sources=/
 
 logger = logging.getLogger(__name__)
 
@@ -24,9 +15,9 @@ def application(environ, start_response):
         config_file = '/etc/ansible-ws/ansible_hosts.yml'
         service = AnsibleWebServiceHosts(config_file, query_strings)
         if service.parameters_valid:
-            status = HTTP_200
+            status = ansible_ws.HTTP_200
         else:
-            status = HTTP_400
+            status = ansible_ws.HTTP_400
 
         output = service.get_result()
         format = service.get_param('format')
@@ -45,7 +36,7 @@ def application(environ, start_response):
         output = json.dumps(output)
         output = output.encode('utf-8')
     except:
-        status = HTTP_500
+        status = ansible_ws.HTTP_500
         content_type = 'text/plain'
         trace = traceback.format_exc()
         output = trace.encode('utf-8')
@@ -56,5 +47,3 @@ def application(environ, start_response):
     ]
     start_response(status, response_headers)
     return [output]
-
-
