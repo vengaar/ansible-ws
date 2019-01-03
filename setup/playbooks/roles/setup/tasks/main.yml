@@ -12,6 +12,11 @@
         name: "{{ wsgi_user }}"
         comment: User for wsgi {{ git_name }}
 
+    - name: Ensure runs fir exist
+      file:
+        path: "{{ runs_dir }}"
+        state: directory
+
     - name: Clone git repo on user home
       become: true
       become_user: "{{ wsgi_user }}"
@@ -40,7 +45,11 @@
       file:
         path: /etc/{{ git_name }}
         state: directory
-    - name: Create configuration file
+    - name: Create general configuration file
+      template:
+        src: "{{ git_name }}.yml"
+        dest: /etc/{{ git_name }}/{{ git_name }}.yml
+    - name: Create services configuration files
       template:
         src: services/{{ service.name }}.yml
         dest: /etc/{{ git_name }}/{{ service.name }}.yml

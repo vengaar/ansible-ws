@@ -1,25 +1,31 @@
-import re, subprocess
-
+import subprocess
 import uuid
 import os
-import json
+import json, yaml
 import time
-import daemon
-import lockfile
+# import daemon
+# import lockfile
 import threading
+import logging
 
 class PlaybookContext(object):
 
     STATUS_READY = 'ready'
     STATUS_STARTED = 'started'
     STATUS_FINISHED = 'finished'
-    DIR_RUNS = '/home/vengaar/wapi_runs'
+    CONFIG_FILE = '/etc/ansible-ws/ansible-ws.yml'
 
     def __init__(self, runid):
-
+        self.logger = logging.getLogger(self.__class__.__name__)
+        try:
+            with open(self.CONFIG_FILE) as configfile:
+                ansible_ws_config = yaml.load(configfile)
+                self.logger.info(f'Configuration file {self.CONFIG_FILE} LOADED')
+        except Exception:
+            self.logger.error(f'Not possible to load configuration file {self.CONFIG_FILE}')
+        self.runs_dir = ansible_ws_config['runs_dir']
         self.runid = runid
-        self.folder = os.path.join(self.DIR_RUNS, self.runid)
-        print(self.folder)
+        self.folder = os.path.join(self.runs_dir, self.runid)
         self.file_output = os.path.join(self.folder, 'run.out')
         self.file_error = os.path.join(self.folder, 'run.err')
         self.file_desc = os.path.join(self.folder, 'run.desc')
@@ -61,8 +67,8 @@ class PlaybookContextLaunch(PlaybookContext):
             self.uuiid = uuid.uuid4()
             self.runid = str(self.uuiid)
             super().__init__(self.runid)
-            if not os.path.isdir(self.DIR_RUNS):
-              os.mkdir(self.DIR_RUNS)
+            if not os.path.isdir(self.runs_dir):
+              os.mkdir(self.runs_dir)
             os.mkdir(self.folder)
             self.__write_description(kwargs)
             self.write_status(self.STATUS_READY)

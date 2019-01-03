@@ -12,6 +12,7 @@ wsgi_services:
   - name: playbook_tasks
   - name: playbook_launch
   - name: playbook_run
+runs_dir: "/home/{{ wsgi_user }}/wapi_runs"
 selinux:
   files:
     - "{{ wsgi_logfile }}"
