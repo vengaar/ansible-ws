@@ -14,32 +14,22 @@ def application(environ, start_response):
         query_strings = parse_qs(environ['QUERY_STRING'])
         config_file = '/etc/ansible-ws/playbook_tags.yml'
         service = AnsibleWebServiceTags(config_file, query_strings)
+        response = service.get_result()
         if service.parameters_valid:
             status = ansible_ws.HTTP_200
+            format = service.get_param('format')
+            if format == 'sui':
+                sui_results = [
+                    dict(name=tag, value=tag)
+                    for tag in response['results']
+                ]
+                response['results'] = sui_results
         else:
             status = ansible_ws.HTTP_400
+        response_headers, output = ansible_ws.get_json_response(response)
 
-        output = service.get_result()
-        format = service.get_param('format')
-        if format == 'sui':
-            sui_results = [
-                dict(name=tag, value=tag)
-                for tag in output['results']
-            ]
-            output['results'] = sui_results
-
-        output = json.dumps(output)
-        output = output.encode('utf-8')
-        content_type = 'application/json'
     except:
-        status = ansible_ws.HTTP_500
-        content_type = 'text/plain'
-        trace = traceback.format_exc()
-        output = trace.encode('utf-8')
+        status, response_headers, output = ansible_ws.get_500_response()
 
-    response_headers = [
-        ('Content-type', content_type),
-        ('Content-Length', str(len(output)))
-    ]
     start_response(status, response_headers)
     return [output]
