@@ -15,15 +15,12 @@ from ansible_ws.playbooks_ws import AnsibleWebServiceLaunch
 def application(environ, start_response):
 
     try:
-        query_strings = parse_qs(environ['QUERY_STRING'])
-        print("qs", query_strings)
         request_body_size = int(environ.get('CONTENT_LENGTH', 0))
-        print("request_body_size", query_strings)
         request_body = environ['wsgi.input'].read(request_body_size)
-        print("request_body", request_body)
-        query_strings = parse_qs(request_body)
-        print("qs", query_strings)
-        print("qs", query_strings.keys())
+        query_strings =  dict(
+            (key.decode("utf-8") , value[0].decode("utf-8"))
+            for key, value in parse_qs(request_body).items()
+        ) 
         config_file = '/etc/ansible-ws/playbook_launch.yml'
         service = AnsibleWebServiceLaunch(config_file, query_strings)
         if service.parameters_valid:

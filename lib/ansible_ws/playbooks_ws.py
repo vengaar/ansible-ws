@@ -30,34 +30,9 @@ class AnsibleWebServiceLaunch(AnsibleWebService):
         super().__init__(config_file, query_strings)
 
     def run(self):
-        context = dict(
-            playbook='/home/vengaar/ansible-ws/test/data/playbooks/tags.yml',
-            # extra_vars=dict(
-            # toto='toto',
-            # foo='bar'
-            # ),
-            # options=['-v', '--diff'],
-            # inventorie= [
-            #   '/tmp/toto',
-            #   '/tmp/titi'
-            # ],
-            # task='plop',
-            # tags=dict(
-            #   to_apply=['foo', 'bar']
-            # )
-        )
-        print("AnsibleWebServiceLaunch", self.parameters)
-        print("AnsibleWebServiceLaunch", self.query_strings)
-        context = dict(
-            (key.decode("utf-8") , value[0].decode("utf-8"))
-            for key, value in self.query_strings.items()
-        )
-        print(context)
-
-        pcl = PlaybookContextLaunch(**context)
-        pcr = PlaybookContext(pcl.runid)
+        pcl = PlaybookContextLaunch(**self.query_strings)
+        self.result = pcl.status
         pcl.launch()
-        self.result = pcr.status
 
 class AnsibleWebServiceTags(AnsibleWebService):
 

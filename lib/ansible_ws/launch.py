@@ -55,7 +55,6 @@ class PlaybookContextLaunch(PlaybookContext):
         print(kwargs)
         self.return_code = None
         self.pid = None
-        self.command_line = None
         self.begin = None
         self.end = None
         if 'runid' not in kwargs:
@@ -81,7 +80,6 @@ class PlaybookContextLaunch(PlaybookContext):
             begin=self.begin,
             end=self.end,
             return_code=self.return_code,
-            command_line=self.command_line,
             description=self.description
         )
         with open(self.file_status, 'w') as run_status:
@@ -109,59 +107,19 @@ class PlaybookContextLaunch(PlaybookContext):
         #     ) as ctx:
         #         run(folder, self.runid)
         thread = threading.Thread(target=self.run, args=())
-        # thread = threading.Thread(target=run, args=(self.runid, self.folder))
         thread.daemon = True
         thread.start()
 
     def run(self):
-        command = [
-            'ansible-playbook',
-            self.description['playbook'],
-        ]
-        if 'extra_vars' in self._description:
-            extra_vars = f"-e '{json.dumps(self.description['extra_vars'])}'"
-            command.append(extra_vars)
-        if 'task' in self.description:
-            task = f'--start-at-task={self.description["task"]}'
-            command.append(task)
-        if 'tags' in self.description:
-            mapping = dict(
-                to_apply='--tags',
-                to_skip='--skip-tags'
-            )
-            alltags = []
-            for type, tags in self.description['tags'].items():
-                tags = ','.join(tags)
-                alltags.append(f'{mapping[type]}="{tags}"')
-            command.append(' '.join(alltags))
-        if 'options' in self.description:
-            command.extend(self.description['options'])
-        if 'invenrories' in self.description:
-            inventories = [
-                '-i {inventory}'
-                for inventory in self.description['inventories']
-            ]
-            command.append(' '.join(invenrories))
-        command = [
-            'ansible-playbook',
-            '/home/vengaar/ansible-ws/test/data/playbooks/wait.yml'
-        ]
-        # print(command)
-        self.command_line = ' '.join(command)
-        # print(self.command_line)
         print('=== start playbook ===')
         print(self.description['cmdline'])
         command = [
           self.description['cmdline']
         ]
-        print(command)
         with open(self.file_output, 'w+') as out, open(self.file_error, 'w+') as err:
             with subprocess.Popen(
                 command,
                 shell=True,
-                # stdin=subprocess.PIPE,
-                # stdout=subprocess.PIPE,
-                # stderr=subprocess.PIPE,
                 stdout=out,
                 stderr=err,
             ) as proc:
@@ -171,43 +129,15 @@ class PlaybookContextLaunch(PlaybookContext):
                 self.return_code = proc.wait()
             self.end = time.time()
             self.write_status(self.STATUS_FINISHED)
-            print("=== end playbook ===")
-
-
-def run(folder, runid):
-    pld = dict(runid=runid)
-    pcl = PlaybookContextLaunch(**pld)
-    command = [
-        'ansible-playbook /home/vengaar/ansible-ws/test/data/playbooks/tags.yml -vvv',
-    ]
-    file_output = os.path.join(folder, 'run.out')
-    file_error = os.path.join(folder, 'run.err')
-    file_error = os.path.join(folder, 'run.in')
-    with open(file_output, 'w+') as out, open(file_error, 'w+') as err:
-        print(out.isatty())
-        print(err.isatty())
-        with subprocess.Popen(
-            command,
-            shell=True,
-            stdin=subprocess.PIPE,
-            stdout=out,
-            stderr=err
-        ) as proc:
-            pcl.pid = proc.pid
-            pcl.begin = time.time()
-            pcl.write_status(pcl.STATUS_STARTED)
-            pcl.return_code = proc.wait()
-        pcl.end = time.time()
-        pcl.write_status(pcl.STATUS_FINISHED)
+        print("=== end playbook ===")
 
 if __name__ == '__main__':
     import pprint
     context = dict(
-    playbook='/home/vengaar/ansible-ws/test/data/playbooks/tags.yml',
+      playbook='/home/vengaar/ansible-ws/test/data/playbooks/tags.yml',
     )
     pcl =PlaybookContextLaunch(**context)
     pcl.launch()
-
     pcr = PlaybookContext(pcl.runid)    
     # while pcr.status["return_code"] is None:
     #   time.sleep(1)
@@ -215,4 +145,4 @@ if __name__ == '__main__':
     # pprint.pprint(pcr.out)
     # pprint.pprint(pcr.description)
     # pprint.pprint(pcr.status)
-    
+

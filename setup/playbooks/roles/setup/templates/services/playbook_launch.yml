@@ -10,12 +10,10 @@ parameters:
     default: "{{ playbook }}"
     attributes:
       - required
-  format:
-    desc: "The output format of json results"
-    choices:
-      - "sui"
-      - "raw"
-    default: "sui"
+  cmdline:
+    desc: "The ansible comman line to used"
+    attributes:
+      - required
 examples:
   - desc: "To get tags for playbook {{ playbook }}"
     url: "{{ url }}?playbook={{ playbook }}"
