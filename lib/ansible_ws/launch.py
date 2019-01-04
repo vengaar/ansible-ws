@@ -50,6 +50,7 @@ class PlaybookContext(object):
     @property
     def status(self):
       with open(self.file_status) as run_status:
+        # self.logger.debug(f'read {self.file_status}')
         status = json.load(run_status)
       return status
 
