@@ -6,7 +6,7 @@ import path_test
 from path_test import ANSIBLE_WS_PATH_TEST
 
 import ansible_ws
-from ansible_ws.playbooks_ws import PlaybookContextLaunch, PlaybookContextRead
+from ansible_ws.playbooks_ws import PlaybookContextLaunch, PlaybookContext
 
 class TestAnsibleLaunch(unittest.TestCase):
 
@@ -48,14 +48,18 @@ class TestAnsibleLaunch(unittest.TestCase):
 
 if __name__ == '__main__':
     #   unittest.main()
+      playbook = '/home/vengaar/ansible-ws/test/data/playbooks/wait.yml'
       context = dict(
-        playbook='/home/vengaar/ansible-ws/test/data/playbooks/wait.yml',
+        playbook=playbook,
+        cmdline=f'ansible-playbook {playbook} -vvv'
+
       )
       pcl =PlaybookContextLaunch(**context)
-      print(pcl.id)
+      runid = pcl.runid
+      print(runid)
       pcl.launch()
-      pcr = PlaybookContextRead(pcl.id)
-      print(pcr)
-      pprint.pprint(pcr.out)
-      pprint.pprint(pcr.description)
-      pprint.pprint(pcr.status)
+      pc = PlaybookContext(runid)
+      print(pc)
+      pprint.pprint(pc.out)
+      pprint.pprint(pc.description)
+      pprint.pprint(pc.status)

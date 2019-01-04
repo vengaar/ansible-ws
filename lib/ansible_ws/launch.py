@@ -3,8 +3,6 @@ import uuid
 import os
 import json, yaml
 import time
-# import daemon
-# import lockfile
 import threading
 import logging
 
@@ -26,6 +24,7 @@ class PlaybookContext(object):
         self.runs_dir = ansible_ws_config['runs_dir']
         self.runid = runid
         self.folder = os.path.join(self.runs_dir, self.runid)
+        self.logger.debug(self.folder)
         self.file_output = os.path.join(self.folder, 'run.out')
         self.file_error = os.path.join(self.folder, 'run.err')
         self.file_desc = os.path.join(self.folder, 'run.desc')
@@ -57,8 +56,6 @@ class PlaybookContext(object):
 class PlaybookContextLaunch(PlaybookContext):
 
     def __init__(self, **kwargs):
-        print("PCL INIT")
-        print(kwargs)
         self.return_code = None
         self.pid = None
         self.begin = None
@@ -74,7 +71,6 @@ class PlaybookContextLaunch(PlaybookContext):
             self.write_status(self.STATUS_READY)
         else:
             runid = kwargs['runid']
-            print(runid)
             super().__init__(runid)
 
     def write_status(self, status):
@@ -98,27 +94,16 @@ class PlaybookContextLaunch(PlaybookContext):
         with open(self.file_desc, 'w') as run_desc:
           json.dump(self._description, run_desc)
 
-
     def launch(self):
-        # folder = self.folder
-        # fpid = os.path.join(folder, 'run.pid')
-        # fpid_out = os.path.join(folder, 'pid.out')
-        # fpid_err = os.path.join(folder, 'pid.err')
-        # with open(fpid_out, 'w+') as pid_out, open(fpid_err, 'w+') as pid_err:
-        #     with daemon.DaemonContext(
-        #         working_directory=folder,
-        #         # pidfile=lockfile.LockFile(fpid),
-        #         stdout=pid_out,
-        #         stderr=pid_err,
-        #     ) as ctx:
-        #         run(folder, self.runid)
+        # Solution where playbook run alays link to httpd process
         thread = threading.Thread(target=self.run, args=())
         thread.daemon = True
         thread.start()
+        # os.system(f'python3 {os.path.realpath(__file__)} --runid {self.runid}')
 
     def run(self):
-        print('=== start playbook ===')
-        print(self.description['cmdline'])
+        self.logger.debug('=== start playbook ===')
+        self.logger.debug(self.description['cmdline'])
         command = [
           self.description['cmdline']
         ]
@@ -135,20 +120,23 @@ class PlaybookContextLaunch(PlaybookContext):
                 self.return_code = proc.wait()
             self.end = time.time()
             self.write_status(self.STATUS_FINISHED)
-        print("=== end playbook ===")
+        self.logger.debug("=== end playbook ===")
 
 if __name__ == '__main__':
-    import pprint
+    import sys
+    import argparse
+    logging.basicConfig(level=logging.DEBUG)
+    logger = logging.getLogger(__name__)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--runid", help="The runid to launch")
+    args = parser.parse_args()    
+    runid = args.runid
+    logger.debug(runid)
     context = dict(
-      playbook='/home/vengaar/ansible-ws/test/data/playbooks/tags.yml',
+        runid=runid
     )
-    pcl =PlaybookContextLaunch(**context)
-    pcl.launch()
-    pcr = PlaybookContext(pcl.runid)    
-    # while pcr.status["return_code"] is None:
-    #   time.sleep(1)
-    #   print ('wait')
-    # pprint.pprint(pcr.out)
-    # pprint.pprint(pcr.description)
-    # pprint.pprint(pcr.status)
-
+    pcl = PlaybookContextLaunch(**context)
+    pid = os.fork()
+    logger.debug(pid)
+    if pid == 0:
+        pcl.run()

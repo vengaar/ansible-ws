@@ -6,6 +6,7 @@ from cgi import parse_qs
 import ansible_ws
 from ansible_ws.playbooks_ws import AnsibleWebServiceLaunch
 
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 def application(environ, start_response):
