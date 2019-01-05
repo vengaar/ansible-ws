@@ -42,7 +42,7 @@ class AnsibleWebServiceTags(AnsibleWebService):
     def run(self):
         playbook = self.get_param('playbook')
         command = ['ansible-playbook', '--list-tags', playbook]
-        p = subprocess.run(command, capture_output=True)
+        p = subprocess.run(command, stdout=subprocess.PIPE)
         out = p.stdout.decode('utf-8')
         tags = []
         line_refused = []
@@ -75,7 +75,7 @@ class AnsibleWebServiceTasks(AnsibleWebService):
     def run(self):
         playbook = self.get_param('playbook')
         command = ['ansible-playbook', '--list-tasks', playbook]
-        p = subprocess.run(command, capture_output=True)
+        p = subprocess.run(command, stdout=subprocess.PIPE)
         out = p.stdout.decode('utf-8')
         tasks = []
         line_refused = []
