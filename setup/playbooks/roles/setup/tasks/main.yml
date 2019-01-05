@@ -23,6 +23,7 @@
       git:
         repo: "{{ git_repo }}"
         dest: /home/{{ wsgi_user }}/{{ git_name }}
+        version: "{{ git_version }}"
         force: yes
 
 

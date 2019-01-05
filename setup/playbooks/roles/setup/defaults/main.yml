@@ -2,6 +2,7 @@
 git_name: ansible-ws
 git_repo: "https://github.com/vengaar/{{ git_name }}.git"
 git_clone: false
+git_version: HEAD
 wsgi_logfile: /home/{{ wsgi_user }}/{{ git_name }}.log
 wsgi_user: "{{ git_name }}"
 wsgi_port: 80
