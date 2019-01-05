@@ -3,19 +3,19 @@ import os
 import unittest
 import pprint
 
-import path_test
-from path_test import ANSIBLE_WS_PATH_TEST
-
+import sys
+sys.path.append('.')
+import tests as ansible_ws_tests
 import ansible_ws
 from ansible_ws.playbooks_ws import AnsibleWebServiceTags, AnsibleWebServiceTasks
 
 class TestAnsibleHostsRequest(unittest.TestCase):
 
-    playbook_tags   = os.path.join(ANSIBLE_WS_PATH_TEST, 'data', 'playbooks', 'tags.yml')
-    playbook_notags = os.path.join(ANSIBLE_WS_PATH_TEST, 'data', 'playbooks', 'notags.yml')
+    playbook_tags   = os.path.join(ansible_ws_tests.ANSIBLE_WS_PATH_TEST, 'data', 'playbooks', 'tags.yml')
+    playbook_notags = os.path.join(ansible_ws_tests.ANSIBLE_WS_PATH_TEST, 'data', 'playbooks', 'notags.yml')
     config_file = '/etc/ansible-ws/playbook_tags.yml'
 
-    def _test_tags(self):
+    def test_tags(self):
         expected = ['tag1', 'tag2', 'tag22', 'tag3']
         query_strings = dict(
             playbook=[self.playbook_tags],
@@ -26,7 +26,7 @@ class TestAnsibleHostsRequest(unittest.TestCase):
         # pprint.pprint(data)
         self.assertEqual(data['results'], expected)
 
-    def _test_tags_no(self):
+    def test_tags_no(self):
         expected = []
         query_strings = dict(
             playbook=[self.playbook_notags],
@@ -45,9 +45,8 @@ class TestAnsibleHostsRequest(unittest.TestCase):
         )
         service = AnsibleWebServiceTasks(self.config_file, query_strings)
         data = service.get_result()
-        pprint.pprint(data)
+        # pprint.pprint(data)
         self.assertEqual(data['results'], expected)
-
 
 
 if __name__ == '__main__':

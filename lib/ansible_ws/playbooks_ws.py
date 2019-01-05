@@ -1,7 +1,38 @@
 import re, subprocess
 
 import ansible_ws
-from ansible_ws.ansible_web_service import AnsibleWebService
+from ansible_ws.ansible_web_service import AnsibleWebService, AnsibleWebServiceConfig
+from ansible_ws.launch import PlaybookContextLaunch, PlaybookContext
+    
+import uuid
+import os
+import json
+
+
+class AnsibleWebServiceRun(AnsibleWebService):
+
+    def __init__(self, config_file, query_strings):
+        super().__init__(config_file, query_strings)
+
+    def run(self):
+        runid = self.get_param("runid")
+        pcr = PlaybookContext(runid)
+        run = dict(
+            status=pcr.status,
+            output=pcr.out
+        )
+        self.result = run
+
+
+class AnsibleWebServiceLaunch(AnsibleWebService):
+
+    def __init__(self, config_file, query_strings):
+        super().__init__(config_file, query_strings)
+
+    def run(self):
+        pcl = PlaybookContextLaunch(**self.query_strings)
+        self.result = pcl.status
+        pcl.launch()
 
 class AnsibleWebServiceTags(AnsibleWebService):
 
@@ -9,9 +40,10 @@ class AnsibleWebServiceTags(AnsibleWebService):
         super().__init__(config_file, query_strings)
 
     def run(self):
+        ansible_cmd = AnsibleWebServiceConfig().get('ansible_cmd.playbook')
         playbook = self.get_param('playbook')
-        command = ['ansible-playbook', '--list-tags', playbook]
-        p = subprocess.run(command, capture_output=True)
+        command = [ansible_cmd, '--list-tags', playbook]
+        p = subprocess.run(command, stdout=subprocess.PIPE)
         out = p.stdout.decode('utf-8')
         tags = []
         line_refused = []
@@ -42,9 +74,10 @@ class AnsibleWebServiceTasks(AnsibleWebService):
         super().__init__(config_file, query_strings)
 
     def run(self):
+        ansible_cmd = AnsibleWebServiceConfig().get('ansible_cmd.playbook')        
         playbook = self.get_param('playbook')
-        command = ['ansible-playbook', '--list-tasks', playbook]
-        p = subprocess.run(command, capture_output=True)
+        command = [ansible_cmd, '--list-tasks', playbook]
+        p = subprocess.run(command, stdout=subprocess.PIPE)
         out = p.stdout.decode('utf-8')
         tasks = []
         line_refused = []

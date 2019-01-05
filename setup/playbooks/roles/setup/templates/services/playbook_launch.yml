@@ -2,19 +2,18 @@
 # {{ ansible_managed }}
 #
 {% set url = wsgi_base_url + "/" + service.name %}
-{% set playbook = "/home/" + wsgi_user + "/ansible-ws/tests/data/playbooks/tags.yml" %}
+{% set playbook = "/home/" + wsgi_user + "/ansible-ws/tests/data/playbooks/wait.yml" %}
 ---
 parameters:
   playbook:
-    desc: "The playbook from gather tags"
+    desc: "The playbook to launch"
+    default: "{{ playbook }}"
     attributes:
       - required
-  format:
-    desc: "The output format of json results"
-    choices:
-      - "sui"
-      - "raw"
-    default: "sui"
+  cmdline:
+    desc: "The ansible comman line to used"
+    attributes:
+      - required
 examples:
   - desc: "To get tags for playbook {{ playbook }}"
     url: "{{ url }}?playbook={{ playbook }}"

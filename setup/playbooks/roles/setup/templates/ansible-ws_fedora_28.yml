@@ -1,0 +1,8 @@
+---
+runs_dir: "{{ runs_dir }}"
+ansible_cmd:
+  playbook: ansible-playbook-3
+unittest:
+  unittest:
+    unittest: unittest
+...

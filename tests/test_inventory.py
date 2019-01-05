@@ -2,16 +2,16 @@ import os
 import unittest
 import pprint
 
-import path_test
-from path_test import ANSIBLE_WS_PATH_TEST
-
+import sys
+sys.path.append('.')
+import tests as ansible_ws_tests
 import ansible_ws
 from ansible_ws.inventory_ws import AnsibleWebServiceHosts
 
 class TestAnsibleHostsRequest(unittest.TestCase):
 
     sources = [
-        os.path.join(ANSIBLE_WS_PATH_TEST, 'data', 'inventories', 'hosts')
+        os.path.join(ansible_ws_tests.ANSIBLE_WS_PATH_TEST, 'data', 'inventories', 'hosts')
     ]
     config_file = '/etc/ansible-ws/ansible_hosts.yml'
 

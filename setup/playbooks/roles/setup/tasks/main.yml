@@ -1,7 +1,7 @@
 ---
 - debug: var=wsgi_user
 - debug: var=git_clone
-
+- debug: var=git_version
 
 - name: Deploy from git
   when: git_clone
@@ -12,12 +12,18 @@
         name: "{{ wsgi_user }}"
         comment: User for wsgi {{ git_name }}
 
+    - name: Ensure runs fir exist
+      file:
+        path: "{{ runs_dir }}"
+        state: directory
+
     - name: Clone git repo on user home
       become: true
       become_user: "{{ wsgi_user }}"
       git:
         repo: "{{ git_repo }}"
         dest: /home/{{ wsgi_user }}/{{ git_name }}
+        version: "{{ git_version }}"
         force: yes
 
 
@@ -25,87 +31,49 @@
   become: true
   become_user: root
   block:
+
     - name: Install dependencies
       dnf:
         name:
           - httpd
           - python3-mod_wsgi
+          - libselinux-python
+          - policycoreutils-python-utils
         state: latest
+
     - name: Update permission to allow apache reach wsgi
       file:
         path: /home/{{ wsgi_user }}
         state: directory
         mode: 0755
+
     - name: Create configuration folders
       file:
         path: /etc/{{ git_name }}
         state: directory
-    - name: Create configuration file
+
+    - name: Create general configuration file
+      template:
+        src: "{{ item }}"
+#         src: "{{ lookup('first_found', findme) }}"
+        dest: /etc/{{ git_name }}/{{ git_name }}.yml
+      with_first_found:
+          - "{{ git_name }}_{{ ansible_distribution|lower }}_{{ ansible_distribution_major_version }}.yml"
+          - "{{ git_name }}_{{ ansible_distribution|lower }}.yml"
+          - "{{ git_name }}.yml"
+#       vars:
+#         findme:
+#           - "{{ git_name }}_{{ ansible_distribution|lower }}_{{ ansible_distribution_major_version }}.yml"
+#           - "{{ git_name }}_{{ ansible_distribution|lower }}.yml"
+#           - "{{ git_name }}.yml"
+
+    - name: Create services configuration files
       template:
         src: services/{{ service.name }}.yml
         dest: /etc/{{ git_name }}/{{ service.name }}.yml
       loop: "{{ wsgi_services }}"
       loop_control:
         loop_var: service
-    - name: Manage firewalld
-      firewalld:
-        port: "{{ wsgi_port }}/tcp"
-        permanent: yes
-        state: enabled
-        immediate: yes
-    - name: Deploy apache configuration
-      template:
-        src: httpd.conf
-        dest: /etc/httpd/conf.d/{{ git_name }}.conf
-    - name: Get selinux state
-      command: getenforce
-      register: getenforce
-
-    - name: Manage selinux
-      when: getenforce.stdout == "Enforcing"
-      block:
-        - name: Set selinux boolean to use home
-          command: setsebool -P {{ item }} on
-          loop:
-            - httpd_enable_homedirs
-            - httpd_read_user_content
-        - name: Create empty log file
-          file:
-            path: "{{ wsgi_logfile }}"
-            state: touch
-            owner: "{{ wsgi_user }}"
-            group: "{{ wsgi_user }}"
-        - name: Set context for files
-          sefcontext:
-            target: "{{ item }}"
-            setype: httpd_sys_rw_content_t
-            state: present
-          loop: "{{ selinux.files }}"
-        - name: Apply new SELinux file context to log file
-          command: restorecon -iv {{ wsgi_logfile }}
-
-    - name: Reload apache config
-      systemd:
-        name: httpd
-        state: reloaded
-        enabled: yes
-    - name: Display wsgi service
-      debug: msg="{{ wsgi_base_url }}/{{ service. name }}"
-      loop: "{{ wsgi_services }}"
-      loop_control:
-        loop_var: service
-
-    - name: Manage firewalld
-      firewalld:
-        port: "{{ wsgi_port }}/tcp"
-        permanent: yes
-        state: enabled
-        immediate: yes
-
-    - name: Deploy apache configuration
-      template:
-        src: httpd.conf
-        dest: /etc/httpd/conf.d/{{ git_name }}.conf
 
     - name: Get selinux state
       command: getenforce
@@ -137,6 +105,18 @@
 
         - name: Apply new SELinux file context to log file
           command: restorecon -iv {{ wsgi_logfile }}
+
+    - name: Deploy apache configuration
+      template:
+        src: httpd.conf
+        dest: /etc/httpd/conf.d/{{ git_name }}.conf
+
+#     - name: Manage firewalld
+#       firewalld:
+#         port: "{{ wsgi_port }}/tcp"
+#         permanent: yes
+#         state: enabled
+#         immediate: yes
 
     - name: Reload apache config
       systemd:

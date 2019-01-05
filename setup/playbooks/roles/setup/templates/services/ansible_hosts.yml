@@ -12,7 +12,7 @@ parameters:
     desc: "List of folder or ansible inventories files to request"
     default:
       - "/etc/ansible/hosts"
-      - "/home/{{ wsgi_user }}/ansible-ws/test/data/inventories/hosts"
+      - "/home/{{ wsgi_user }}/ansible-ws/tests/data/inventories/hosts"
   format:
     desc: "The output format of json results"
     choices:

@@ -6,18 +6,28 @@ According case, use ansible python module or ansible cli.
 * (beta) - To get hosts defined in inventories according to the groups name
 * (beta) - To get tags for a playbook (wrap command `ansible-playbook --list-tags`) 
 * (beta) - To get tasks for a playbook (wrap command `ansible-playbook --list-tasks`)
-* (todo) - To launch playbook
+* (beta) - To launch playbook
 
 # Setup
 
 ## Prerequisite
 
-* fedora 29
-* ansible
+* python => 3.6
+* fedora => 28
+* ansible => 2.7
 
 ## Procedure
 As root on your server
 
+* on fedora 28
+
+~~~~
+dnf install ansible-python3
+git clone https://github.com/vengaar/ansible-ws.git
+ansible-playbook-3 ansible-ws/setup/playbooks/setup.yml -v
+~~~~
+
+* on fedora 29
 ~~~~
 dnf install ansible
 git clone https://github.com/vengaar/ansible-ws.git
@@ -36,6 +46,8 @@ Test url:
 * http://localhost/ansible_hosts
 * http://localhost/plabooks_tags
 * http://localhost/playbooks_tasks
+* http://localhost/playbooks_launch
+* http://localhost/playbooks_run
 
 # FAQ
 
