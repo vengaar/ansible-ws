@@ -16,6 +16,8 @@
       file:
         path: "{{ runs_dir }}"
         state: directory
+        owner: "{{ wsgi_user }}"
+        group: "{{ wsgi_user }}"
 
     - name: Clone git repo on user home
       become: true
