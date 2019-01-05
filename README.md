@@ -12,15 +12,24 @@ According case, use ansible python module or ansible cli.
 
 ## Prerequisite
 
-* fedora 29
-* ansible
+* python => 3.6
+* fedora => 28
+* ansible => 2.7
 
 ## Procedure
 As root on your server
 
+* on fedora 28
+
 ~~~~
-(fedora 29) dnf install ansible
-(fedora 28) dnf install ansible-python3
+dnf install ansible-python3
+git clone https://github.com/vengaar/ansible-ws.git
+ansible-playbook-3 ansible-ws/setup/playbooks/setup.yml -v
+~~~~
+
+* on fedora 29
+~~~~
+dnf install ansible
 git clone https://github.com/vengaar/ansible-ws.git
 ansible-playbook ansible-ws/setup/playbooks/setup.yml -v
 ~~~~
