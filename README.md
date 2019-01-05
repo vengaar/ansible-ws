@@ -19,7 +19,8 @@ According case, use ansible python module or ansible cli.
 As root on your server
 
 ~~~~
-dnf install ansible
+#dnf install ansible
+dnf install ansible-python3
 git clone https://github.com/vengaar/ansible-ws.git
 ansible-playbook ansible-ws/setup/playbooks/setup.yml -v
 ~~~~
