@@ -35,6 +35,7 @@
         name:
           - httpd
           - python3-mod_wsgi
+          - libselinux-python
         state: latest
     - name: Update permission to allow apache reach wsgi
       file:
