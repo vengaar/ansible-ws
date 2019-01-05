@@ -6,6 +6,9 @@ import time
 import threading
 import logging
 
+import ansible_ws
+from ansible_ws.ansible_web_service import AnsibleWebServiceConfig
+
 class PlaybookContext(object):
 
     STATUS_READY = 'ready'
@@ -21,7 +24,8 @@ class PlaybookContext(object):
                 self.logger.info(f'Configuration file {self.CONFIG_FILE} LOADED')
         except Exception:
             self.logger.error(f'Not possible to load configuration file {self.CONFIG_FILE}')
-        self.runs_dir = ansible_ws_config['runs_dir']
+
+        self.runs_dir = AnsibleWebServiceConfig().get('runs_dir')
         self.runid = runid
         self.folder = os.path.join(self.runs_dir, self.runid)
         self.logger.debug(self.folder)

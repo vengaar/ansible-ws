@@ -1,7 +1,7 @@
 import re, subprocess
 
 import ansible_ws
-from ansible_ws.ansible_web_service import AnsibleWebService
+from ansible_ws.ansible_web_service import AnsibleWebService, AnsibleWebServiceConfig
 from ansible_ws.launch import PlaybookContextLaunch, PlaybookContext
     
 import uuid
@@ -40,8 +40,9 @@ class AnsibleWebServiceTags(AnsibleWebService):
         super().__init__(config_file, query_strings)
 
     def run(self):
+        ansible_cmd = AnsibleWebServiceConfig().get('ansible_cmd.playbook')
         playbook = self.get_param('playbook')
-        command = ['ansible-playbook', '--list-tags', playbook]
+        command = [ansible_cmd, '--list-tags', playbook]
         p = subprocess.run(command, stdout=subprocess.PIPE)
         out = p.stdout.decode('utf-8')
         tags = []
@@ -73,8 +74,9 @@ class AnsibleWebServiceTasks(AnsibleWebService):
         super().__init__(config_file, query_strings)
 
     def run(self):
+        ansible_cmd = AnsibleWebServiceConfig().get('ansible_cmd.playbook')        
         playbook = self.get_param('playbook')
-        command = ['ansible-playbook', '--list-tasks', playbook]
+        command = [ansible_cmd, '--list-tasks', playbook]
         p = subprocess.run(command, stdout=subprocess.PIPE)
         out = p.stdout.decode('utf-8')
         tasks = []
