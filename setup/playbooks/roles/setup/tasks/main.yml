@@ -1,7 +1,7 @@
 ---
 - debug: var=wsgi_user
 - debug: var=git_clone
-
+- debug: var=git_version
 
 - name: Deploy from git
   when: git_clone

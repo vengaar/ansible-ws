@@ -2,7 +2,7 @@
 # {{ ansible_managed }}
 #
 {% set url = wsgi_base_url + "/" + service.name %}
-{% set playbook = "/home/" + wsgi_user + "/ansible-ws/test/data/playbooks/wait.yml" %}
+{% set playbook = "/home/" + wsgi_user + "/ansible-ws/tests/data/playbooks/wait.yml" %}
 ---
 parameters:
   playbook:
