@@ -12,7 +12,7 @@ parameters:
     default: "info"
   private_key:
     desc: "The ssh private key to use"
-    default: "/home/vengaar/.ssh/wapi_rsa"
+    default: "/home/{{ wsgi_user }}/ansible-ws/tests/data/agent/ansible-ws"
   passphrase:
     desc: "The passphrase of the private key"
 examples:

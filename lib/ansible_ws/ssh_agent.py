@@ -40,6 +40,7 @@ import pathlib
 import json
 import logging
 import copy
+import psutil
 
 def parse_output(output: bytes) -> Dict[str, str]:
     result = {}
@@ -72,13 +73,16 @@ class SshAgent():
             json.dump(self.env_agent, fstream)
         self.env = copy.deepcopy(os.environ)
         self.env.update(self.env_agent)
-        self.pid = self.env['SSH_AGENT_PID']
+        self.pid = int(self.env['SSH_AGENT_PID'])
         self.socket = self.env['SSH_AUTH_SOCK']
 
     def kill(self) -> None:
-        self.logger.info(f'Killing ssh-agent {self.pid}')
-        subprocess.check_call(['kill', self.pid])
-        os.remove(self.file_agent)
+        if psutil.pid_exists(self.pid) and os.path.exists(self.socket):
+            self.logger.info(f'Killing ssh-agent {self.pid}')
+            p = psutil.Process(self.pid)
+            p.terminate()
+            p.wait()
+            os.remove(self.file_agent)
 
     def load_key(self, private_key, passphrase):
         self.logger.info(f'Load key {private_key}')
