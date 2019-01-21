@@ -68,7 +68,7 @@ class SshAgent():
           output = subprocess.check_output(['ssh-agent', '-s'])
           self.env_agent = parse_output(output)
           self.logger.debug(self.env_agent)
-          with open(self.file_agent, 'w') as fstream:
+          with open(self.file_agent, 'w+') as fstream:
             json.dump(self.env_agent, fstream)
         self.env = copy.deepcopy(os.environ)
         self.env.update(self.env_agent)
