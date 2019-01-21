@@ -6,12 +6,14 @@ import sys
 sys.path.append('.')
 import tests as ansible_ws_tests
 import ansible_ws
-from ansible_ws.inventory_ws import AnsibleWebServiceHosts
+from ansible_ws.inventory_ws import AnsibleWebServiceHosts, AnsibleWebServiceGroupVars
 
 class TestAnsibleHostsRequest(unittest.TestCase):
 
+    hosts_dir = os.path.join(ansible_ws_tests.ANSIBLE_WS_PATH_TEST, 'data', 'inventories')
+    hosts_database = os.path.join(hosts_dir, 'hosts_database') 
     sources = [
-        os.path.join(ansible_ws_tests.ANSIBLE_WS_PATH_TEST, 'data', 'inventories', 'hosts')
+        hosts_database
     ]
     config_file = '/etc/ansible-ws/ansible_hosts.yml'
 
@@ -68,6 +70,21 @@ class TestAnsibleHostsRequest(unittest.TestCase):
         # pprint.pprint(data)
         self.assertEqual(data['results'], expected)
 
+    def test_groupvars(self):
+        expected = ['es', 'fr', 'it']
+        query_strings = dict(
+            group=['database_app1_prod'],
+            key=['countries.dict'],
+            inventory=[self.hosts_dir]
+        )
+        config_file = '/etc/ansible-ws/groupvars.yml'
+        service = AnsibleWebServiceGroupVars(config_file, query_strings)
+        print(service.parameters)
+        data = service.get_result()
+        pprint.pprint(data)
+        self.assertEqual(data['results'], expected)
 
 if __name__ == '__main__':
+    import logging
+    logging.basicConfig(level=logging.DEBUG)
     unittest.main()

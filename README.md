@@ -7,6 +7,7 @@ According case, use ansible python module or ansible cli.
 * (beta) - To get tags for a playbook (wrap command `ansible-playbook --list-tags`) 
 * (beta) - To get tasks for a playbook (wrap command `ansible-playbook --list-tasks`)
 * (beta) - To launch playbook
+* (beta) - To get list defined in groups vars
 
 # Setup
 
@@ -48,6 +49,26 @@ Test url:
 * http://localhost/playbooks_tasks
 * http://localhost/playbooks_launch
 * http://localhost/playbooks_run
+* http://localhost/groupvars
+
+# /ansible_hosts
+
+Allow you to retrieve hosts defined in groups.
+
+# /plabooks_tags
+
+# /playbooks_tasks
+
+# /playbooks_launch
+
+# /playbooks_run
+
+# /groupvars
+
+Allow to retrieve list of values defined in groups var folder
+
+To avoid to define for each request the groups var folder,`
+you can update the default of `inventory` in the config file `/etc/ansible-ws/groupvars.yml`
 
 # FAQ
 

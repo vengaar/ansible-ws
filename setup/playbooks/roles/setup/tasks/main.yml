@@ -12,13 +12,6 @@
         name: "{{ wsgi_user }}"
         comment: User for wsgi {{ git_name }}
 
-    - name: Ensure runs fir exist
-      file:
-        path: "{{ runs_dir }}"
-        state: directory
-        owner: "{{ wsgi_user }}"
-        group: "{{ wsgi_user }}"
-
     - name: Clone git repo on user home
       become: true
       become_user: "{{ wsgi_user }}"
@@ -28,11 +21,24 @@
         version: "{{ git_version }}"
         force: yes
 
-
 - name: Configure
   become: true
   become_user: root
   block:
+
+    - name: Ensure runs dir exist
+      file:
+        path: "{{ runs_dir }}"
+        state: directory
+        owner: "{{ wsgi_user }}"
+        group: "{{ wsgi_user }}"
+
+    - name: Ensure grapher_dir exist
+      file:
+        path: "{{ grapher_dir }}"
+        state: directory
+        owner: "{{ wsgi_user }}"
+        group: "{{ wsgi_user }}"
 
     - name: Install dependencies
       dnf:

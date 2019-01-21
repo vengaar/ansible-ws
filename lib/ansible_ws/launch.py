@@ -8,6 +8,7 @@ import logging
 
 import ansible_ws
 from ansible_ws.ansible_web_service import AnsibleWebServiceConfig
+from ansible_ws.ssh_agent import SshAgent
 
 class PlaybookContext(object):
 
@@ -112,6 +113,8 @@ class PlaybookContextLaunch(PlaybookContext):
         command = [
           self.description['cmdline']
         ]
+        agent = SshAgent()
+        os.environ.update(agent.env_agent)
         with open(self.file_output, 'w+') as out, open(self.file_error, 'w+') as err:
             with subprocess.Popen(
                 command,

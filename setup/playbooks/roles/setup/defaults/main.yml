@@ -13,6 +13,10 @@ wsgi_services:
   - name: playbook_tasks
   - name: playbook_launch
   - name: playbook_run
+#   - name: inventory_grapher
+  - name: groupvars
+  - name: ssh_agent
+grapher_dir: "/home/{{ wsgi_user }}/grapher_output"
 runs_dir: "/home/{{ wsgi_user }}/wapi_runs"
 selinux:
   files:
