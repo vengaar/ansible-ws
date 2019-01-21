@@ -1,0 +1,26 @@
+#
+# {{ ansible_managed }}
+#
+{% set url = wsgi_base_url + "/" + service.name %}
+{% set inventory= "/home/" + wsgi_user + "/ansible-ws/tests/data/inventories" %}
+---
+
+parameters:
+  target:
+    desc: "The host or group to do the graph"
+    attributes:
+      - required
+  inventory:
+    desc: "The folder or inventpry file tu used"
+    default: "{{ inventory }}"
+  format:
+    desc: "The output format of graph"
+    choices:
+      - "svg"
+    default: "svg"
+examples:
+  - desc: "To have help"
+    url: "{{ url }}"
+  - desc: "To get graph of host server_prod_11 defined in ansible-ws test inventories"
+    url: "{{ url }}?target=server_prod_11&inventory={{ inventory }}"
+...

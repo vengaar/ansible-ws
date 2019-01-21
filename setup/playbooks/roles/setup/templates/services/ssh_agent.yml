@@ -1,0 +1,21 @@
+#
+# {{ ansible_managed }}
+#
+{% set url = wsgi_base_url + "/" + service.name %}
+---
+parameters:
+  action:
+    desc: ""
+    choices:
+      - add
+      - info
+    default: "info"
+  private_key:
+    desc: "The ssh private key to use"
+    default: "/home/vengaar/.ssh/wapi_rsa"
+  passphrase:
+    desc: "The passphrase of the private key"
+examples:
+  - desc: "To get information about agent"
+    url: "{{ url }}"
+...
