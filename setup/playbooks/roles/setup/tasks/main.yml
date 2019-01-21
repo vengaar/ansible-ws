@@ -21,6 +21,11 @@
         version: "{{ git_version }}"
         force: yes
 
+- name: Create default ssh key
+  shell: echo 'y' | ssh-keygen -f ~/.ssh/ansible-ws -C ansible-ws -P "ansible-ws"
+  become: true
+  become_user: "{{ wsgi_user }}"
+
 - name: Configure
   become: true
   become_user: root
