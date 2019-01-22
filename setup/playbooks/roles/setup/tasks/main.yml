@@ -21,10 +21,19 @@
         version: "{{ git_version }}"
         force: yes
 
-- name: Create default ssh key
-  shell: echo 'y' | ssh-keygen -f ~/.ssh/ansible-ws -C ansible-ws -P "ansible-ws"
+- name: Manage ssh key
   become: true
   become_user: "{{ wsgi_user }}"
+  block:
+
+    - name: Create default ssh key
+      shell: echo 'y' | ssh-keygen -f ~/.ssh/ansible-ws -C ansible-ws -P "ansible-ws"
+
+    - name: Add key in authorized_key
+      authorized_key:
+        user: "{{ wsgi_user }}"
+        state: present
+        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/ansible-ws.pub') }}"
 
 - name: Configure
   become: true
