@@ -33,7 +33,7 @@
       authorized_key:
         user: "{{ wsgi_user }}"
         state: present
-        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/ansible-ws.pub') }}"
+        key: "{{ lookup('file', '~/.ssh/ansible-ws.pub') }}"
 
 - name: Configure
   become: true
