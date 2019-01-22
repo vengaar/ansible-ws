@@ -52,6 +52,7 @@
           - python3-mod_wsgi
           - libselinux-python
           - policycoreutils-python-utils
+          - python3-pexpect
         state: latest
 
     - name: Update permission to allow apache reach wsgi
