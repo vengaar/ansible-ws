@@ -24,16 +24,22 @@
 - name: Manage ssh key
   become: true
   become_user: "{{ wsgi_user }}"
+  vars:
+    ssh_private_key_file: "/home/{{ wsgi_user }}/.ssh/ansible-ws"
+    ssh_public_key_file: "{{ ssh_private_key_file }}.pub"
   block:
 
     - name: Create default ssh key
-      shell: echo 'y' | ssh-keygen -f ~/.ssh/ansible-ws -C ansible-ws -P "ansible-ws"
+      shell: echo "y" | ssh-keygen -f {{ ssh_private_key_file }} -C ansible-ws -P "ansible-ws"
 
     - name: Add key in authorized_key
       authorized_key:
         user: "{{ wsgi_user }}"
         state: present
-        key: "{{ lookup('file', '/home/{{ wsgi_user }}/.ssh/ansible-ws.pub') }}"
+        key: "{{ lookup('file', ssh_public_key_file) }}"
+
+    - name: Update known_hosts
+      shell: ssh-keyscan -t ecdsa-sha2-nistp256 {{ ansible_default_ipv4.address }} > /home/{{ wsgi_user }}/.ssh/known_hosts
 
 - name: Configure
   become: true
