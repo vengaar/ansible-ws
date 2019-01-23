@@ -15,18 +15,11 @@ class PlaybookContext(object):
     STATUS_READY = 'ready'
     STATUS_STARTED = 'started'
     STATUS_FINISHED = 'finished'
-    CONFIG_FILE = '/etc/ansible-ws/ansible-ws.yml'
 
-    def __init__(self, runid):
+    def __init__(self, runid: str, ansible_ws_config: AnsibleWebServiceConfig=None) -> None:
         self.logger = logging.getLogger(self.__class__.__name__)
-        try:
-            with open(self.CONFIG_FILE) as configfile:
-                ansible_ws_config = yaml.load(configfile)
-                self.logger.info(f'Configuration file {self.CONFIG_FILE} LOADED')
-        except Exception:
-            self.logger.error(f'Not possible to load configuration file {self.CONFIG_FILE}')
-
-        self.runs_dir = AnsibleWebServiceConfig().get('runs_dir')
+        self.ansible_ws_config = AnsibleWebServiceConfig() if ansible_ws_config is None else ansible_ws_config 
+        self.runs_dir = self.ansible_ws_config.get('runs_dir')
         self.runid = runid
         self.folder = os.path.join(self.runs_dir, self.runid)
         self.logger.debug(self.folder)
@@ -69,7 +62,8 @@ class PlaybookContextLaunch(PlaybookContext):
         if 'runid' not in kwargs:
             self.uuiid = uuid.uuid4()
             self.runid = str(self.uuiid)
-            super().__init__(self.runid)
+            ansible_ws_config = kwargs.pop('ansible_ws_config', None)
+            super().__init__(self.runid, ansible_ws_config=ansible_ws_config)
             if not os.path.isdir(self.runs_dir):
               os.mkdir(self.runs_dir)
             os.mkdir(self.folder)

@@ -39,7 +39,7 @@ class TestAnsibleHostsRequest(unittest.TestCase):
         )
         service = AnsibleWebServiceHosts(self.config_file, query_strings)
         data = service.get_result()
-        # pprint.pprint(data)
+#         pprint.pprint(data)
         self.assertEqual(data['results'], expected)
 
     def test_regex(self):
@@ -53,7 +53,7 @@ class TestAnsibleHostsRequest(unittest.TestCase):
         )
         service = AnsibleWebServiceHosts(self.config_file, query_strings)
         data = service.get_result()
-        # pprint.pprint(data)
+#         pprint.pprint(data)
         self.assertEqual(data['results'], expected)
 
     def test_list(self):
@@ -67,7 +67,7 @@ class TestAnsibleHostsRequest(unittest.TestCase):
         )
         service = AnsibleWebServiceHosts(self.config_file, query_strings)
         data = service.get_result()
-        # pprint.pprint(data)
+#         pprint.pprint(data)
         self.assertEqual(data['results'], expected)
 
     def test_groupvars(self):
@@ -79,9 +79,9 @@ class TestAnsibleHostsRequest(unittest.TestCase):
         )
         config_file = '/etc/ansible-ws/groupvars.yml'
         service = AnsibleWebServiceGroupVars(config_file, query_strings)
-        print(service.parameters)
+#         print(service.parameters)
         data = service.get_result()
-        pprint.pprint(data)
+#         pprint.pprint(data)
         self.assertEqual(data['results'], expected)
 
 if __name__ == '__main__':

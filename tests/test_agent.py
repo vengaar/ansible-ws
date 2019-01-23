@@ -17,12 +17,12 @@ class TestSshAgent(unittest.TestCase):
     def test(self):
 
       ssh_agent = SshAgent()
-      pprint.pprint(ssh_agent.env)
+#       pprint.pprint(ssh_agent.env)
       ssh_agent.load_key(self.private_key, 'ansible-ws')
-    #   pprint.pprint(ssh_agent.keys)
+#       pprint.pprint(ssh_agent.keys)
       with open(self.public_key) as fstream:
         expected_key = fstream.read() 
-    #   pprint.pprint(expected_key)
+#       pprint.pprint(expected_key)
       self.assertEqual(ssh_agent.keys, expected_key)
       ssh_agent = SshAgent()
       self.assertEqual(ssh_agent.keys, expected_key)
@@ -37,7 +37,7 @@ class TestSshAgent(unittest.TestCase):
         )
         service = AnsibleWebServiceSshAgent(config_file, query_strings)
         response = service.get_result()
-        pprint.pprint(response)
+#         pprint.pprint(response)
         ssh_agent = SshAgent()
         ssh_agent.kill()
 

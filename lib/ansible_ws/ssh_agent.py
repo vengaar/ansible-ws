@@ -15,7 +15,6 @@ class AnsibleWebServiceSshAgent(AnsibleWebService):
         self.logger.error(action)
         agent = SshAgent()
         if action == 'add':
-            
             _private_key = self.get_param('private_key')
             private_key = os.path.expanduser(_private_key)
             passphrase = self.get_param('passphrase')
