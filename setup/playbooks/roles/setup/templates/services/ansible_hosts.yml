@@ -1,7 +1,6 @@
 #
 # {{ ansible_managed }}
 #
-{% set url = wsgi_base_url + "/" + service.name %}
 ---
 parameters:
   groups:

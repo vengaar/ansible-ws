@@ -45,7 +45,7 @@ class AnsibleWebServiceConfig(object):
 
     CONFIG_FILE = '/etc/ansible-ws/ansible-ws.yml'
 
-    def __init__(self):
+    def __init__(self, config_file=CONFIG_FILE):
         self.logger = logging.getLogger(self.__class__.__name__)
         try:
             with open(self.CONFIG_FILE) as configfile:

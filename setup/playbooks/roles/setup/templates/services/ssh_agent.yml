@@ -1,0 +1,14 @@
+#
+# {{ ansible_managed }}
+#
+---
+parameters:
+  action:
+    desc: ""
+    choices:
+      - info
+    default: "info"
+examples:
+  - desc: "To get information about agent"
+    url: "{{ url }}"
+...

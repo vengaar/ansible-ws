@@ -1,5 +1,6 @@
 ---
 runs_dir: "{{ runs_dir }}"
+grapher_dir: "{{ grapher_dir }}"
 ansible_cmd:
   playbook: ansible-playbook
 unittest:

@@ -1,0 +1,13 @@
+---
+foo: bar
+
+countries:
+  list:
+  - fr
+  - it
+  - es
+  dict:
+    fr: france
+    it: italy
+    es: spain
+...

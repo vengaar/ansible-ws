@@ -1,7 +1,6 @@
 #
 # {{ ansible_managed }}
 #
-{% set url = wsgi_base_url + "/" + service.name %}
 {% set playbook = "/home/" + wsgi_user + "/ansible-ws/tests/data/playbooks/tags.yml" %}
 ---
 parameters:

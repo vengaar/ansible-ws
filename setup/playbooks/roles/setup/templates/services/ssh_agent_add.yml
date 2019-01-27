@@ -1,0 +1,22 @@
+#
+# {{ ansible_managed }}
+#
+---
+parameters:
+  action:
+    desc: ""
+    choices:
+      - add
+    default: "add"
+  private_key:
+    desc: "The ssh private key to use"
+    attributes:
+      - required
+  passphrase:
+    desc: "The passphrase of the private key"
+    attributes:
+      - required
+examples:
+  - desc: "To add key on agent"
+    url: "{{ url }}?private_key=/home/{{ wsgi_user }}/ansible-ws/tests/data/agent/key1&passphrase=key1"
+...

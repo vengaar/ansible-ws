@@ -4,6 +4,9 @@ server_prod_11
 server_prod_12
 server_prod_13
 
+[database_app1_prod:vars]
+app_user=db01
+
 [database_app2_prod]
 server_prod_21
 server_prod_22

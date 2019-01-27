@@ -12,13 +12,6 @@
         name: "{{ wsgi_user }}"
         comment: User for wsgi {{ git_name }}
 
-    - name: Ensure runs fir exist
-      file:
-        path: "{{ runs_dir }}"
-        state: directory
-        owner: "{{ wsgi_user }}"
-        group: "{{ wsgi_user }}"
-
     - name: Clone git repo on user home
       become: true
       become_user: "{{ wsgi_user }}"
@@ -28,11 +21,51 @@
         version: "{{ git_version }}"
         force: yes
 
+- name: Ensure permissions for tests keys
+  file:
+    path: "{{ item }}"
+    mode: 0600
+  with_fileglob:
+    - "/home/{{ wsgi_user }}/{{ git_name }}/tests/data/agent/key*"
+
+- name: Manage ssh key
+  become: true
+  become_user: "{{ wsgi_user }}"
+  vars:
+    ssh_private_key_file: "/home/{{ wsgi_user }}/.ssh/ansible-ws"
+    ssh_public_key_file: "{{ ssh_private_key_file }}.pub"
+  block:
+
+    - name: Create default ssh key
+      shell: echo "y" | ssh-keygen -f {{ ssh_private_key_file }} -C ansible-ws -P "ansible-ws"
+
+    - name: Add key in authorized_key
+      authorized_key:
+        user: "{{ wsgi_user }}"
+        state: present
+        key: "{{ lookup('file', ssh_public_key_file) }}"
+
+    - name: Update known_hosts
+      shell: ssh-keyscan -t ecdsa-sha2-nistp256 {{ ansible_default_ipv4.address }} > /home/{{ wsgi_user }}/.ssh/known_hosts
 
 - name: Configure
   become: true
   become_user: root
   block:
+
+    - name: Ensure runs dir exist
+      file:
+        path: "{{ runs_dir }}"
+        state: directory
+        owner: "{{ wsgi_user }}"
+        group: "{{ wsgi_user }}"
+
+    - name: Ensure grapher_dir exist
+      file:
+        path: "{{ grapher_dir }}"
+        state: directory
+        owner: "{{ wsgi_user }}"
+        group: "{{ wsgi_user }}"
 
     - name: Install dependencies
       dnf:
@@ -41,6 +74,7 @@
           - python3-mod_wsgi
           - libselinux-python
           - policycoreutils-python-utils
+          - python3-pexpect
         state: latest
 
     - name: Update permission to allow apache reach wsgi
@@ -76,6 +110,8 @@
       loop: "{{ wsgi_services }}"
       loop_control:
         loop_var: service
+      vars:
+        url: "{{ wsgi_base_url + '/' + service.alias }}"
 
     - name: Get selinux state
       command: getenforce
@@ -127,7 +163,7 @@
         enabled: yes
 
     - name: Display wsgi service
-      debug: msg="{{ wsgi_base_url }}/{{ service. name }}"
+      debug: msg="{{ wsgi_base_url }}/{{ service. alias }}"
       loop: "{{ wsgi_services }}"
       loop_control:
         loop_var: service

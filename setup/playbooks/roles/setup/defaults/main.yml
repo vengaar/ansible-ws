@@ -9,10 +9,24 @@ wsgi_port: 80
 wsgi_base_url: http://{{ ansible_default_ipv4.address }}:{{ wsgi_port }}
 wsgi_services:
   - name: ansible_hosts
+    alias: ansible-ws/groups
   - name: playbook_tags
+    alias: ansible-ws/tags
   - name: playbook_tasks
+    alias: ansible-ws/tasks
   - name: playbook_launch
+    alias: ansible-ws/launch
   - name: playbook_run
+    alias: ansible-ws/run
+  - name: groupvars
+    alias: ansible-ws/groupsvars
+  - name: ssh_agent
+    alias: ssh-agent/info
+  - name: ssh_agent_add
+    alias: ssh-agent/add
+  - name: ssh_agent_kill
+    alias: ssh-agent/kill
+grapher_dir: "/home/{{ wsgi_user }}/grapher_output"
 runs_dir: "/home/{{ wsgi_user }}/wapi_runs"
 selinux:
   files:
