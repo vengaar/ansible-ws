@@ -3,8 +3,10 @@
 #
 ---
 parameters:
+  id:
+    desc: "The id of the agent"
   action:
-    desc: ""
+    desc: "The action to have on the agent"
     choices:
       - add
     default: "add"
