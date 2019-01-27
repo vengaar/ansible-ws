@@ -74,6 +74,7 @@
           - python3-mod_wsgi
           - libselinux-python
           - policycoreutils-python-utils
+          - python3-psutil
           - python3-pexpect
         state: latest
 
