@@ -6,8 +6,8 @@ parameters:
   action:
     desc: ""
     choices:
-      - info
-    default: "info"
+      - kill
+    default: "kill"
 examples:
   - desc: "To get information about agent"
     url: "{{ url }}"

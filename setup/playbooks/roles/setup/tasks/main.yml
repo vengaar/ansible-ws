@@ -103,6 +103,8 @@
       loop: "{{ wsgi_services }}"
       loop_control:
         loop_var: service
+      vars:
+        url: "{{ wsgi_base_url + '/' + service.alias }}"
 
     - name: Get selinux state
       command: getenforce
@@ -154,7 +156,7 @@
         enabled: yes
 
     - name: Display wsgi service
-      debug: msg="{{ wsgi_base_url }}/{{ service. name }}"
+      debug: msg="{{ wsgi_base_url }}/{{ service. alias }}"
       loop: "{{ wsgi_services }}"
       loop_control:
         loop_var: service

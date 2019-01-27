@@ -1,7 +1,6 @@
 #
 # {{ ansible_managed }}
 #
-{% set url = wsgi_base_url + "/" + service.name %}
 {% set runid = "935629ee-edd1-4dbe-ae5f-ebf6df75e306" %}
 ---
 parameters:

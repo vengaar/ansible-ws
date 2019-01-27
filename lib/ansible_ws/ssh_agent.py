@@ -21,6 +21,8 @@ class AnsibleWebServiceSshAgent(AnsibleWebService):
             self.logger.error(private_key)
             self.logger.error(passphrase)
             agent.load_key(private_key, passphrase)
+        elif action == 'kill':
+            agent.kill()
         result = dict(
           agent=agent.env_agent,
           keys=agent.keys
@@ -81,7 +83,7 @@ class SshAgent():
             p = psutil.Process(self.pid)
             p.terminate()
             p.wait()
-            os.remove(self.file_agent)
+        os.remove(self.file_agent)
 
     def load_key(self, private_key, passphrase):
         self.logger.info(f'Load key {private_key}')

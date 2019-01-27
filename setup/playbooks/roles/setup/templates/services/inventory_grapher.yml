@@ -1,10 +1,8 @@
 #
 # {{ ansible_managed }}
 #
-{% set url = wsgi_base_url + "/" + service.name %}
 {% set inventory= "/home/" + wsgi_user + "/ansible-ws/tests/data/inventories" %}
 ---
-
 parameters:
   target:
     desc: "The host or group to do the graph"

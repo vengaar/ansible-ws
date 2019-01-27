@@ -44,26 +44,22 @@ ansible-playbook ansible-ws/setup/playbooks/setup.yml -v
 ## Test
 Test url:
 
-* http://localhost/ansible_hosts
-* http://localhost/plabooks_tags
-* http://localhost/playbooks_tasks
-* http://localhost/playbooks_launch
-* http://localhost/playbooks_run
-* http://localhost/groupvars
+* http://localhost/ansible-ws/groups
+* http://localhost/ansible-ws/tags
+* http://localhost/ansible-ws/tasks
+* http://localhost/ansible-ws/launch
+* http://localhost/ansible-ws/run
+* http://localhost/ansible-ws/groupvars
 
-# /ansible_hosts
+* http://localhost/ssh-agent/info
+* http://localhost/ssh-agent/add
+* http://localhost/ssh-agent/kill
+
+# /ansible-ws/groups
 
 Allow you to retrieve hosts defined in groups.
 
-# /plabooks_tags
-
-# /playbooks_tasks
-
-# /playbooks_launch
-
-# /playbooks_run
-
-# /groupvars
+# /ansible-ws/groupvars
 
 Allow to retrieve list of values defined in groups var folder
 
