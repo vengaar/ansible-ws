@@ -21,6 +21,13 @@
         version: "{{ git_version }}"
         force: yes
 
+- name: Ensure permissions for tests keys
+  file:
+    path: "{{ item }}"
+    mode: 0600
+  with_fileglob:
+    - "/home/{{ wsgi_user }}/{{ git_name }}/tests/data/agent/key*"
+
 - name: Manage ssh key
   become: true
   become_user: "{{ wsgi_user }}"
