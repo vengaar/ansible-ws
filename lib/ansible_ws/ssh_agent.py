@@ -12,6 +12,7 @@ import pexpect
 
 import ansible_ws
 from ansible_ws.ansible_web_service import AnsibleWebService
+from sys import stdout
 
 class AnsibleWebServiceSshAgent(AnsibleWebService):
     """
@@ -24,15 +25,15 @@ class AnsibleWebServiceSshAgent(AnsibleWebService):
         self.result = dict()
         action = self.get_param('action')
         id = self.get_param('id')
-        self.logger.error(self.parameters)
-        self.logger.error(action)
+        self.logger.debug(self.parameters)
+        self.logger.debug(action)
         agent = SshAgent(id)
         if action == 'add':
             _private_key = self.get_param('private_key')
             private_key = os.path.expanduser(_private_key)
             passphrase = self.get_param('passphrase')
-            self.logger.error(private_key)
-            self.logger.error(passphrase)
+            self.logger.debug(private_key)
+            self.logger.debug(passphrase)
             agent.load_key(private_key, passphrase)
         elif action == 'kill':
             agent.kill()
@@ -82,9 +83,10 @@ class SshAgent():
 
     def __create(self):
         self.logger.info('NEW AGENT')
-        with subprocess.Popen(['ssh-agent', '-s'],stdout=subprocess.PIPE) as process:
-            out, err = process.communicate()
-        self.env_agent = self.parse_output(out)
+#         with subprocess.Popen(['ssh-agent', '-s'],stdout=subprocess.PIPE) as process:
+#             output, err = process.communicate()
+        output = subprocess.check_output(['ssh-agent', '-s'])
+        self.env_agent = self.parse_output(output)
         self.logger.debug(self.env_agent)
         with open(self.file_agent, 'w+') as fstream:
           json.dump(self.env_agent, fstream)
@@ -115,12 +117,17 @@ class SshAgent():
       process = subprocess.run(
           ['ssh-add', '-L'],
           env=self.env,
-          capture_output=True,
+          stdout=subprocess.PIPE,
           text=True,
       )
       if process.returncode == 0:
-        keys = process.stdout
+        output = process.stdout
+        keys = [
+            key
+            for key in output.split(os.linesep)
+            if key != ''
+        ]
       else:
-        keys = ''
+        keys = []
       self.logger.debug(keys)
       return keys
