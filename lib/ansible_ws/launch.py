@@ -109,6 +109,7 @@ class PlaybookContextLaunch(PlaybookContext):
         ]
         agent = SshAgent()
         os.environ.update(agent.env_agent)
+        os.environ['ANSIBLE_FORCE_COLOR'] = 'true'
         with open(self.file_output, 'w+') as out, open(self.file_error, 'w+') as err:
             with subprocess.Popen(
                 command,
