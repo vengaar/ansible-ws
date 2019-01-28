@@ -117,11 +117,10 @@ class SshAgent():
       process = subprocess.run(
           ['ssh-add', '-L'],
           env=self.env,
-          stdout=subprocess.PIPE,
-          text=True,
+          stdout=subprocess.PIPE
       )
       if process.returncode == 0:
-        output = process.stdout
+        output = str(process.stdout, 'utf-8')
         keys = [
             key
             for key in output.split(os.linesep)
