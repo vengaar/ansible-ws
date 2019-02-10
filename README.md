@@ -66,7 +66,7 @@ ansible-playbook ansible-ws/setup/playbooks/setup.yml -v
 ~~~~
 git clone https://github.com/vengaar/ansible-ws.git
 cd ansible-ws
-git chekout devel
+git checkout devel
 git pull
 ansible-playbook setup/playbooks/setup.yml -e "git_version=devel"
 ~~~~
