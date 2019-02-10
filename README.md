@@ -13,14 +13,39 @@ According case, use ansible python module or ansible cli.
 
 ## Prerequisite
 
-* python => 3.6
-* fedora => 28
-* ansible => 2.7
+* For installation
+  * Git
+* Python => 3.6
+* Ansible installed with python3
+* OS
+  * Ubuntu >= 18.04.1 LTS
+  * fedora >= 28
 
 ## Procedure
+
+### Ubuntu
+
+**CAUTION : Need to use pip3, else with apt ansible in stack python2**
+
 As root on your server
 
-* on fedora 28
+~~~~
+apt install python3-pip
+pip3 install ansible
+git clone https://github.com/vengaar/ansible-ws.git
+ansible-playbook ansible-ws/setup/playbooks/setup.yml -v
+~~~~
+
+### Fedora
+
+**CAUTION : Management with SELinux no yet working**
+2 possible workaround:
+* Disable selinx `setenforce 0`
+* Update ansible.cfg to put `local_tmp = /tmp/.ansible/tmp`
+   
+As root on your server
+
+* For fedora 28
 
 ~~~~
 dnf install ansible-python3
@@ -28,18 +53,23 @@ git clone https://github.com/vengaar/ansible-ws.git
 ansible-playbook-3 ansible-ws/setup/playbooks/setup.yml -v
 ~~~~
 
-* on fedora 29
+* For fedora 29
+
 ~~~~
 dnf install ansible
 git clone https://github.com/vengaar/ansible-ws.git
 ansible-playbook ansible-ws/setup/playbooks/setup.yml -v
 ~~~~
 
-### Issues
+### To test devel
 
-* Pb with SELinux, 2 possible workaround 
-   * Disable selinx `setenforce 0`
-   * Update ansible.cfg to put `local_tmp = /tmp/.ansible/tmp`
+~~~~
+git clone https://github.com/vengaar/ansible-ws.git
+cd ansible-ws
+git chekout devel
+git pull
+ansible-playbook setup/playbooks/setup.yml -e "git_version=devel"
+~~~~
 
 ## Test
 Test url:
