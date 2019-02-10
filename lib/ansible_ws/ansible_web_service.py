@@ -60,12 +60,14 @@ class AnsibleWebServiceConfig(object):
     def get(self, keys):
         value = self.config
         for key in keys.split('.'):
-            value= value[key]
+            value = value[key]
         return value
+
 
 class AnsibleWebService(object):
     """
     """
+
     def __init__(self, config_file, query_strings):
         self.logger = logging.getLogger(self.__class__.__name__)
         self.config_file = config_file
@@ -92,11 +94,14 @@ class AnsibleWebService(object):
         )
 
         if self.parameters_valid:
-          cache = self.config.get('cache')
-          if cache:
-              resource = self.get_param(cache['resource'])
-              type = cache['type']
-              self.result = self.get_result_from_cache(type, resource)
+          cache_config = self.config.get('cache')
+          cache_action = self.get_param('cache')
+          use_cache = cache_config is not None and cache_action in ('use', 'flush')
+          self.logger.debug(f'{use_cache} -> {cache_action} for {cache_config}')
+          if use_cache:
+            resource = self.get_param(cache_config['resource'])
+            type = cache_config['type']
+            self.result = self.get_result_from_cache(type, resource, cache_action)
           else:
               self.result = self.run()
 
@@ -114,17 +119,17 @@ class AnsibleWebService(object):
             output['debug'] = self.debug
         return output
 
-    def get_result_from_cache(self, type, resource):
+    def get_result_from_cache(self, type, resource, cache_action):
         """
         """
         self.logger.info(f'Try using cache for {type} on {resource}')
-        
+
         def update_cache(cache_path):
-            self.run()
+            result = self.run()
             self.logger.info(f'Write cache {cache_path}')
             with open(cache_path, 'w') as stream:
-                json.dump(self.result, stream)
-            return self.result
+                json.dump(result, stream)
+            return result
 
         self.logger.debug(f'resource={resource}')
         resource_name = os.path.basename(resource)
@@ -133,6 +138,8 @@ class AnsibleWebService(object):
         cache_filename = f'.cached.{type}.{resource_name}'
         cache_path = os.path.join(dir, cache_filename)
         print(f'cache_path={cache_path}')
+        if cache_action == 'flush':
+            os.remove(cache_path)
         if os.path.isfile(cache_path):
             self.logger.info(f'Cache found {cache_path}')
             stat_cache = os.stat(cache_path)
@@ -154,20 +161,4 @@ class AnsibleWebService(object):
             self.logger.info(f'Cache not found {cache_path}')
             result = update_cache(cache_path)
         return result
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
