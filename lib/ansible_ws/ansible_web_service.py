@@ -2,7 +2,9 @@ import logging
 import os
 import yaml
 import json
-
+import hashlib
+import time
+import functools
 
 def get_parameters(qs, config_parameters):
     validation = True
@@ -41,6 +43,36 @@ def get_parameters(qs, config_parameters):
         # print(name, value)
 
     return (validation, parameters)
+
+
+def json_file_cache(func):
+    #print(func)
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        """
+        """
+        #print(args, kwargs)
+        self = args[0]
+        discrimimant = args[1]
+        if self.use_cache():
+            self.logger.debug(f'discrimimant for cache={discrimimant}')
+            key = self.cache_get_key(discrimimant)
+            cache_action = self.get_param('cache')
+            if cache_action == 'flush':
+                self.cache_flush_data(key)
+            if self.cache_is_valid(key):
+                result = self.cache_get_data(key)
+                if result is None:
+                    result = func(*args, **kwargs)
+            else:
+                result = func(*args, **kwargs)
+                self.cache_store_data(key, result)
+        else:
+            result = func(*args, **kwargs)
+        return result
+
+    return wrapper
 
 
 class AnsibleWebServiceConfig(object):
@@ -94,16 +126,7 @@ class AnsibleWebService(object):
         )
 
         if self.parameters_valid:
-          cache_config = self.config.get('cache')
-          cache_action = self.get_param('cache')
-          use_cache = cache_config is not None and cache_action in ('use', 'flush')
-          self.logger.debug(f'{use_cache} -> {cache_action} for {cache_config}')
-          if use_cache:
-            resource = self.get_param(cache_config['resource'])
-            type = cache_config['type']
-            self.result = self.get_result_from_cache(type, resource, cache_action)
-          else:
-              self.result = self.run()
+          self.result = self.run()
 
     def get_param(self, name):
         return self.parameters.get(name)
@@ -119,46 +142,60 @@ class AnsibleWebService(object):
             output['debug'] = self.debug
         return output
 
-    def get_result_from_cache(self, type, resource, cache_action):
-        """
-        """
-        self.logger.info(f'Try using cache for {type} on {resource}')
 
-        def update_cache(cache_path):
-            result = self.run()
-            self.logger.info(f'Write cache {cache_path}')
-            with open(cache_path, 'w') as stream:
-                json.dump(result, stream)
-            return result
 
-        self.logger.debug(f'resource={resource}')
-        resource_name = os.path.basename(resource)
-        self.logger.debug(f'resource_name={resource_name}')
-        dir = os.path.dirname(resource)
-        cache_filename = f'.cached.{type}.{resource_name}'
-        cache_path = os.path.join(dir, cache_filename)
-        print(f'cache_path={cache_path}')
-        if cache_action == 'flush':
-            os.remove(cache_path)
-        if os.path.isfile(cache_path):
-            self.logger.info(f'Cache found {cache_path}')
-            stat_cache = os.stat(cache_path)
-            stat_resource = os.stat(resource)
-            if stat_cache.st_mtime > stat_resource.st_mtime:
-                self.logger.info('Cache younger than resource -> use cache')
-                try:
-                    with open(cache_path) as stream:
-                        data = stream.read()
-                    result = json.loads(data)
-                except Exception as e:
-                    self.logger.error(f'Failed to read cache {cache_path}')
-                    self.logger.error(str(e))
-                    result = update_cache(cache_path)
-            else:
-                self.logger.info('Cache older than resource -> update cache')
-                result = update_cache(cache_path)
+#############
+### CACHE ###
+#############
+
+    def use_cache(self):
+        cache_config = self.config.get('cache')
+        cache_action = self.get_param('cache')
+        use_cache = cache_config is not None and cache_action in ('use', 'flush')
+        self.logger.debug(f'use_cache {use_cache} -> {cache_action}, {cache_config}')
+        return use_cache
+
+    def cache_get_key(self, discriminant):
+        id = str(discriminant).encode('utf-8')
+        md5 = hashlib.md5(id).hexdigest()
+        key = f'/tmp/.ansible-ws.cache.{md5}'
+        return key
+
+    def cache_is_valid(self, key):
+        if os.path.isfile(key):
+            cache_stat = os.stat(key)
+            cache_age = time.time() - cache_stat.st_mtime
+            ttl = 60
+            return cache_age < ttl
         else:
-            self.logger.info(f'Cache not found {cache_path}')
-            result = update_cache(cache_path)
+            return False
+
+    def cache_get_data(self, key):
+        try:
+            with open(key) as stream:
+                data = stream.read()
+            result = json.loads(data)
+        except Exception as e:
+            logger.error(f'Failed to get cache {key}')
+            logger.error(str(e))
         return result
+
+    def cache_store_data(self, key, data):
+        self.logger.info(f'cache > store : {key}')
+        try:
+            with open(key, 'w') as stream:
+                json.dump(data, stream)
+        except Exception as e:
+            logger.error(f'Failed to write cache {key}')
+            logger.error(str(e))
+
+    def cache_flush_data(self, key):
+        self.logger.info(f'cache > flush : {key}')
+        if os.path.isfile(key):
+            try:
+                os.remove(key)
+            except Exception as e:
+                logger.error(f'Failed to flush cache {key}')
+                logger.error(str(e))
+
 

@@ -2,6 +2,7 @@
 # {{ ansible_managed }}
 #
 ---
+cache: true
 parameters:
   groups:
     desc: "The ansible groups to used to select hosts"
@@ -24,6 +25,13 @@ parameters:
       - "yes"
       - "no"
     default: "yes"
+  cache:
+    desc: "To manage cache"
+    choices:
+      - "use"
+      - "pass"
+      - "flush"
+    default: "use"
 examples:
   - desc: "To have help"
     url: "http://192.168.1.19:8081"
