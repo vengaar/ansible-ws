@@ -2,6 +2,13 @@
 - debug: var=wsgi_user
 - debug: var=git_clone
 - debug: var=git_version
+- debug: var=os_version
+- debug: var=required.os
+
+- name: Ensure pre-requiste
+  assert:
+    that:
+      - os_version in required.os
 
 - name: Deploy from git
   when: git_clone
@@ -66,17 +73,6 @@
         state: directory
         owner: "{{ wsgi_user }}"
         group: "{{ wsgi_user }}"
-
-    - name: Install dependencies
-      dnf:
-        name:
-          - httpd
-          - python3-mod_wsgi
-          - libselinux-python
-          - policycoreutils-python-utils
-          - python3-psutil
-          - python3-pexpect
-        state: latest
 
     - name: Update permission to allow apache reach wsgi
       file:
@@ -157,15 +153,13 @@
 #         state: enabled
 #         immediate: yes
 
-    - name: Reload apache config
-      systemd:
-        name: httpd
-        state: reloaded
-        enabled: yes
 
-    - name: Display wsgi service
-      debug: msg="{{ wsgi_base_url }}/{{ service. alias }}"
-      loop: "{{ wsgi_services }}"
-      loop_control:
-        loop_var: service
+
+- include_tasks: "{{ ansible_distribution|lower }}.yml"
+
+- name: Display wsgi service
+  debug: msg="{{ wsgi_base_url }}/{{ service. alias }}"
+  loop: "{{ wsgi_services }}"
+  loop_control:
+    loop_var: service
 ...
