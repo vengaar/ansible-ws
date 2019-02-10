@@ -41,7 +41,7 @@ class AnsibleWebServiceSshAgent(AnsibleWebService):
           agent=agent.env_agent,
           keys=agent.keys
         )
-        self.result = result
+        return result
 
 
 

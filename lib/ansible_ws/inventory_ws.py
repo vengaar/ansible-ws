@@ -32,7 +32,7 @@ class AnsibleWebServiceHosts(AnsibleWebService):
             for group_name in inventory.groups
             if re.match(pattern, group_name) is not None
         )
-        self.result = response
+        return response
 
 class AnsibleWebServiceGroupVars(AnsibleWebService):
     """
@@ -76,5 +76,5 @@ class AnsibleWebServiceGroupVars(AnsibleWebService):
         for sub_key in key.split('.'):
             data = data[sub_key]
 
-        self.result = sorted(data.keys()) if isinstance(data, dict) else data
+        return sorted(data.keys()) if isinstance(data, dict) else data
 

@@ -1,6 +1,8 @@
-import yaml, logging, re, subprocess, ansible
-from ansible.inventory.manager import InventoryManager
-from ansible.parsing.dataloader import DataLoader
+import logging
+import os
+import yaml
+import json
+
 
 def get_parameters(qs, config_parameters):
     validation = True
@@ -90,7 +92,13 @@ class AnsibleWebService(object):
         )
 
         if self.parameters_valid:
-          self.run()
+          cache = self.config.get('cache')
+          if cache:
+              resource = self.get_param(cache['resource'])
+              type = cache['type']
+              self.result = self.get_result_from_cache(type, resource)
+          else:
+              self.result = self.run()
 
     def get_param(self, name):
         return self.parameters.get(name)
@@ -105,3 +113,61 @@ class AnsibleWebService(object):
         if self.mode_debug:
             output['debug'] = self.debug
         return output
+
+    def get_result_from_cache(self, type, resource):
+        """
+        """
+        self.logger.info(f'Try using cache for {type} on {resource}')
+        
+        def update_cache(cache_path):
+            self.run()
+            self.logger.info(f'Write cache {cache_path}')
+            with open(cache_path, 'w') as stream:
+                json.dump(self.result, stream)
+            return self.result
+
+        self.logger.debug(f'resource={resource}')
+        resource_name = os.path.basename(resource)
+        self.logger.debug(f'resource_name={resource_name}')
+        dir = os.path.dirname(resource)
+        cache_filename = f'.cached.{type}.{resource_name}'
+        cache_path = os.path.join(dir, cache_filename)
+        print(f'cache_path={cache_path}')
+        if os.path.isfile(cache_path):
+            self.logger.info(f'Cache found {cache_path}')
+            stat_cache = os.stat(cache_path)
+            stat_resource = os.stat(resource)
+            if stat_cache.st_mtime > stat_resource.st_mtime:
+                self.logger.info('Cache younger than resource -> use cache')
+                try:
+                    with open(cache_path) as stream:
+                        data = stream.read()
+                    result = json.loads(data)
+                except Exception as e:
+                    self.logger.error(f'Failed to read cache {cache_path}')
+                    self.logger.error(str(e))
+                    result = update_cache(cache_path)
+            else:
+                self.logger.info('Cache older than resource -> update cache')
+                result = update_cache(cache_path)
+        else:
+            self.logger.info(f'Cache not found {cache_path}')
+            result = update_cache(cache_path)
+        return result
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

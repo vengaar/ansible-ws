@@ -3,6 +3,9 @@
 #
 {% set playbook = "/home/" + wsgi_user + "/ansible-ws/tests/data/playbooks/tags.yml" %}
 ---
+cache:
+  resource: playbook
+  type: tasks
 parameters:
   playbook:
     desc: "The playbook from gather tags"
@@ -14,6 +17,13 @@ parameters:
       - "sui"
       - "raw"
     default: "sui"
+  cache:
+    desc: "To manage cache"
+    choices:
+      - "use"
+      - "pass"
+      - "flush"
+    default: "use"
 examples:
   - desc: "To get tags for playbook {{ playbook }}"
     url: "{{ url }}?playbook={{ playbook }}"
