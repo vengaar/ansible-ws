@@ -1,6 +1,10 @@
-import yaml, logging, re, subprocess, ansible
-from ansible.inventory.manager import InventoryManager
-from ansible.parsing.dataloader import DataLoader
+import logging
+import os
+import yaml
+import json
+import hashlib
+import time
+import functools
 
 def get_parameters(qs, config_parameters):
     validation = True
@@ -37,8 +41,40 @@ def get_parameters(qs, config_parameters):
                     validation = False
         parameters[name] = value
         # print(name, value)
+    if 'help' in qs:
+        validation = False
 
     return (validation, parameters)
+
+
+def json_file_cache(func):
+    #print(func)
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        """
+        """
+        #print(args, kwargs)
+        self = args[0]
+        discrimimant = args[1]
+        if self.use_cache():
+            self.logger.debug(f'discrimimant for cache={discrimimant}')
+            key = self.cache_get_key(discrimimant)
+            cache_action = self.get_param('cache')
+            if cache_action == 'flush':
+                self.cache_flush_data(key)
+            if self.cache_is_valid(key):
+                result = self.cache_get_data(key)
+                if result is None:
+                    result = func(*args, **kwargs)
+            else:
+                result = func(*args, **kwargs)
+                self.cache_store_data(key, result)
+        else:
+            result = func(*args, **kwargs)
+        return result
+
+    return wrapper
 
 
 class AnsibleWebServiceConfig(object):
@@ -58,12 +94,14 @@ class AnsibleWebServiceConfig(object):
     def get(self, keys):
         value = self.config
         for key in keys.split('.'):
-            value= value[key]
+            value = value[key]
         return value
+
 
 class AnsibleWebService(object):
     """
     """
+
     def __init__(self, config_file, query_strings):
         self.logger = logging.getLogger(self.__class__.__name__)
         self.config_file = config_file
@@ -90,7 +128,7 @@ class AnsibleWebService(object):
         )
 
         if self.parameters_valid:
-          self.run()
+          self.result = self.run()
 
     def get_param(self, name):
         return self.parameters.get(name)
@@ -105,3 +143,61 @@ class AnsibleWebService(object):
         if self.mode_debug:
             output['debug'] = self.debug
         return output
+
+
+
+#############
+### CACHE ###
+#############
+
+    def use_cache(self):
+        cache_config = self.config.get('cache')
+        cache_action = self.get_param('cache')
+        use_cache = cache_config is not None and cache_action in ('use', 'flush')
+        self.logger.debug(f'use_cache {use_cache} -> {cache_action}, {cache_config}')
+        return use_cache
+
+    def cache_get_key(self, discriminant):
+        id = str(discriminant).encode('utf-8')
+        md5 = hashlib.md5(id).hexdigest()
+        key = f'/tmp/.ansible-ws.cache.{md5}'
+        return key
+
+    def cache_is_valid(self, key):
+        if os.path.isfile(key):
+            cache_stat = os.stat(key)
+            cache_age = time.time() - cache_stat.st_mtime
+            ttl = 60
+            return cache_age < ttl
+        else:
+            return False
+
+    def cache_get_data(self, key):
+        try:
+            with open(key) as stream:
+                data = stream.read()
+            result = json.loads(data)
+        except Exception as e:
+            logger.error(f'Failed to get cache {key}')
+            logger.error(str(e))
+        return result
+
+    def cache_store_data(self, key, data):
+        self.logger.info(f'cache > store : {key}')
+        try:
+            with open(key, 'w') as stream:
+                json.dump(data, stream)
+        except Exception as e:
+            logger.error(f'Failed to write cache {key}')
+            logger.error(str(e))
+
+    def cache_flush_data(self, key):
+        self.logger.info(f'cache > flush : {key}')
+        if os.path.isfile(key):
+            try:
+                os.remove(key)
+            except Exception as e:
+                logger.error(f'Failed to flush cache {key}')
+                logger.error(str(e))
+
+

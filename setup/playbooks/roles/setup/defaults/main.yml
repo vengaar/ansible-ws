@@ -32,4 +32,10 @@ selinux:
   files:
     - "{{ wsgi_logfile }}"
     - "/home/{{ wsgi_user }}/.ansible/tmp(/.*)?"
+os_version: "{{ ansible_distribution }}/{{ ansible_distribution_major_version }}"
+required:
+  os:
+    - "Fedora/28"
+    - "Fedora/29"
+    - "Ubuntu/18"
 ...

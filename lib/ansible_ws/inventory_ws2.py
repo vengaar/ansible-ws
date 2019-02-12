@@ -1,14 +1,13 @@
 """
 """
-import  os
-import json, yaml
+import os
+import json
+import yaml
 import re
-import ansible
-from ansible.inventory.manager import InventoryManager
-from ansible.parsing.dataloader import DataLoader
+import subprocess
 
 import ansible_ws
-from ansible_ws.ansible_web_service import AnsibleWebService
+from ansible_ws.ansible_web_service import AnsibleWebService, json_file_cache
 
 class AnsibleWebServiceHosts(AnsibleWebService):
     """
@@ -17,19 +16,46 @@ class AnsibleWebServiceHosts(AnsibleWebService):
     def __init__(self, config_file, query_strings):
         super().__init__(config_file, query_strings)
 
+    @json_file_cache
+    def get_groups(self, sources):
+        """
+        """
+        command = [
+            'ansible',
+            '-m',
+            'debug',
+            '-a',
+            'var=groups',
+            'localhost',
+        ]
+        if len(sources) > 0:
+            inventories = []
+            for source in sources:
+                inventories.append('-i')
+                inventories.append(source)
+            command.extend(inventories)
+        self.logger.debug(f'get groups command {command}')
+        p = subprocess.run(command, stdout=subprocess.PIPE)
+        out = p.stdout.decode('utf-8')
+        lines = out.splitlines()
+        lines[0] = '{'
+        inventory = json.loads(''.join(lines))
+        groups = inventory['groups']
+        self.logger.debug(groups)
+        return groups
+
+    def use_cache(self):
+        return True
+
     def run(self):
+        
         sources = self.parameters['sources']
-        loader = DataLoader()
-        inventory = InventoryManager(
-            loader=loader,
-            sources=sources
-        )
-        groups_dict = inventory.get_groups_dict()
-        groups = self.get_param('groups')
-        pattern = re.compile(groups)
+        groups = self.get_groups(sources)
+        param_groups = self.get_param('groups')
+        pattern = re.compile(param_groups)
         response = dict(
-            (group_name, sorted(groups_dict[group_name]))
-            for group_name in inventory.groups
+            (group_name, sorted(groups[group_name]))
+            for group_name in groups.keys()
             if re.match(pattern, group_name) is not None
         )
         return response

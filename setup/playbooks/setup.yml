@@ -5,8 +5,6 @@
     - name: Ensure pre-requiste
       assert:
         that:
-          - ansible_distribution == "Fedora"
-          - ansible_distribution_major_version|int >= 28
           - ansible_user_id == "root"
   roles:
     - role: setup

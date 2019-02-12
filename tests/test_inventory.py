@@ -6,7 +6,7 @@ import sys
 sys.path.append('.')
 import tests as ansible_ws_tests
 import ansible_ws
-from ansible_ws.inventory_ws import AnsibleWebServiceHosts, AnsibleWebServiceGroupVars
+from ansible_ws.inventory_ws2 import AnsibleWebServiceHosts, AnsibleWebServiceGroupVars
 
 class TestAnsibleHostsRequest(unittest.TestCase):
 
@@ -41,6 +41,18 @@ class TestAnsibleHostsRequest(unittest.TestCase):
         data = service.get_result()
 #         pprint.pprint(data)
         self.assertEqual(data['results'], expected)
+
+        service = AnsibleWebServiceHosts(self.config_file, query_strings)
+        data = service.get_result()
+#         pprint.pprint(data)
+        self.assertEqual(data['results'], expected)
+
+        query_strings['cache'] = ['flush']
+        service = AnsibleWebServiceHosts(self.config_file, query_strings)
+        data = service.get_result()
+#         pprint.pprint(data)
+        self.assertEqual(data['results'], expected)
+
 
     def test_regex(self):
         expected = dict(
