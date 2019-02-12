@@ -16,47 +16,28 @@ According case, use ansible python module or ansible cli.
 * For installation
   * Git
 * Python => 3.6
-* Ansible installed with python3
-* OS
-  * Ubuntu >= 18.04.1 LTS
-  * fedora >= 28
+* Ansible
 
 ## Procedure
 
-### Ubuntu
+**CAUTION : currently require ti have SELinux in Permissive mode**
 
-**CAUTION : Need to use pip3, else with apt ansible in stack python2**
+### Ubuntu >= 18.04.1 LTS
 
 As root on your server
 
 ~~~~
-apt install python3-pip
-pip3 install ansible
+apt-get install ansible
 git clone https://github.com/vengaar/ansible-ws.git
 ansible-playbook ansible-ws/setup/playbooks/setup.yml -v
 ~~~~
 
-### Fedora
-
-**CAUTION : Management with SELinux no yet working**
-2 possible workaround:
-* Disable selinx `setenforce 0`
-* Update ansible.cfg to put `local_tmp = /tmp/.ansible/tmp`
+### Fedora > 28
    
 As root on your server
 
-* For fedora 28
-
 ~~~~
-dnf install ansible-python3
-git clone https://github.com/vengaar/ansible-ws.git
-ansible-playbook-3 ansible-ws/setup/playbooks/setup.yml -v
-~~~~
-
-* For fedora 29
-
-~~~~
-dnf install ansible
+dnf install ansible-python
 git clone https://github.com/vengaar/ansible-ws.git
 ansible-playbook ansible-ws/setup/playbooks/setup.yml -v
 ~~~~
