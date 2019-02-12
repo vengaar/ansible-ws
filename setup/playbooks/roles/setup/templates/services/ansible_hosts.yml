@@ -11,7 +11,7 @@ parameters:
   sources:
     desc: "List of folder or ansible inventories files to request"
     default:
-      - "/etc/ansible/hosts"
+#       - "/etc/ansible/hosts"
       - "/home/{{ wsgi_user }}/ansible-ws/tests/data/inventories/hosts_database"
       - "/home/{{ wsgi_user }}/ansible-ws/tests/data/inventories/hosts_webserver"
   format:
@@ -35,7 +35,7 @@ parameters:
     default: "use"
 examples:
   - desc: "To have help"
-    url: "http://192.168.1.19:8081"
+    url: "{{ url }}?help=true"
   - desc: "To get all hosts"
     url: "{{ url }}?groups=all"
   - desc: "To get hosts in groups database_app1_prod and database_app2_dev"
