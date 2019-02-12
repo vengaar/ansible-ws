@@ -41,6 +41,8 @@ def get_parameters(qs, config_parameters):
                     validation = False
         parameters[name] = value
         # print(name, value)
+    if 'help' in qs:
+        validation = False
 
     return (validation, parameters)
 

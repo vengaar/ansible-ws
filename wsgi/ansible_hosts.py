@@ -3,7 +3,7 @@ import logging
 from cgi import parse_qs
 
 import ansible_ws
-from ansible_ws.inventory_ws import AnsibleWebServiceHosts
+from ansible_ws.inventory_ws2 import AnsibleWebServiceHosts
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
