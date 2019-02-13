@@ -18,6 +18,7 @@
       user:
         name: "{{ wsgi_user }}"
         comment: User for wsgi {{ git_name }}
+        shell: /bin/bash
 
     - name: Clone git repo on user home
       become: true
