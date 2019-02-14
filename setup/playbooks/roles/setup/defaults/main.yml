@@ -19,14 +19,13 @@ wsgi_services:
   - name: playbook_run
     alias: ansible-ws/run
   - name: groupvars
-    alias: ansible-ws/groupsvars
+    alias: ansible-ws/groupvars
   - name: ssh_agent
     alias: ssh-agent/info
   - name: ssh_agent_add
     alias: ssh-agent/add
   - name: ssh_agent_kill
     alias: ssh-agent/kill
-grapher_dir: "/home/{{ wsgi_user }}/grapher_output"
 runs_dir: "/home/{{ wsgi_user }}/wapi_runs"
 selinux:
   files:

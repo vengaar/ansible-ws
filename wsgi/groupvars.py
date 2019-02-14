@@ -4,7 +4,7 @@ import logging
 from cgi import parse_qs
 
 import ansible_ws
-from ansible_ws.inventory_ws import AnsibleWebServiceGroupVars
+from ansible_ws.inventory_ws2 import AnsibleWebServiceGroupVars
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -18,10 +18,9 @@ def application(environ, start_response):
         response = service.get_result()
         if service.parameters_valid:
             status = ansible_ws.HTTP_200
-            
             sui_results = [
-                dict(name=tag, value=tag)
-                for tag in response['results']
+                dict(name=value, value=value)
+                for value in response['results']
             ]
             response['results'] = sui_results
         else:
