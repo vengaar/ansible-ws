@@ -8,6 +8,8 @@ wsgi_user: "{{ git_name }}"
 wsgi_port: 80
 wsgi_base_url: http://{{ ansible_default_ipv4.address }}:{{ wsgi_port }}
 wsgi_services:
+  - name: 'sw2'
+    alias: '/sw2/query'
   - name: ansible_hosts
     alias: ansible-ws/groups
   - name: playbook_tags
