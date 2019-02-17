@@ -8,7 +8,7 @@ from math import fabs
 
 class ScriptWebServiceWrapper():
 
-    def __init__(self, query_strings):
+    def __init__(self, query_strings, config):
         self.logger = logging.getLogger(self.__class__.__name__)
         self.query_strings = query_strings
         self.mode_debug = query_strings.get('debug', 'false') == 'true'
@@ -39,12 +39,12 @@ class ScriptWebServiceWrapper():
                     self.logger.error(str(e))
                     self._is_valid = False
                     self.output['usages'] = 'Parameter parameters must be a valid JSON'
-            parameters['cache'] = self.query_strings.get('cache')
-            self.logger.debug(parameters)
+            query_strings.update(parameters)
+            self.logger.debug(query_strings)
             if self._is_valid:
                 PluginClass = getattr(importlib.import_module(f'sw2.{query}'), 'ScriptWrapperQuery')
                 self.logger.debug(PluginClass)
-                self.plugin = PluginClass(**parameters)
+                self.plugin = PluginClass(**query_strings)
                 self.logger.debug(self.plugin)
                 if self.plugin.is_valid():
                     self.output['results'] = self.plugin.query()
@@ -61,11 +61,13 @@ class ScriptWrapper():
     """
         No usage defined
     """
+    # @todo, to read from config
+    cache_prefix = '/tmp/.sw2.cache.'
 
     def __build_key_cache(self, discriminant, category):
         id = str(discriminant).encode('utf-8')
         md5 = hashlib.md5(id).hexdigest()
-        key = f'/tmp/.sw2.cache.{category}.{md5}'
+        key = f'{self.cache_prefix}{category}.{md5}'
         return key
 
     def __cache_get_data(self, key):
@@ -115,11 +117,11 @@ class ScriptWrapper():
         cache_action = self.parameters.get('cache', 'read')
         self.cache_config['action'] = cache_action
         self.logger.debug(f'cache > get {cache_action} > {self.cache_config}')
-        if cache_action == 'pass':
+        if cache_action == 'bypass':
             data = func(discrimimant)
         else:
             key = self.__build_key_cache(discrimimant, category)
-            if cache_action == 'flush':
+            if cache_action == 'refresh':
                 self.__cache_flush_data(key)
             if self.cache_is_valid(key):
                 data = self.__cache_get_data(key)

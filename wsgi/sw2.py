@@ -4,17 +4,18 @@ import logging
 from cgi import parse_qs
 
 import ansible_ws
+from ansible_ws.ansible_web_service import AnsibleWebServiceConfig
 import sw2
 from sw2 import ScriptWebServiceWrapper
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+config = AnsibleWebServiceConfig()
 
 def application(environ, start_response):
 
     try:
         method = environ['REQUEST_METHOD']
-        print("==========>", method)
         if method == 'GET':
             query_strings = parse_qs(environ['QUERY_STRING'])
             parameters = {
@@ -28,8 +29,7 @@ def application(environ, start_response):
                 (key.decode("utf-8") , value[0].decode("utf-8"))
                 for key, value in parse_qs(request_body).items()
             )
-        print("==========>", parameters)
-        service = ScriptWebServiceWrapper(parameters)
+        service = ScriptWebServiceWrapper(parameters, config)
         response = service.get_result()
         if service.is_valid():
             status = ansible_ws.HTTP_200

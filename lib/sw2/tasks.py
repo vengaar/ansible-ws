@@ -2,6 +2,7 @@
 """
 import subprocess
 import re
+import os
 
 from . import ScriptWrapper
 
@@ -14,18 +15,26 @@ class ScriptWrapperQuery(ScriptWrapper):
         super().__init__(**kwargs)
         if 'playbook' not in self.parameters:
             self._is_valid = False
+        self.playbook = self.parameters.get('playbook')
 
     def query(self):
         """
         """
-        playbook = self.parameters.get('playbook',)
         self.cache_config = {
-            'discriminant': playbook,
+            'discriminant': self.playbook,
             'category': 'tasks'
         }
         tasks = self.get_cached_resource(self.get_tasks)
         response = self.format_to_semantic_ui_dropdown(tasks)
         return response
+
+    def cache_is_valid(self, key):
+        if os.path.isfile(key):
+            stat_cache = os.stat(key)
+            stat_playbook = os.stat(self.playbook)
+            return stat_cache.st_mtime > stat_playbook.st_mtime
+        else:
+            return False
 
     def get_tasks(self, playbook):
         command = ['ansible-playbook', '--list-tasks', playbook]

@@ -5,4 +5,6 @@ ansible_cmd:
 unittest:
   unittest:
     unittest: unittest
+cache:
+  ttl: 60
 ...

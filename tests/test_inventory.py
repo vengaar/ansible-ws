@@ -20,18 +20,14 @@ class TestAnsibleHostsRequest(unittest.TestCase):
     def test_default(self):
         expected = dict(
             all=[
-                'server_dev_11',
-                'server_dev_12',
-                'server_dev_13',
-                'server_dev_21',
-                'server_dev_22',
-                'server_dev_23',
-                'server_prod_11',
-                'server_prod_12',
-                'server_prod_13',
-                'server_prod_21',
-                'server_prod_22',
-                'server_prod_23',
+                'db_prod_11',
+                'db_prod_12',
+                'db_prod_13',
+                'db_prod_21',
+                'db_prod_22',
+                'db_prod_23',
+                'server_dev_x1',
+                'server_dev_x2',
             ],
         )
         query_strings = dict(
@@ -56,8 +52,8 @@ class TestAnsibleHostsRequest(unittest.TestCase):
 
     def test_regex(self):
         expected = dict(
-            database_app1_prod=['server_prod_11', 'server_prod_12', 'server_prod_13'],
-            database_app2_prod=['server_prod_21', 'server_prod_22', 'server_prod_23'],
+            database_app1_prod=['db_prod_11', 'db_prod_12', 'db_prod_13'],
+            database_app2_prod=['db_prod_21', 'db_prod_22', 'db_prod_23'],
         )
         query_strings = dict(
             sources=self.sources,
@@ -70,8 +66,8 @@ class TestAnsibleHostsRequest(unittest.TestCase):
 
     def test_list(self):
         expected = dict(
-            database_app1_dev=['server_dev_11', 'server_dev_12', 'server_dev_13'],
-            database_app2_prod=['server_prod_21', 'server_prod_22', 'server_prod_23'],
+            database_app1_dev=['server_dev_x1', 'server_dev_x2'],
+            database_app2_prod=['db_prod_21', 'db_prod_22', 'db_prod_23'],
         )
         query_strings = dict(
             sources=self.sources,
