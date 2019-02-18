@@ -16,22 +16,30 @@ class TestSWSW(unittest.TestCase):
 
     config = AnsibleWebServiceConfig()
 
-    def test_demo(self):
+    def test_groupvars(self):
         parameters = {
-            'demo1': 'value1',
-            'demo2': ['foo', 'bar']
+            'group': 'database_app1_prod',
+            'key': 'countries.dict',
+            'inventories': [
+                '~/ansible-ws/tests/data/inventories/hosts_database',
+                '~/ansible-ws/tests/data/inventories/hosts_webserver',
+            ]
         }
         json_parameters = json.dumps(parameters)
 #         print(json_parameters)
         request = dict(
             debug='true',
-            query='demo',
+            query='groupvars',
             parameters=json_parameters
         )
         sw2 = ScriptWebServiceWrapper(request, self.config)
         response = sw2.get_result()
 #         pprint.pprint(response)
-        self.assertEqual(response['results'][5]['name'], 'foo')
+        expected = [
+            {'name': value, 'value': value}
+            for value in ['es', 'fr', 'it']
+        ]
+        self.assertEqual(response['results'], expected)
 
 
 if __name__ == '__main__':

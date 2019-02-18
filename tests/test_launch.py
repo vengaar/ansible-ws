@@ -1,3 +1,4 @@
+import logging
 import os
 import unittest
 import pprint
@@ -56,6 +57,6 @@ class TestAnsibleLaunch(unittest.TestCase):
       self.assertEqual(status['return_code'], 0)
 
 if __name__ == '__main__':
-    import logging
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
+#     logging.basicConfig(level=logging.ERROR)
     unittest.main()

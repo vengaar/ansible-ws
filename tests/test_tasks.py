@@ -12,26 +12,38 @@ from ansible_ws.ansible_web_service import AnsibleWebServiceConfig
 from sw2 import ScriptWebServiceWrapper
 
 
-class TestSWSW(unittest.TestCase):
+class TestTags(unittest.TestCase):
 
     config = AnsibleWebServiceConfig()
 
-    def test_demo(self):
+    def test_tasks(self):
+        playbook = os.path.expanduser('~/ansible-ws/tests/data/playbooks/tags.yml')
         parameters = {
-            'demo1': 'value1',
-            'demo2': ['foo', 'bar']
+            'playbook': playbook,
         }
         json_parameters = json.dumps(parameters)
 #         print(json_parameters)
         request = dict(
             debug='true',
-            query='demo',
+            cache='refresh',
+            query='tasks',
             parameters=json_parameters
         )
         sw2 = ScriptWebServiceWrapper(request, self.config)
         response = sw2.get_result()
 #         pprint.pprint(response)
-        self.assertEqual(response['results'][5]['name'], 'foo')
+        expected = [
+            {'name': value, 'value': value}
+            for value in [
+                'task11',
+                'task12 with long name',
+                'task13',
+                'debug',
+                'task21',
+                'task22',
+            ]
+        ]
+        self.assertEqual(response['results'], expected)
 
 
 if __name__ == '__main__':

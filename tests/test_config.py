@@ -1,3 +1,4 @@
+import logging
 import os
 import unittest
 import pprint
@@ -18,6 +19,6 @@ class TestAnsibleWebServiceConfig(unittest.TestCase):
         self.assertEqual(value, 'unittest')
 
 if __name__ == '__main__':
-    import logging
     logging.basicConfig(level=logging.DEBUG)
+#     logging.basicConfig(level=logging.ERROR)
     unittest.main()
