@@ -4,6 +4,7 @@ import subprocess
 import os
 
 from . import ScriptWrapper
+from sys import stdout
 
 
 class ScriptWrapperQuery(ScriptWrapper):
@@ -29,5 +30,5 @@ class ScriptWrapperQuery(ScriptWrapper):
         command = [f'ansible-inventory-grapher {self.host}{inventory} | dot -T{self.format} > {img_file}']
         self.logger.debug(command)
         with open(img_file, 'wb+') as out:
-            subprocess.run(command, capture_output=True, check=True, shell=True)
+            subprocess.run(command, stdout=subprocess.PIPE, check=True, shell=True)
         return img_file

@@ -25,7 +25,7 @@ class TestAnsibleLaunch(unittest.TestCase):
       playbook = os.path.join(ansible_ws_tests.ANSIBLE_WS_PATH_TEST, 'data', 'playbooks', 'tags.yml') 
 #     print(playbook)
       ansible_ws_config = AnsibleWebServiceConfig()
-      ansible_ws_config.config['runs_dir'] = self.RUNS_DIR
+      ansible_ws_config.config['ansible']['runs_dir'] = self.RUNS_DIR
       context = dict(
         playbook=playbook,
         cmdline=f'ansible-playbook {playbook} -v',
