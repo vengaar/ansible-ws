@@ -17,6 +17,9 @@ According case, use ansible python module or ansible cli.
   * Git
 * Python => 3.6
 * Ansible
+* If you want grapher
+  * dnf/apt-get install graphviz
+  * pip3 install ansible-inventory-grapher
 
 ## Procedure
 
@@ -51,6 +54,7 @@ git checkout devel
 git pull
 ansible-playbook setup/playbooks/setup.yml -e "git_version=devel"
 ~~~~
+
 
 ## Test
 Test url:
