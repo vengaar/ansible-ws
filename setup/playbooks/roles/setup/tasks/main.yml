@@ -61,12 +61,15 @@
   become_user: root
   block:
 
-    - name: Ensure runs dir exist
+    - name: Ensure working folders exist
       file:
-        path: "{{ runs_dir }}"
+        path: "{{ item }}"
         state: directory
         owner: "{{ wsgi_user }}"
         group: "{{ wsgi_user }}"
+      loop:
+        - "{{ runs_dir }}"
+        - "{{ graph_dir }}"
 
     - name: Update permission to allow apache reach wsgi
       file:

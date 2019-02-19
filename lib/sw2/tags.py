@@ -11,8 +11,8 @@ class ScriptWrapperQuery(ScriptWrapper):
     """Below expected parameters
 [required,string] playbook, the playbook to list tags."""
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self,config,  **kwargs):
+        super().__init__(config, **kwargs)
         if 'playbook' not in self.parameters:
             self._is_valid = False
         self.playbook = self.parameters.get('playbook')

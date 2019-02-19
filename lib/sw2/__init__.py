@@ -6,6 +6,7 @@ import hashlib
 import time
 from math import fabs
 
+
 class ScriptWebServiceWrapper():
 
     def __init__(self, query_strings, config):
@@ -14,7 +15,7 @@ class ScriptWebServiceWrapper():
         self.mode_debug = query_strings.get('debug', 'false') == 'true'
         self.debug = dict()
         self.meta = dict(
-          query_string=self.query_strings,
+            query_string=self.query_strings,
         )
         self.output = dict()
         self._is_valid = True
@@ -44,7 +45,7 @@ class ScriptWebServiceWrapper():
             if self._is_valid:
                 PluginClass = getattr(importlib.import_module(f'sw2.{query}'), 'ScriptWrapperQuery')
                 self.logger.debug(PluginClass)
-                self.plugin = PluginClass(**query_strings)
+                self.plugin = PluginClass(config, **query_strings)
                 self.logger.debug(self.plugin)
                 if self.plugin.is_valid():
                     self.output['results'] = self.plugin.query()
@@ -57,12 +58,11 @@ class ScriptWebServiceWrapper():
     def get_result(self):
         return self.output
 
+
 class ScriptWrapper():
     """
         No usage defined
     """
-    # @todo, to read from config
-    cache_prefix = '/tmp/.sw2.cache.'
 
     def __build_key_cache(self, discriminant, category):
         id = str(discriminant).encode('utf-8')
@@ -106,8 +106,7 @@ class ScriptWrapper():
         if os.path.isfile(key):
             cache_stat = os.stat(key)
             cache_age = time.time() - cache_stat.st_mtime
-            ttl = 180
-            return cache_age < ttl
+            return cache_age < self.cache_ttl
         else:
             return False
 
@@ -132,8 +131,11 @@ class ScriptWrapper():
                 self.__cache_store_data(key, data)
         return data
 
-    def __init__(self, **kwargs):
+    def __init__(self, config, **kwargs):
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.config = config
+        self.cache_prefix = self.config.get('cache.prefix')
+        self.cache_ttl = self.config.get('cache.ttl')
         self.parameters = kwargs
         self.logger.debug(self.parameters)
         self._is_valid = True

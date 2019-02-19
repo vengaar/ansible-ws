@@ -8,8 +8,8 @@ wsgi_user: "{{ git_name }}"
 wsgi_port: 80
 wsgi_base_url: http://{{ ansible_default_ipv4.address }}:{{ wsgi_port }}
 wsgi_services:
-  - name: 'sw2'
-    alias: 'sw2/query'
+  - name: sw2
+    alias: sw2/query
   - name: playbook_launch
     alias: ansible-ws/launch
   - name: playbook_run
@@ -20,7 +20,9 @@ wsgi_services:
     alias: ssh-agent/add
   - name: ssh_agent_kill
     alias: ssh-agent/kill
-runs_dir: "/home/{{ wsgi_user }}/wapi_runs"
+working_dir: "/home/{{ wsgi_user }}/{{ git_name }}@working"
+runs_dir: "{{ working_dir }}/runs"
+graph_dir: "{{ working_dir }}/graphs"
 selinux:
   files:
     - "{{ wsgi_logfile }}"

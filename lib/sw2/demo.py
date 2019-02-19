@@ -9,8 +9,8 @@ from . import ScriptWrapper
 
 class ScriptWrapperQuery(ScriptWrapper):
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, config, **kwargs):
+        super().__init__(config, **kwargs)
 
     def query(self):
         p1 = self.parameters.get('demo1')

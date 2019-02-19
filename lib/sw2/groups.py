@@ -13,8 +13,8 @@ class ScriptWrapperQuery(ScriptWrapper):
 [required,string] pattern, the pattern of groups name to search.
 [optional,list] sources, the inventory files to used."""
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self,config, **kwargs):
+        super().__init__(config, **kwargs)
         if 'pattern' not in self.parameters:
             self._is_valid = False
 

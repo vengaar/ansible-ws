@@ -13,8 +13,8 @@ class ScriptWrapperQuery(ScriptWrapper):
 [required,string] key, the keys to follow with dot notation.
 [optional,list] inventories, the inventories files to used."""
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self,config,  **kwargs):
+        super().__init__(config, **kwargs)
         required = set(['group', 'key'])
         if not required.issubset(set(self.parameters.keys())):
             self._is_valid = False
