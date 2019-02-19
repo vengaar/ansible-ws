@@ -19,7 +19,7 @@ class PlaybookContext(object):
     def __init__(self, runid: str, ansible_ws_config: AnsibleWebServiceConfig=None) -> None:
         self.logger = logging.getLogger(self.__class__.__name__)
         self.ansible_ws_config = AnsibleWebServiceConfig() if ansible_ws_config is None else ansible_ws_config 
-        self.runs_dir = self.ansible_ws_config.get('runs_dir')
+        self.runs_dir = self.ansible_ws_config.get('ansible.runs_dir')
         self.runid = runid
         self.folder = os.path.join(self.runs_dir, self.runid)
         self.logger.debug(self.folder)
