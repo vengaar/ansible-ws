@@ -2,6 +2,7 @@ import logging
 import os
 import unittest
 import pprint
+import json
 import sys
 sys.path.append('.')
 import tests
@@ -15,21 +16,22 @@ class TestSWSW(unittest.TestCase):
 
     config = AnsibleWebServiceConfig()
 
-    def test_grapher(self):
+    def test_demo(self):
+        parameters = {
+            'demo1': 'value1',
+            'demo2': ['foo', 'bar']
+        }
+        json_parameters = json.dumps(parameters)
+#         print(json_parameters)
         request = dict(
             debug='true',
-            query='grapher',
-            host='db_prod_11',
-            inventory='~/ansible-ws/tests/data/inventories'
+            query='demo',
+            parameters=json_parameters
         )
-        expected_file = '/home/vengaar/ansible-ws@working/graphs/db_prod_11.png'
-        if os.path.isfile(expected_file):
-            os.remove(expected_file)
         sw2 = ScriptWebServiceWrapper(request, self.config)
         response = sw2.get_result()
 #         pprint.pprint(response)
-        self.assertTrue(os.path.isfile(expected_file))
-        os.remove(expected_file)
+        self.assertEqual(response['results'][5]['name'], 'foo')
 
 
 if __name__ == '__main__':

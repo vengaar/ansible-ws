@@ -1,13 +1,16 @@
 
+[webserver_app1:children]
+webserver_app1_prod
+webserver_app1_dev
+
 [webserver_app1_prod:vars]
 app_user=ws01
 
 [webserver_app1_prod]
-server_prod_11
-server_prod_21
-server_prod_31
+ws_prod_11
+ws_prod_12
+ws_prod_13
 
 [webserver_app1_dev]
-server_dev_12
-server_dev_22
-server_dev_32
+server_dev_x1
+server_dev_x2

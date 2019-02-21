@@ -1,10 +1,28 @@
 ---
-runs_dir: "{{ runs_dir }}"
 
-grapher_dir: "{{ grapher_dir }}"
-ansible_cmd:
-  playbook: ansible-playbook
+### ansible ###
+ansible:
+  cmd: ansible-playbook
+  inventories:
+    - ~/ansible-ws/tests/data/inventories/hosts_database
+    - ~/ansible-ws/tests/data/inventories/hosts_webserver
+  runs_dir: "{{ runs_dir }}" 
+
+### cache ###
+cache:
+  prefix: "/tmp/.sw2.cache."
+  ttl: 60
+
+### grapher ###
+
+grapher:
+  output: "{{ graph_dir }}"
+  format: png
+
+### unittest ###
+
 unittest:
   unittest:
     unittest: unittest
+
 ...

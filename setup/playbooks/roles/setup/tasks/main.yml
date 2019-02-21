@@ -61,19 +61,15 @@
   become_user: root
   block:
 
-    - name: Ensure runs dir exist
+    - name: Ensure working folders exist
       file:
-        path: "{{ runs_dir }}"
+        path: "{{ item }}"
         state: directory
         owner: "{{ wsgi_user }}"
         group: "{{ wsgi_user }}"
-
-    - name: Ensure grapher_dir exist
-      file:
-        path: "{{ grapher_dir }}"
-        state: directory
-        owner: "{{ wsgi_user }}"
-        group: "{{ wsgi_user }}"
+      loop:
+        - "{{ runs_dir }}"
+        - "{{ graph_dir }}"
 
     - name: Update permission to allow apache reach wsgi
       file:
@@ -89,17 +85,11 @@
     - name: Create general configuration file
       template:
         src: "{{ item }}"
-#         src: "{{ lookup('first_found', findme) }}"
         dest: /etc/{{ git_name }}/{{ git_name }}.yml
       with_first_found:
-          - "{{ git_name }}_{{ ansible_distribution|lower }}_{{ ansible_distribution_major_version }}.yml"
-          - "{{ git_name }}_{{ ansible_distribution|lower }}.yml"
-          - "{{ git_name }}.yml"
-#       vars:
-#         findme:
-#           - "{{ git_name }}_{{ ansible_distribution|lower }}_{{ ansible_distribution_major_version }}.yml"
-#           - "{{ git_name }}_{{ ansible_distribution|lower }}.yml"
-#           - "{{ git_name }}.yml"
+        - "{{ git_name }}_{{ ansible_distribution|lower }}_{{ ansible_distribution_major_version }}.yml"
+        - "{{ git_name }}_{{ ansible_distribution|lower }}.yml"
+        - "{{ git_name }}.yml"
 
     - name: Create services configuration files
       template:

@@ -1,3 +1,4 @@
+import logging
 import os
 import unittest
 import pprint
@@ -24,7 +25,7 @@ class TestAnsibleLaunch(unittest.TestCase):
       playbook = os.path.join(ansible_ws_tests.ANSIBLE_WS_PATH_TEST, 'data', 'playbooks', 'tags.yml') 
 #     print(playbook)
       ansible_ws_config = AnsibleWebServiceConfig()
-      ansible_ws_config.config['runs_dir'] = self.RUNS_DIR
+      ansible_ws_config.config['ansible']['runs_dir'] = self.RUNS_DIR
       context = dict(
         playbook=playbook,
         cmdline=f'ansible-playbook {playbook} -v',
@@ -56,6 +57,6 @@ class TestAnsibleLaunch(unittest.TestCase):
       self.assertEqual(status['return_code'], 0)
 
 if __name__ == '__main__':
-    import logging
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
+#     logging.basicConfig(level=logging.ERROR)
     unittest.main()
