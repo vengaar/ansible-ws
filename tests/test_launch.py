@@ -13,7 +13,7 @@ from ansible_ws.ansible_web_service import AnsibleWebServiceConfig
 
 class TestAnsibleLaunch(unittest.TestCase):
 
-    RUNS_DIR = os.path.join(ansible_ws_tests.ANSIBLE_WS_PATH_TEST, 'data', 'runs')
+    RUNS_DIR = os.path.join(ansible_ws_tests.ANSIBLE_WS_PATH_TEST, 'data', 'runs_tmp')
 
     @classmethod
     def tearDownClass(cls):

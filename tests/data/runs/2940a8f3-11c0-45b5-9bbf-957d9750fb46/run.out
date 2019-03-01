@@ -1,0 +1,27 @@
+[0;34mUsing /home/vengaar/.ansible.cfg as config file[0m
+[0;34m/home/vengaar/wapi/test/inventories/hosts did not meet host_list requirements, check plugin documentation if this is unexpected[0m
+[0;34m/home/vengaar/wapi/test/inventories/hosts did not meet script requirements, check plugin documentation if this is unexpected[0m
+
+PLAY [localhost] ***************************************************************
+
+TASK [debug] *******************************************************************
+[0;32mok: [localhost] => {[0m
+[0;32m    "pause_number": "2"[0m
+[0;32m}[0m
+
+TASK [debug] *******************************************************************
+[0;32mok: [localhost] => {[0m
+[0;32m    "pause_duration": "2"[0m
+[0;32m}[0m
+
+TASK [pause] *******************************************************************
+Pausing for 2 seconds
+(ctrl+C then 'C' = continue early, ctrl+C then 'A' = abort)
+Pausing for 2 seconds
+(ctrl+C then 'C' = continue early, ctrl+C then 'A' = abort)
+[0;32mok: [localhost] => (item=0) => {"changed": false, "delta": 2, "echo": true, "item": 0, "rc": 0, "start": "2019-03-01 17:19:44.930525", "stderr": "", "stdout": "Paused for 2.0 seconds", "stop": "2019-03-01 17:19:46.931822", "user_input": ""}[0m
+[0;32mok: [localhost] => (item=1) => {"changed": false, "delta": 2, "echo": true, "item": 1, "rc": 0, "start": "2019-03-01 17:19:46.939283", "stderr": "", "stdout": "Paused for 2.0 seconds", "stop": "2019-03-01 17:19:48.939739", "user_input": ""}[0m
+
+PLAY RECAP *********************************************************************
+[0;32mlocalhost[0m                  : [0;32mok=3   [0m changed=0    unreachable=0    failed=0   
+

@@ -1,0 +1,1 @@
+{"pid": 19675, "runid": "53f26c38-6de8-4251-bf3a-5a5304effdd2", "status": "finished", "state": "succeeded", "begin": 1551460751.3591459, "end": 1551460753.9493072, "return_code": 0, "description": {"playbook": "/home/vengaar/wapi/test/playbooks/test_nowapi.yml", "cmdline": "ansible-playbook /home/vengaar/wapi/test/playbooks/test_nowapi.yml "}}

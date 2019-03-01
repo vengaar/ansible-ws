@@ -1,0 +1,28 @@
+[0;34mUsing /home/vengaar/.ansible.cfg as config file[0m
+[0;34m/home/vengaar/wapi/test/inventories/hosts did not meet host_list requirements, check plugin documentation if this is unexpected[0m
+[0;34m/home/vengaar/wapi/test/inventories/hosts did not meet script requirements, check plugin documentation if this is unexpected[0m
+
+PLAY [localhost] ***************************************************************
+
+TASK [Display country_selected] ************************************************
+[0;32mok: [localhost] => {[0m
+[0;32m    "country_selected": "fr"[0m
+[0;32m}[0m
+
+TASK [Display countries_selected] **********************************************
+[0;32mok: [localhost] => {[0m
+[0;32m    "countries_selected": [[0m
+[0;32m        "de",[0m
+[0;32m        "it"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Check extra vars type] ***************************************************
+[0;32mok: [localhost] => {[0m
+[0;32m    "changed": false,[0m
+[0;32m    "msg": "All assertions passed"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;32mlocalhost[0m                  : [0;32mok=3   [0m changed=0    unreachable=0    failed=0   
+

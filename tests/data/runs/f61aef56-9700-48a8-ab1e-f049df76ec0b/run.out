@@ -1,0 +1,39 @@
+[0;34mansible-playbook 2.7.7[0m
+[0;34m  config file = /home/vengaar/.ansible.cfg[0m
+[0;34m  configured module search path = ['/home/vengaar/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules'][0m
+[0;34m  ansible python module location = /usr/lib/python3.7/site-packages/ansible[0m
+[0;34m  executable location = /usr/bin/ansible-playbook[0m
+[0;34m  python version = 3.7.2 (default, Jan 16 2019, 19:49:22) [GCC 8.2.1 20181215 (Red Hat 8.2.1-6)][0m
+[0;34mUsing /home/vengaar/.ansible.cfg as config file[0m
+[0;34m/home/vengaar/wapi/test/inventories/hosts did not meet host_list requirements, check plugin documentation if this is unexpected[0m
+[0;34m/home/vengaar/wapi/test/inventories/hosts did not meet script requirements, check plugin documentation if this is unexpected[0m
+
+PLAYBOOK: remote.yml ***********************************************************
+[0;34m2 plays in /home/vengaar/wapi/test/playbooks/remote.yml[0m
+
+PLAY [localhost] ***************************************************************
+
+TASK [Gathering Facts] *********************************************************
+[1;30mtask path: /home/vengaar/wapi/test/playbooks/remote.yml:2[0m
+[0;32mok: [localhost][0m
+[0;34mMETA: ran handlers[0m
+
+TASK [add_host] ****************************************************************
+[1;30mtask path: /home/vengaar/wapi/test/playbooks/remote.yml:16[0m
+[0;34mcreating host via 'add_host': hostname=192.168.1.19[0m
+[0;33mchanged: [localhost] => {"add_host": {"groups": ["remote_localhost"], "host_name": "192.168.1.19", "host_vars": {"ansible_python_interpreter": "/usr/bin/python3"}}, "changed": true}[0m
+[0;34mMETA: ran handlers[0m
+[0;34mMETA: ran handlers[0m
+
+PLAY [remote_localhost] ********************************************************
+[0;34mMETA: ran handlers[0m
+
+TASK [shell] *******************************************************************
+[1;30mtask path: /home/vengaar/wapi/test/playbooks/remote.yml:26[0m
+[1;31mfatal: [192.168.1.19]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: vengaar@192.168.1.19: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password,keyboard-interactive).", "unreachable": true}[0m
+	to retry, use: --limit @/home/vengaar/wapi/test/playbooks/remote.retry
+
+PLAY RECAP *********************************************************************
+[0;31m192.168.1.19[0m               : ok=0    changed=0    [1;31munreachable=1   [0m failed=0   
+[0;33mlocalhost[0m                  : [0;32mok=2   [0m [0;33mchanged=1   [0m unreachable=0    failed=0   
+

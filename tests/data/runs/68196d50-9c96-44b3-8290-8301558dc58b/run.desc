@@ -1,0 +1,1 @@
+{"playbook": "/home/vengaar/wapi/test/playbooks/groupvars.yml", "cmdline": "ansible-playbook /home/vengaar/wapi/test/playbooks/groupvars.yml -v -i ~/wapi/test/inventories/hosts --extra-vars '{\"country_selected\":\"fr\",\"countries_selected\":[\"de\",\"it\"]}'", "options": "-v -i ~/wapi/test/inventories/hosts", "country_selected": "fr", "countries_selected": "de,it"}
