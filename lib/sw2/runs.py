@@ -10,31 +10,53 @@ from . import ScriptWrapper
 
 
 class ScriptWrapperQuery(ScriptWrapper):
-    """
-    """
+    """Return a list of run according to parameters"""
 
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
 
         date_pattern = '%B %d, %Y'
+        today = datetime.datetime.now()
+        tomorow = today + datetime.timedelta(days=1)
+        default_from = today.strftime(date_pattern)
+        default_to   = tomorow.strftime(date_pattern)
 
-        self.states = self.parameters.get('states', PlaybookContext.STATES)
-        self.playbook = self.parameters.get('playbook', '')
+        self.parameters_description = {
+            'states': {
+                'description': 'The states of the runs searched',
+                'default': ','.join(list(PlaybookContext.STATES)),
+                'values': PlaybookContext.STATES,
+                'format': 'List of sate separated by coma'
+            },
+            'playbook': {
+                'description': 'The name of playbook used for the run',
+                'default': '',
+                'format': 'regex'
+            },
+            'from': {
+                'description': 'The minimal date when the runs must have started. By default current day.',
+                'default': default_from,
+                'format': date_pattern
+            },
+            'to': {
+                'description': 'The maximal date when the runs must have started. By default tommorow.',
+                'default': default_to,
+                'format': date_pattern
+            }
+        }
+
+        states = self.parameters.get('states', self.parameters_description['states']['default'])
+        self.states = states.split(',')
+        self.playbook = self.parameters.get('playbook', self.parameters_description['playbook']['default'])
         self.regex = re.compile(self.playbook)
 
-        start_txt = self.parameters.get('from')
-        if start_txt is None:
-            self.start = 0
-        else:
-            start_date = datetime.datetime.strptime(start_txt, date_pattern)
-            self.start = datetime.datetime.timestamp(start_date)
+        start_txt = self.parameters.get('from', self.parameters_description['from']['default'])
+        start_date = datetime.datetime.strptime(start_txt, date_pattern)
+        self.start = datetime.datetime.timestamp(start_date)
 
-        end_txt = self.parameters.get('to')
-        if end_txt is None:
-            self.end = time.time()
-        else:
-            end_date = datetime.datetime.strptime(end_txt, date_pattern)
-            self.end = datetime.datetime.timestamp(end_date)
+        end_txt = self.parameters.get('to', self.parameters_description['to']['default'])
+        end_date = datetime.datetime.strptime(end_txt, date_pattern)
+        self.end = datetime.datetime.timestamp(end_date)
 
     def query(self):
         """

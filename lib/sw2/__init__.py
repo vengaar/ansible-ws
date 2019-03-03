@@ -4,10 +4,25 @@ import importlib
 import json
 import hashlib
 import time
-from math import fabs
-
+import glob
 
 class ScriptWebServiceWrapper():
+
+    def get_usage(self):
+        modules = [
+            os.path.splitext(file)[0]
+            for file in os.listdir(os.path.dirname(__file__))
+            if not os.path.basename(file).startswith('__')
+        ]
+        usage = dict(
+            error=f'query parameter is missing. The available queries are {modules}',
+            usage='/sw2/query?query={query}&{query_parameters}',
+            help=[
+                'To have the detail of each query, call a query with parameter help',
+                'example: /sw2/query?query=run&help=true'
+            ]
+        )
+        return usage
 
     def __init__(self, query_strings, config):
         self.logger = logging.getLogger(self.__class__.__name__)
@@ -25,7 +40,7 @@ class ScriptWebServiceWrapper():
 
         if 'query' not in self.query_strings:
             self._is_valid = False
-            self.output['usages'] = 'Missing query parameter'
+            self.output['usages'] = self.get_usage()
         else:
             parameters = {}
             query = self.query_strings.get('query')
@@ -47,7 +62,9 @@ class ScriptWebServiceWrapper():
                 self.logger.debug(PluginClass)
                 self.plugin = PluginClass(config, **query_strings)
                 self.logger.debug(self.plugin)
-                if self.plugin.is_valid():
+                if 'help' in query_strings:
+                    self.output["usages"] = self.plugin.usages
+                elif self.plugin.is_valid() :
                     self.output['results'] = self.plugin.query()
                 else:
                     self.output["usages"] = self.plugin.usages
@@ -139,10 +156,20 @@ class ScriptWrapper():
         self.parameters = kwargs
         self.logger.debug(self.parameters)
         self._is_valid = True
+        self.parameters_description = dict()
+        self.examples = []
+    
+    @property
+    def usages(self):
+        usages = {
+            'parameters': self.parameters_description,
+            'examples': self.examples
+        }
         if self.__doc__ is None:
-            self.usages = ["No usages defines"]
+            usages['description'] = ["No usages defines"]
         else:
-            self.usages = self.__doc__.split(os.linesep)
+            usages['description'] = self.__doc__.split(os.linesep),
+        return usages
 
     def is_valid(self):
         return self._is_valid
