@@ -10,6 +10,8 @@ import tests as ansible_ws_tests
 import ansible_ws
 from ansible_ws.playbooks_ws import PlaybookContextLaunch, PlaybookContext
 from ansible_ws.ansible_web_service import AnsibleWebServiceConfig
+from sw2 import ScriptWebServiceWrapper
+
 
 class TestAnsibleLaunch(unittest.TestCase):
 
@@ -22,7 +24,7 @@ class TestAnsibleLaunch(unittest.TestCase):
 
     def test_run(self):
 
-      playbook = os.path.join(ansible_ws_tests.ANSIBLE_WS_PATH_TEST, 'data', 'playbooks', 'tags.yml') 
+      playbook = os.path.join(ansible_ws_tests.ANSIBLE_WS_PATH_TEST, 'data', 'playbooks', 'tags.yml')
 #     print(playbook)
       ansible_ws_config = AnsibleWebServiceConfig()
       ansible_ws_config.config['ansible']['runs_dir'] = self.RUNS_DIR
@@ -31,7 +33,7 @@ class TestAnsibleLaunch(unittest.TestCase):
         cmdline=f'ansible-playbook {playbook} -v',
         ansible_ws_config=ansible_ws_config
       )
-      pcl =PlaybookContextLaunch(**context)
+      pcl = PlaybookContextLaunch(**context)
 #     print(pcl.runid)
       pc = PlaybookContext(pcl.runid, ansible_ws_config=ansible_ws_config)
       self.assertIsNone(pc.out)
@@ -55,6 +57,21 @@ class TestAnsibleLaunch(unittest.TestCase):
       self.assertIsInstance(status['end'], float)
       self.assertIsInstance(status['pid'], int)
       self.assertEqual(status['return_code'], 0)
+
+      request = {
+          'debug': 'true',
+          'query': 'run',
+          'runid': runid
+      }
+      sw2 = ScriptWebServiceWrapper(request, ansible_ws_config)
+      response = sw2.get_result()
+#       pprint.pprint(response)
+      status = response['results']['status']
+#       pprint.pprint(status)
+      self.assertEqual(status['runid'], runid)
+      self.assertEqual(status['return_code'], 0)
+      self.assertEqual(status['state'], 'succeeded')
+      self.assertEqual(status['status'], 'finished')
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)

@@ -33,7 +33,7 @@ class ScriptWrapperQuery(ScriptWrapper):
         """
         """
         runid = self.parameters.get('runid')
-        pc = PlaybookContext(runid)
+        pc = PlaybookContext(runid, self.config)
         response = dict(
             status=pc.status,
             output=pc.out
