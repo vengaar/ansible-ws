@@ -14,13 +14,28 @@ class ScriptWrapperQuery(ScriptWrapper):
 
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
+        self.name = 'runs'
+        self.date_pattern = '%B %d, %Y'
+        self.today = datetime.datetime.now()
+        tomorow = self.today + datetime.timedelta(days=1)
+        self.default_from = self.today.strftime(self.date_pattern)
+        self.default_to   = tomorow.strftime(self.date_pattern)
+        self.__usages()
 
-        date_pattern = '%B %d, %Y'
-        today = datetime.datetime.now()
-        tomorow = today + datetime.timedelta(days=1)
-        default_from = today.strftime(date_pattern)
-        default_to   = tomorow.strftime(date_pattern)
+        states = self.parameters.get('states', self.parameters_description['states']['default'])
+        self.states = states.split(',')
+        self.playbook = self.parameters.get('playbook', self.parameters_description['playbook']['default'])
+        self.regex = re.compile(self.playbook)
 
+        start_txt = self.parameters.get('from', self.parameters_description['from']['default'])
+        start_date = datetime.datetime.strptime(start_txt, self.date_pattern)
+        self.start = datetime.datetime.timestamp(start_date)
+
+        end_txt = self.parameters.get('to', self.parameters_description['to']['default'])
+        end_date = datetime.datetime.strptime(end_txt, self.date_pattern)
+        self.end = datetime.datetime.timestamp(end_date)
+
+    def __usages(self):
         self.parameters_description = {
             'states': {
                 'description': 'The states of the runs searched',
@@ -35,28 +50,27 @@ class ScriptWrapperQuery(ScriptWrapper):
             },
             'from': {
                 'description': 'The minimal date when the runs must have started. By default current day.',
-                'default': default_from,
-                'format': date_pattern
+                'default': self.default_from,
+                'format': self.date_pattern
             },
             'to': {
                 'description': 'The maximal date when the runs must have started. By default tommorow.',
-                'default': default_to,
-                'format': date_pattern
+                'default': self.default_to,
+                'format': self.date_pattern
             }
         }
-
-        states = self.parameters.get('states', self.parameters_description['states']['default'])
-        self.states = states.split(',')
-        self.playbook = self.parameters.get('playbook', self.parameters_description['playbook']['default'])
-        self.regex = re.compile(self.playbook)
-
-        start_txt = self.parameters.get('from', self.parameters_description['from']['default'])
-        start_date = datetime.datetime.strptime(start_txt, date_pattern)
-        self.start = datetime.datetime.timestamp(start_date)
-
-        end_txt = self.parameters.get('to', self.parameters_description['to']['default'])
-        end_date = datetime.datetime.strptime(end_txt, date_pattern)
-        self.end = datetime.datetime.timestamp(end_date)
+        pattern = '.*database'
+        sources = '~/ansible-ws/tests/data/inventories/hosts_database'
+        self.examples.append({
+            'desc': f'To get daily runs',
+            'url': f'/sw2/query?query={self.name}'
+        })
+        date_from = self.today + datetime.timedelta(days=-7)
+        date_txt = date_from.strftime(self.date_pattern)
+        self.examples.append({
+            'desc': f'To get runs of the previous week',
+            'url': f'/sw2/query?query={self.name}&from={date_txt}'
+        })
 
     def query(self):
         """

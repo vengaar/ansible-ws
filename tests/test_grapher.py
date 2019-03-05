@@ -14,15 +14,18 @@ from sw2 import ScriptWebServiceWrapper
 class TestSWSW(unittest.TestCase):
 
     config = AnsibleWebServiceConfig()
+    inventory = os.path.join(tests.ANSIBLE_WS_PATH_TEST, 'data', 'inventories')
 
     def test_grapher(self):
-        request = dict(
-            debug='true',
-            query='grapher',
-            host='db_prod_11',
-            inventory='~/ansible-ws/tests/data/inventories'
-        )
-        expected_file = '/home/vengaar/ansible-ws@working/graphs/db_prod_11.png'
+        grapher_output = '/tmp'
+        self.config.config['grapher']['output'] = grapher_output
+        request = {
+            'debug': 'true',
+            'query': 'grapher',
+            'host': 'db_prod_11',
+            'inventory': self.inventory
+        }
+        expected_file = '/tmp/db_prod_11.png'
         if os.path.isfile(expected_file):
             os.remove(expected_file)
         sw2 = ScriptWebServiceWrapper(request, self.config)

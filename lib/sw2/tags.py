@@ -8,14 +8,30 @@ from . import ScriptWrapper
 
 
 class ScriptWrapperQuery(ScriptWrapper):
-    """Below expected parameters
-[required,string] playbook, the playbook to list tags."""
+    """Wrapper on 'ansible-playbook -list-tags' to get tags for a playbook."""
 
     def __init__(self,config,  **kwargs):
         super().__init__(config, **kwargs)
-        if 'playbook' not in self.parameters:
-            self._is_valid = False
-        self.playbook = self.parameters.get('playbook')
+        self.name = 'tags'
+        self.__usages()
+        self._is_valid = ('playbook' in self.parameters)
+        if self._is_valid:
+            playbook = self.parameters.get('playbook')
+            self.playbook = os.path.expanduser(playbook)
+
+    def __usages(self):
+        self.parameters_description = {
+            'playbook': {
+                'description': 'Tthe playbook to list tags',
+                'format': 'The complete path of the playbook',
+                'required': True,
+            },
+        }
+        playbook = '~/ansible-ws/tests/data/playbooks/tags.yml'
+        self.examples.append({
+            'desc': f'To get tags of playbooks {playbook}',
+            'url': f'/sw2/query?query={self.name}&playbook={playbook}'
+        })
 
     def query(self):
         """

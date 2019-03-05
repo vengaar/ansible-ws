@@ -9,21 +9,57 @@ from . import ScriptWrapper
 
 
 class ScriptWrapperQuery(ScriptWrapper):
-    """Below expected parameters
-[required,string] pattern, the pattern of groups name to search.
-[optional,list] sources, the inventory files to used."""
+    """Wrapper on [ansible -m debug -a 'var=groups' localhost] to get groups resolved.
+The groups are cached.
+The output is formmated for semantic ui dropdown"""
 
-    def __init__(self,config, **kwargs):
+    def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
-        if 'pattern' not in self.parameters:
-            self._is_valid = False
+        self.name = 'groups'
+        self.default_groups_selection = 'no'
+        self.__usages()
+
+        self._is_valid = 'pattern' in self.parameters
+        if self._is_valid:
+            self.sources = []
+            if 'parameters' in self.parameters:
+                self.sources = self.parameters.get('sources', [])
+            else:
+                if 'sources' in self.parameters:
+                    self.sources = self.parameters['sources'].split(',')
+                else:
+                    self.sources = []
+
+    def __usages(self):
+        self.parameters_description = {
+            'pattern': {
+                'description': 'The pattern of groups name to search',
+                'required': True,
+            },
+            'sources': {
+                'description': 'The inventory files to used',
+                'required': False,
+                'format': 'List of inventories separated by coma'
+            },
+            'groups_selection': {
+                'description': 'The inventory files to used',
+                'required': False,
+                'default': self.default_groups_selection,
+                'values': ['no', 'yes'],
+            },
+        }
+        pattern = '.*database'
+        sources = '~/ansible-ws/tests/data/inventories/hosts_database'
+        self.examples.append({
+            'desc': f'To get hosts in group.s matching regex {pattern}',
+            'url': f'/sw2/query?query={self.name}&pattern={pattern}&sources={sources}'
+        })
 
     def query(self):
         """
         """
-        sources = self.parameters.get('sources', [])
         self.cache_config = {
-            'discriminant': sources,
+            'discriminant': self.sources,
             'category': 'inventory'
         }
         inventory = self.get_cached_resource(self.get_inventory)
@@ -35,7 +71,7 @@ class ScriptWrapperQuery(ScriptWrapper):
             for group_name in groups.keys()
             if re.match(re_pattern, group_name) is not None
         )
-        disabled = self.parameters.get('groups_selection', 'no')
+        disabled = self.parameters.get('groups_selection', self.default_groups_selection)
         response = []
         for name, hosts in selected_groups.items():
             group = dict(name=f'<i class="orange sitemap icon"></i> {name}', value=name, disabled=disabled)

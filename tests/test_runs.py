@@ -12,17 +12,18 @@ from ansible_ws.ansible_web_service import AnsibleWebServiceConfig
 from sw2 import ScriptWebServiceWrapper
 
 
-class TestSWSW(unittest.TestCase):
+class TestRuns(unittest.TestCase):
 
     RUNS_DIR = os.path.join(ansible_ws_tests.ANSIBLE_WS_PATH_TEST, 'data', 'runs')
     ansible_ws_config = AnsibleWebServiceConfig()
 
     def test_search_basic(self):
         self.ansible_ws_config.config['ansible']['runs_dir'] = self.RUNS_DIR
-        request = dict(
-            debug='true',
-            query='runs',
-        )
+        request = {
+            'debug': 'true',
+            'query': 'runs',
+            'from': 'January 1, 2019',
+        }
         sw2 = ScriptWebServiceWrapper(request, self.ansible_ws_config)
         response = sw2.get_result()
 #         pprint.pprint(response)
@@ -31,11 +32,12 @@ class TestSWSW(unittest.TestCase):
 
     def test_search_state(self):
         self.ansible_ws_config.config['ansible']['runs_dir'] = self.RUNS_DIR
-        request = dict(
-            debug='true',
-            query='runs',
-            states='failed'
-        )
+        request = {
+            'debug': 'true',
+            'query': 'runs',
+            'from': 'January 1, 2019',
+            'states': 'failed'
+        }
         sw2 = ScriptWebServiceWrapper(request, self.ansible_ws_config)
         response = sw2.get_result()
 #         pprint.pprint(response)

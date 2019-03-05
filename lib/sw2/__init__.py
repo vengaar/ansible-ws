@@ -15,7 +15,7 @@ class ScriptWebServiceWrapper():
             if not os.path.basename(file).startswith('__')
         ]
         usage = dict(
-            error=f'query parameter is missing. The available queries are {modules}',
+            error=f'query parameter is missing. The available queries are {sorted(modules)}',
             usage='/sw2/query?query={query}&{query_parameters}',
             help=[
                 'To have the detail of each query, call a query with parameter help',
