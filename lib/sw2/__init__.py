@@ -5,6 +5,7 @@ import json
 import hashlib
 import time
 import glob
+import urllib
 
 class ScriptWebServiceWrapper():
 
@@ -68,6 +69,7 @@ class ScriptWebServiceWrapper():
                     self.output['results'] = self.plugin.query()
                 else:
                     self.output["usages"] = self.plugin.usages
+                    self.output["errors"] = self.plugin.errors
 
     def is_valid(self):
         return self._is_valid and self.plugin.is_valid()
@@ -158,7 +160,17 @@ class ScriptWrapper():
         self._is_valid = True
         self.parameters_description = dict()
         self.examples = []
-    
+        self.errors = []
+        self.query_name = self.parameters['query']
+
+    def add_example(self, description, parameters):
+        qs = urllib.parse.urlencode(parameters)
+        self.examples.append({
+            'parameters': parameters,
+            'desc': description.format(**parameters),
+            'url': f'/sw2/query?query={self.query_name}&{qs}'
+        })
+
     @property
     def usages(self):
         usages = {
@@ -170,6 +182,24 @@ class ScriptWrapper():
         else:
             usages['description'] = self.__doc__.split(os.linesep),
         return usages
+
+    def get(self, name):
+        return self.parameters[name]
+
+    def check_parameters(self):
+        """
+        """
+        for name, parameter in self.parameters_description.items():
+            if parameter.get('required', False):
+                if name not in self.parameters:
+                    self._is_valid = False
+                    self.errors.append(f'required parameter {name} is missing')
+            if 'values' in parameter:
+                if name in self.parameters:
+                    values = parameter['values']
+                    if self.parameters[name] not in values:
+                        self._is_valid = False
+                        self.errors.append(f'value of parameter {name} not in expected values {values}')
 
     def is_valid(self):
         return self._is_valid

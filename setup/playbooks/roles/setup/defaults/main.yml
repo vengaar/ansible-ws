@@ -12,14 +12,6 @@ wsgi_services:
     alias: sw2/query
   - name: playbook_launch
     alias: ansible-ws/launch
-  - name: playbook_run
-    alias: ansible-ws/run
-  - name: ssh_agent
-    alias: ssh-agent/info
-  - name: ssh_agent_add
-    alias: ssh-agent/add
-  - name: ssh_agent_kill
-    alias: ssh-agent/kill
 working_dir: "/home/{{ wsgi_user }}/{{ git_name }}@working"
 runs_dir: "{{ working_dir }}/runs"
 graph_dir: "{{ working_dir }}/graphs"
