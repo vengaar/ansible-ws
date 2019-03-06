@@ -8,16 +8,21 @@ According use ansible cli to avoid dependecies on Ansible python code and versio
     * Start from entry point http://localhost/sw2/query to have full details
     * The queries are :
         * For Ansible CLI wrapper
-            * tags
-            * tasks
-            * groups
-            * groupvars
+            * tags , to get playbook tags (result is cahced)
+            * tasks , to get playbook tasks (result is cahced)
+            * groups, to get invnetories groups and members (result is cahced)
+            * groupvars, to get groups variables (result is cahced)
+            * launch, to launch a playbook
         * Internal:
             * runs, to get existing runs
             * run, to get run info from runid
             * For cache management of CLI output
                 * cache_flush
                 * cache_info
+            * To manage ssh agent
+                * SSHAgent
+                * SSHAgentAdd
+                * SSHAgentKill
         * Other
             * demo, to have basic data for a dropdown
             * grapher, wapper on ansible-inventory-grapher
@@ -26,14 +31,6 @@ According use ansible cli to avoid dependecies on Ansible python code and versio
         * help=true, to have self documentation and examples
         * cache={cache_action}, with cache_action in ['bypass', 'refresh']
             * Only for sw2 using cache
-
-* Dedicated wsgi launch playbook (doc todo)
-    * http://localhost/ansible-ws/launch
-
-* SSH web agent
-    * http://localhost/ssh-agent/info
-    * http://localhost/ssh-agent/add
-    * http://localhost/ssh-agent/kill
 
 # Setup
 
@@ -86,7 +83,4 @@ ansible-playbook setup/playbooks/setup.yml -e "git_version=devel"
 Test url:
 
 * http://localhost/sw2/query
-* http://localhost/ansible-ws/launch
-* http://localhost/ssh-agent/info
-* http://localhost/ssh-agent/add
-* http://localhost/ssh-agent/kill
+

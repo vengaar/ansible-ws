@@ -6,6 +6,8 @@ import hashlib
 import time
 import glob
 import urllib
+import re
+
 
 class ScriptWebServiceWrapper():
 
@@ -193,13 +195,21 @@ class ScriptWrapper():
             if parameter.get('required', False):
                 if name not in self.parameters:
                     self._is_valid = False
-                    self.errors.append(f'required parameter {name} is missing')
+                    self.errors.append(f'Required parameter {name} is missing')
             if 'values' in parameter:
                 if name in self.parameters:
                     values = parameter['values']
                     if self.parameters[name] not in values:
                         self._is_valid = False
-                        self.errors.append(f'value of parameter {name} not in expected values {values}')
+                        self.errors.append(f'The value of {name} is not in expected values {values}')
+            if 'regex' in parameter:
+                if name in self.parameters:
+                    regex = parameter['regex']
+                    value = self.parameters[name]
+                    re.match(regex, value)
+                    if re.match(regex, value) is None:
+                        self._is_valid = False
+                        self.errors.append(f"The command line [{value}] don't match expected regex {regex}")
 
     def is_valid(self):
         return self._is_valid
