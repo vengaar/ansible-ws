@@ -10,8 +10,6 @@ wsgi_base_url: http://{{ ansible_default_ipv4.address }}:{{ wsgi_port }}
 wsgi_services:
   - name: sw2
     alias: sw2/query
-  - name: playbook_launch
-    alias: ansible-ws/launch
 working_dir: "/home/{{ wsgi_user }}/{{ git_name }}@working"
 runs_dir: "{{ working_dir }}/runs"
 graph_dir: "{{ working_dir }}/graphs"

@@ -84,22 +84,8 @@
 
     - name: Create general configuration file
       template:
-        src: "{{ item }}"
+        src: "{{ git_name }}.yml"
         dest: /etc/{{ git_name }}/{{ git_name }}.yml
-      with_first_found:
-        - "{{ git_name }}_{{ ansible_distribution|lower }}_{{ ansible_distribution_major_version }}.yml"
-        - "{{ git_name }}_{{ ansible_distribution|lower }}.yml"
-        - "{{ git_name }}.yml"
-
-    - name: Create services configuration files
-      template:
-        src: services/{{ service.name }}.yml
-        dest: /etc/{{ git_name }}/{{ service.name }}.yml
-      loop: "{{ wsgi_services }}"
-      loop_control:
-        loop_var: service
-      vars:
-        url: "{{ wsgi_base_url + '/' + service.alias }}"
 
 - include_tasks: "{{ ansible_distribution|lower }}.yml"
 
