@@ -14,7 +14,6 @@ class ScriptWrapperQuery(ScriptWrapper):
 
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
-        self.name = 'runs'
         self.date_pattern = '%B %d, %Y'
         self.today = datetime.datetime.now()
         tomorow = self.today + datetime.timedelta(days=1)

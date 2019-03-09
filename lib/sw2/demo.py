@@ -11,7 +11,6 @@ class ScriptWrapperQuery(ScriptWrapper):
 
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
-        self.name = 'tasks'
         self.__usages()
         self.check_parameters()
 

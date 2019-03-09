@@ -15,7 +15,6 @@ The output is formmated for semantic ui dropdown"""
 
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
-        self.name = 'groups'
         self.default_groups_selection = 'no'
         self.__usages()
         self.check_parameters()

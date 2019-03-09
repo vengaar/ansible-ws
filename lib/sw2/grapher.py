@@ -12,7 +12,6 @@ class ScriptWrapperQuery(ScriptWrapper):
 
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
-        self.name = 'grapher'
         self.default_format = self.config.get('grapher.format')
         self.output_folder = config.get('grapher.output')
         self.__usages()

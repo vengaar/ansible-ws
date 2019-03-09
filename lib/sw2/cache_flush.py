@@ -12,7 +12,6 @@ See query cache_info to get existing keys"""
     def __init__(self, config, **kwargs):
 
         super().__init__(config, **kwargs)
-        self.name = 'cache_flush'
         self.__usages()
         self.check_parameters()
 

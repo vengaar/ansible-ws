@@ -13,7 +13,6 @@ The tags are put in cache."""
 
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
-        self.name = 'tasks'
         self.__usages()
         self.check_parameters()
         if self._is_valid:
