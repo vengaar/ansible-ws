@@ -61,10 +61,10 @@ class TestSWSW(unittest.TestCase):
             'key': 'foo.barr',
         }
         request = tests.get_sw2_request(self.query, parameters)
-        pprint.pprint(request)
+#         pprint.pprint(request)
         sw2 = ScriptWebServiceWrapper(request, self.config)
         response = sw2.get_result()
-        pprint.pprint(response)
+#         pprint.pprint(response)
         expected = []
         self.assertEqual(response['results'], expected)
 
