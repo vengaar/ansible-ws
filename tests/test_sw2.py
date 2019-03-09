@@ -12,13 +12,13 @@ from ansible_ws.ansible_web_service import AnsibleWebServiceConfig
 from sw2 import ScriptWebServiceWrapper
 
 
-class TestSWSW(unittest.TestCase):
+class TestSW2(unittest.TestCase):
 
     config = AnsibleWebServiceConfig()
 
     def test_demo(self):
         parameters = {
-            'demo1': 'value1',
+            'demo1': 'test',
             'demo2': ['foo', 'bar']
         }
         json_parameters = json.dumps(parameters)
@@ -31,8 +31,8 @@ class TestSWSW(unittest.TestCase):
         sw2 = ScriptWebServiceWrapper(request, self.config)
         response = sw2.get_result()
 #         pprint.pprint(response)
-        self.assertEqual(response['results'][5]['name'], 'foo')
-
+        self.assertEqual(response['results'][3]['name'], 'test')
+        self.assertEqual(response['results'][4]['name'], 'foo')
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)

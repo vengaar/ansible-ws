@@ -1,0 +1,1 @@
+{"playbook": "/home/vengaar/wapi/test/playbooks/fail.yml", "cmdline": "ansible-playbook /home/vengaar/wapi/test/playbooks/fail.yml "}

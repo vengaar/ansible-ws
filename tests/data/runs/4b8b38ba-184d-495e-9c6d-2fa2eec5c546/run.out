@@ -1,0 +1,111 @@
+[0;34mUsing /home/vengaar/.ansible.cfg as config file[0m
+[0;34m/home/vengaar/wapi/test/inventories/hosts did not meet host_list requirements, check plugin documentation if this is unexpected[0m
+[0;34m/home/vengaar/wapi/test/inventories/hosts did not meet script requirements, check plugin documentation if this is unexpected[0m
+
+PLAY [['database_app1_prod']] **************************************************
+
+TASK [Display inventory_hostname] **********************************************
+[0;32mok: [server_prod_11] => {[0m
+[0;32m    "inventory_hostname": "server_prod_11"[0m
+[0;32m}[0m
+[0;32mok: [server_prod_12] => {[0m
+[0;32m    "inventory_hostname": "server_prod_12"[0m
+[0;32m}[0m
+[0;32mok: [server_prod_13] => {[0m
+[0;32m    "inventory_hostname": "server_prod_13"[0m
+[0;32m}[0m
+
+TASK [Display param email] *****************************************************
+[0;32mok: [server_prod_11] => {[0m
+[0;32m    "email": "foo@bar.io"[0m
+[0;32m}[0m
+[0;32mok: [server_prod_12] => {[0m
+[0;32m    "email": "foo@bar.io"[0m
+[0;32m}[0m
+[0;32mok: [server_prod_13] => {[0m
+[0;32m    "email": "foo@bar.io"[0m
+[0;32m}[0m
+
+TASK [Display param app1_server] ***********************************************
+[0;32mok: [server_prod_11] => {[0m
+[0;32m    "app1_server": "server_prod_12"[0m
+[0;32m}[0m
+[0;32mok: [server_prod_12] => {[0m
+[0;32m    "app1_server": "server_prod_12"[0m
+[0;32m}[0m
+[0;32mok: [server_prod_13] => {[0m
+[0;32m    "app1_server": "server_prod_12"[0m
+[0;32m}[0m
+
+TASK [Display param prod_servers] **********************************************
+[0;32mok: [server_prod_11] => {[0m
+[0;32m    "prod_servers": [[0m
+[0;32m        "database_app1_prod"[0m
+[0;32m    ][0m
+[0;32m}[0m
+[0;32mok: [server_prod_12] => {[0m
+[0;32m    "prod_servers": [[0m
+[0;32m        "database_app1_prod"[0m
+[0;32m    ][0m
+[0;32m}[0m
+[0;32mok: [server_prod_13] => {[0m
+[0;32m    "prod_servers": [[0m
+[0;32m        "database_app1_prod"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Display param color] *****************************************************
+[0;32mok: [server_prod_11] => {[0m
+[0;32m    "color": [[0m
+[0;32m        "red"[0m
+[0;32m    ][0m
+[0;32m}[0m
+[0;32mok: [server_prod_12] => {[0m
+[0;32m    "color": [[0m
+[0;32m        "red"[0m
+[0;32m    ][0m
+[0;32m}[0m
+[0;32mok: [server_prod_13] => {[0m
+[0;32m    "color": [[0m
+[0;32m        "red"[0m
+[0;32m    ][0m
+[0;32m}[0m
+
+TASK [Display param agree] *****************************************************
+[0;32mok: [server_prod_11] => {[0m
+[0;32m    "agree": false[0m
+[0;32m}[0m
+[0;32mok: [server_prod_12] => {[0m
+[0;32m    "agree": false[0m
+[0;32m}[0m
+[0;32mok: [server_prod_13] => {[0m
+[0;32m    "agree": false[0m
+[0;32m}[0m
+
+TASK [Task with tag] ***********************************************************
+[0;32mok: [server_prod_11] => {[0m
+[0;32m    "msg": "A tagged task"[0m
+[0;32m}[0m
+[0;32mok: [server_prod_12] => {[0m
+[0;32m    "msg": "A tagged task"[0m
+[0;32m}[0m
+[0;32mok: [server_prod_13] => {[0m
+[0;32m    "msg": "A tagged task"[0m
+[0;32m}[0m
+
+TASK [Task without tag] ********************************************************
+[0;32mok: [server_prod_11] => {[0m
+[0;32m    "msg": "A task without tags"[0m
+[0;32m}[0m
+[0;32mok: [server_prod_12] => {[0m
+[0;32m    "msg": "A task without tags"[0m
+[0;32m}[0m
+[0;32mok: [server_prod_13] => {[0m
+[0;32m    "msg": "A task without tags"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;32mserver_prod_11[0m             : [0;32mok=8   [0m changed=0    unreachable=0    failed=0   
+[0;32mserver_prod_12[0m             : [0;32mok=8   [0m changed=0    unreachable=0    failed=0   
+[0;32mserver_prod_13[0m             : [0;32mok=8   [0m changed=0    unreachable=0    failed=0   
+

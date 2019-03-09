@@ -1,0 +1,1 @@
+{"pid": 19735, "runid": "f14529a2-cd83-4d2c-b885-a6184b83f7bc", "status": "finished", "state": "failed", "begin": 1551460796.1865423, "end": 1551460797.9021518, "return_code": 2, "description": {"playbook": "/home/vengaar/wapi/test/playbooks/fail.yml", "cmdline": "ansible-playbook /home/vengaar/wapi/test/playbooks/fail.yml "}}

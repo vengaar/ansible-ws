@@ -1,0 +1,10 @@
+
+PLAY [localhost] ***************************************************************
+
+TASK [fail] ********************************************************************
+[0;31mfatal: [localhost]: FAILED! => {"changed": false, "msg": "Test playbook fail"}[0m
+	to retry, use: --limit @/home/vengaar/wapi/test/playbooks/fail.retry
+
+PLAY RECAP *********************************************************************
+[0;31mlocalhost[0m                  : ok=0    changed=0    unreachable=0    [0;31mfailed=1   [0m
+

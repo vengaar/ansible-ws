@@ -4,10 +4,28 @@ import importlib
 import json
 import hashlib
 import time
-from math import fabs
+import glob
+import urllib
+import re
 
 
 class ScriptWebServiceWrapper():
+
+    def get_usage(self):
+        modules = [
+            os.path.splitext(file)[0]
+            for file in os.listdir(os.path.dirname(__file__))
+            if not os.path.basename(file).startswith('__')
+        ]
+        usage = dict(
+            error=f'query parameter is missing. The available queries are {sorted(modules)}',
+            usage='/sw2/query?query={query}&{query_parameters}',
+            help=[
+                'To have the detail of each query, call a query with parameter help',
+                'example: /sw2/query?query=run&help=true'
+            ]
+        )
+        return usage
 
     def __init__(self, query_strings, config):
         self.logger = logging.getLogger(self.__class__.__name__)
@@ -25,7 +43,7 @@ class ScriptWebServiceWrapper():
 
         if 'query' not in self.query_strings:
             self._is_valid = False
-            self.output['usages'] = 'Missing query parameter'
+            self.output['usages'] = self.get_usage()
         else:
             parameters = {}
             query = self.query_strings.get('query')
@@ -47,10 +65,13 @@ class ScriptWebServiceWrapper():
                 self.logger.debug(PluginClass)
                 self.plugin = PluginClass(config, **query_strings)
                 self.logger.debug(self.plugin)
-                if self.plugin.is_valid():
+                if 'help' in query_strings:
+                    self.output["usages"] = self.plugin.usages
+                elif self.plugin.is_valid() :
                     self.output['results'] = self.plugin.query()
                 else:
                     self.output["usages"] = self.plugin.usages
+                    self.output["errors"] = self.plugin.errors
 
     def is_valid(self):
         return self._is_valid and self.plugin.is_valid()
@@ -139,10 +160,56 @@ class ScriptWrapper():
         self.parameters = kwargs
         self.logger.debug(self.parameters)
         self._is_valid = True
+        self.parameters_description = dict()
+        self.examples = []
+        self.errors = []
+        self.query_name = self.parameters['query']
+
+    def add_example(self, description, parameters):
+        qs = urllib.parse.urlencode(parameters)
+        self.examples.append({
+            'parameters': parameters,
+            'desc': description.format(**parameters),
+            'url': f'/sw2/query?query={self.query_name}&{qs}'
+        })
+
+    @property
+    def usages(self):
+        usages = {
+            'parameters': self.parameters_description,
+            'examples': self.examples
+        }
         if self.__doc__ is None:
-            self.usages = ["No usages defines"]
+            usages['description'] = ["No usages defines"]
         else:
-            self.usages = self.__doc__.split(os.linesep)
+            usages['description'] = self.__doc__.split(os.linesep),
+        return usages
+
+    def get(self, name):
+        return self.parameters[name]
+
+    def check_parameters(self):
+        """
+        """
+        for name, parameter in self.parameters_description.items():
+            if parameter.get('required', False):
+                if name not in self.parameters:
+                    self._is_valid = False
+                    self.errors.append(f'Required parameter {name} is missing')
+            if 'values' in parameter:
+                if name in self.parameters:
+                    values = parameter['values']
+                    if self.parameters[name] not in values:
+                        self._is_valid = False
+                        self.errors.append(f'The value of {name} is not in expected values {values}')
+            if 'regex' in parameter:
+                if name in self.parameters:
+                    regex = parameter['regex']
+                    value = self.parameters[name]
+                    re.match(regex, value)
+                    if re.match(regex, value) is None:
+                        self._is_valid = False
+                        self.errors.append(f"The command line [{value}] don't match expected regex {regex}")
 
     def is_valid(self):
         return self._is_valid

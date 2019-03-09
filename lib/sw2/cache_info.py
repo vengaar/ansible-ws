@@ -8,6 +8,8 @@ from symbol import except_clause
 
 
 class ScriptWrapperQuery(ScriptWrapper):
+    """To list all data in cache.
+This query has no parameter."""
 
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)

@@ -1,0 +1,1 @@
+{"pid": 19559, "runid": "f61aef56-9700-48a8-ab1e-f049df76ec0b", "status": "finished", "state": "failed", "begin": 1551460553.859431, "end": 1551460561.0445464, "return_code": 4, "description": {"playbook": "/home/vengaar/wapi/test/playbooks/remote.yml", "cmdline": "ansible-playbook /home/vengaar/wapi/test/playbooks/remote.yml -vv", "options": "-vv"}}

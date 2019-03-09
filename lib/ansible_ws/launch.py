@@ -16,6 +16,13 @@ class PlaybookContext(object):
     STATUS_STARTED = 'started'
     STATUS_FINISHED = 'finished'
 
+    STATE_RUNNING = 'running'
+    STATE_SUCCEEDED = 'succeeded'
+    STATE_FAILED = 'failed'
+#     STATE_ABORTED = 'aborted'
+#     STATE_KILLED = 'killed'
+    STATES = (STATE_RUNNING, STATE_SUCCEEDED, STATE_FAILED)
+
     def __init__(self, runid: str, ansible_ws_config: AnsibleWebServiceConfig=None) -> None:
         self.logger = logging.getLogger(self.__class__.__name__)
         self.ansible_ws_config = AnsibleWebServiceConfig() if ansible_ws_config is None else ansible_ws_config 
@@ -75,10 +82,17 @@ class PlaybookContextLaunch(PlaybookContext):
 
     def write_status(self, status):
         self.__status = status
+        if self.return_code is None:
+            state = self.STATE_RUNNING
+        elif self.return_code == 0:
+            state = self.STATE_SUCCEEDED
+        else:
+            state = self.STATE_FAILED
         status = dict(
             pid=self.pid,
             runid=self.runid,
             status=self.__status,
+            state=state,
             begin=self.begin,
             end=self.end,
             return_code=self.return_code,

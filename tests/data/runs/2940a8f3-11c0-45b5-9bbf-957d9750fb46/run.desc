@@ -1,0 +1,1 @@
+{"playbook": "/home/vengaar/wapi/test/playbooks/wait.yml", "cmdline": "ansible-playbook /home/vengaar/wapi/test/playbooks/wait.yml -v --extra-vars '{\"pause_number\":\"2\",\"pause_duration\":\"2\"}'", "options": "-v", "pause_number": "2", "pause_duration": "2"}

@@ -7,12 +7,16 @@ import sys
 sys.path.append('.')
 import tests as ansible_ws_tests
 import ansible_ws
-from ansible_ws.ssh_agent import AnsibleWebServiceSshAgent, SshAgent
+from ansible_ws.ansible_web_service import AnsibleWebServiceConfig
+from ansible_ws.ssh_agent import SshAgent
+from sw2 import ScriptWebServiceWrapper
+
 
 class TestSshAgent(unittest.TestCase):
 
     key1 = os.path.join(ansible_ws_tests.ANSIBLE_WS_PATH_TEST, 'data', 'agent', 'key1')
     key2 = os.path.join(ansible_ws_tests.ANSIBLE_WS_PATH_TEST, 'data', 'agent', 'key2')
+    config = AnsibleWebServiceConfig()
 
     def get_public_key(self, file):
         with open(f'{file}.pub') as fstream:
@@ -26,7 +30,7 @@ class TestSshAgent(unittest.TestCase):
 #       pprint.pprint(ssh_agent.env)
       ssh_agent.load_key(self.key1, 'key1')
 #       pprint.pprint(ssh_agent.keys)
-      pub_key1 = self.get_public_key(self.key1) 
+      pub_key1 = self.get_public_key(self.key1)
 #       pprint.pprint(pub_key1)
       self.assertEqual(len(ssh_agent.keys), 1)
       self.assertIn(pub_key1, ssh_agent.keys)
@@ -40,21 +44,38 @@ class TestSshAgent(unittest.TestCase):
       self.assertIn(pub_key2, ssh_agent.keys)
       ssh_agent.kill()
 
-    def test_ws(self):
-        config_file = '/etc/ansible-ws/ssh_agent_add.yml'
-        query_strings = dict(
-            action=['add'],
-            private_key=[self.key1],
-            passphrase=['key1'],
-            id=['ansible-ws-unittest']
-        )
-        service = AnsibleWebServiceSshAgent(config_file, query_strings)
-        response = service.get_result()
+    def test_sw2(self):
+        id = 'ansible-ws-unittest'
+        request = {
+            'query': 'SSHAgent',
+            'id': id,
+        }
+        sw2 = ScriptWebServiceWrapper(request, self.config)
+        response = sw2.get_result()
 #         pprint.pprint(response)
-        pub_key1 = self.get_public_key(self.key1)
-        self.assertIn(pub_key1, response['results']['keys'])
-        ssh_agent = SshAgent('ansible-ws-unittest')
-        ssh_agent.kill()
+        self.assertEqual(response['results']['keys'], [])
+        self.assertEqual(response['results']['action'], 'init')
+        
+        request = {
+            'query': 'SSHAgentAdd',
+            'id': id,
+            'private_key': self.key1,
+            'passphrase': 'key1',
+        }
+        sw2 = ScriptWebServiceWrapper(request, self.config)
+        response = sw2.get_result()
+#         pprint.pprint(response)
+        self.assertEqual(response['results']['action'], 'add')
+        self.assertTrue(response['results']['keys'][0].startswith('ssh-rsa '))
+        request = {
+            'query': 'SSHAgentKill',
+            'id': id,
+        }
+        sw2 = ScriptWebServiceWrapper(request, self.config)
+        response = sw2.get_result()
+#         pprint.pprint(response)
+        self.assertEqual(response['results']['keys'], [])
+        self.assertEqual(response['results']['action'], 'kill')
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)

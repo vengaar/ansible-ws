@@ -8,19 +8,49 @@ from . import ScriptWrapper
 
 
 class ScriptWrapperQuery(ScriptWrapper):
-    """Below expected parameters
-[required,string] group, the name of group to get vars.
-[required,string] key, the keys to follow with dot notation.
-[optional,list] inventories, the inventories files to used."""
+    """Wrapper on command [ansible-inventory --list --export] to get group variables.
+The exported inventory is put in cache."""
 
     def __init__(self,config,  **kwargs):
         super().__init__(config, **kwargs)
+        self.__usages()
         required = set(['group', 'key'])
-        if not required.issubset(set(self.parameters.keys())):
-            self._is_valid = False
-        self.group = self.parameters.get('group')
-        self.key = self.parameters.get('key')
-        self.inventories = self.parameters.get('inventories')
+        self._is_valid = required.issubset(set(self.parameters.keys()))
+        if self._is_valid:
+            self.group = self.parameters.get('group')
+            self.key = self.parameters.get('key')
+            self.inventories = []
+            if 'parameters' in self.parameters:
+                self.inventories = self.parameters.get('inventories')
+            else:
+                inventories = self.parameters.get('inventories')
+                if inventories is not None:
+                    self.inventories = inventories.split(',')
+
+    def __usages(self):
+        self.parameters_description = {
+            'group': {
+                'description': 'The name of group to get var',
+                'required': 'true',
+            },
+            'playbook': {
+                'description': 'The keys to follow with dot notation',
+                'required': 'true',
+            },
+            'inventories': {
+                'description': 'The inventories files to used. If nothing is defined the default ansible inventories are used',
+                'required': 'false',
+                'format': 'List of inventory separated by coma'
+            },
+        }
+        
+        group = 'database_app1_prod'
+        key = 'countries.list'
+        inventories = '~/ansible-ws/tests/data/inventories/hosts_database'
+        self.examples.append({
+            'desc': f'The get list defined in the group {group} under the key {key} and defined in the inventories {inventories}',
+            'url': f'/sw2/query?query=groupvars&group={group}&key={key}&inventories={inventories}'
+        })
 
     def query(self):
 
@@ -29,12 +59,14 @@ class ScriptWrapperQuery(ScriptWrapper):
             'category': 'export'
         }
         inventory = self.get_cached_resource(self.get_export)
-        vars = inventory[self.group]['vars']
-
-        for sub_key in self.key.split('.'):
-            vars = vars[sub_key]
-
-        values = sorted(vars.keys()) if isinstance(vars, dict) else vars
+        
+        values = []
+        if self.group in inventory:
+            if 'vars' in inventory[self.group]:
+                vars = inventory[self.group]['vars']
+                for sub_key in self.key.split('.'):
+                    vars = vars[sub_key]
+                values = sorted(vars.keys()) if isinstance(vars, dict) else vars
         response = self.format_to_semantic_ui_dropdown(values)
         return response
 

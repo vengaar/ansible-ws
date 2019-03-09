@@ -1,13 +1,36 @@
 # ansible-ws
 
 Set of SWGI application to request ansible.
-According case, use ansible python module or ansible cli.
+According use ansible cli to avoid dependecies on Ansible python code and version.
 
-* (beta) - To get hosts defined in inventories according to the groups name
-* (beta) - To get tags for a playbook (wrap command `ansible-playbook --list-tags`) 
-* (beta) - To get tasks for a playbook (wrap command `ansible-playbook --list-tasks`)
-* (beta) - To launch playbook
-* (beta) - To get list defined in groups vars
+* sw2 queries 
+    * The sw2 queries are self documented
+    * Start from entry point http://localhost/sw2/query to have full details
+    * The queries are :
+        * For Ansible CLI wrapper
+            * tags , to get playbook tags (result is cahced)
+            * tasks , to get playbook tasks (result is cahced)
+            * groups, to get invnetories groups and members (result is cahced)
+            * groupvars, to get groups variables (result is cahced)
+            * launch, to launch a playbook
+        * Internal:
+            * runs, to get existing runs
+            * run, to get run info from runid
+            * For cache management of CLI output
+                * cache_flush
+                * cache_info
+            * To manage ssh agent
+                * SSHAgent
+                * SSHAgentAdd
+                * SSHAgentKill
+        * Other
+            * demo, to have basic data for a dropdown
+            * grapher, wapper on ansible-inventory-grapher
+    * sw2 querie have options:
+        * debug=true, to have more details on output
+        * help=true, to have self documentation and examples
+        * cache={cache_action}, with cache_action in ['bypass', 'refresh']
+            * Only for sw2 using cache
 
 # Setup
 
@@ -59,39 +82,5 @@ ansible-playbook setup/playbooks/setup.yml -e "git_version=devel"
 ## Test
 Test url:
 
-* http://localhost/ansible-ws/groups
-* http://localhost/ansible-ws/tags
-* http://localhost/ansible-ws/tasks
-* http://localhost/ansible-ws/launch
-* http://localhost/ansible-ws/run
-* http://localhost/ansible-ws/groupvars
+* http://localhost/sw2/query
 
-* http://localhost/ssh-agent/info
-* http://localhost/ssh-agent/add
-* http://localhost/ssh-agent/kill
-
-# /ansible-ws/groups
-
-Allow you to retrieve hosts defined in groups.
-
-# /ansible-ws/groupvars
-
-Allow to retrieve list of values defined in groups var folder
-
-To avoid to define for each request the groups var folder,`
-you can update the default of `inventory` in the config file `/etc/ansible-ws/groupvars.yml`
-
-# FAQ
-
-## Howto define ansible inventories to use
-
-On request with parameters `sources`, add one parameter for each file.
-
-Example to request
-
-* on file1 use `?source=full_path_of_file1`
-* on file1 and file2 use `?source=full_path_of_file1&source=full_path_of_file2`
-
-## Howto define a default list on inventories files to use
-
-To avoid to always define the same inventories files, define them in `/etc/ansible-ws/ansible_hosts.yml` as default of `sources`
