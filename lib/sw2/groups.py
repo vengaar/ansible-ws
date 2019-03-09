@@ -46,7 +46,7 @@ The output is formmated for semantic ui dropdown"""
     def query(self):
         """
         """
-        sources = self.get('sources', [])
+        sources = self.get('sources')
         self.cache_config = {
             'discriminant': sources,
             'category': 'inventory'
@@ -60,7 +60,7 @@ The output is formmated for semantic ui dropdown"""
             for group_name in groups.keys()
             if re.match(re_pattern, group_name) is not None
         )
-        disabled = self.get('groups_selection', self.default_groups_selection)
+        disabled = self.get('groups_selection')
         response = []
         for name, hosts in selected_groups.items():
             group = dict(name=f'<i class="orange sitemap icon"></i> {name}', value=name, disabled=disabled)
@@ -80,9 +80,10 @@ The output is formmated for semantic ui dropdown"""
             'var=groups',
             'localhost',
         ]
-        for source in sources:
-            command.append('-i')
-            command.append(source)
+        if sources is not None:
+            for source in sources:
+                command.append('-i')
+                command.append(source)
         self.logger.debug(f'get groups command {command}')
         p = subprocess.run(command, stdout=subprocess.PIPE)
         out = p.stdout.decode('utf-8')

@@ -40,17 +40,13 @@ class ScriptWrapperQuery(ScriptWrapper):
         }
         self.add_example('To generate graph of host {host}', parameters)
 
-
-
     def query(self):
         """
         """
         host = self.get('host')
-        format = self.get('format', self.default_format)
-        if 'inventory' in self.parameters:
-            inventory = f' -i {self.parameters["inventory"]}'
-        else:
-            inventory = ''
+        format = self.get('format')
+        p_inventory = self.get('inventory')
+        inventory = '' if p_inventory is None else f' -i {p_inventory}'
         img_file = f'{self.output_folder}/{host}.{format}'
         command = [f'ansible-inventory-grapher {host}{inventory} | dot -T{format} > {img_file}']
         self.logger.debug(command)

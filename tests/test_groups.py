@@ -21,6 +21,17 @@ class TestSWSW(unittest.TestCase):
     ]
     query = 'groups'
 
+    def test_default(self):
+        parameters = {
+            'pattern': 'all',
+        }
+        request = tests.get_sw2_request(self.query, parameters)
+#         pprint.pprint(request)
+        sw2 = ScriptWebServiceWrapper(request, self.config)
+        response = sw2.get_result()
+#         pprint.pprint(response)
+        self.assertIsInstance(response['results'], list)
+
     def test_groups_pattern(self):
         parameters = {
             'pattern': 'database',

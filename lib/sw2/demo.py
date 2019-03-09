@@ -21,9 +21,9 @@ class ScriptWrapperQuery(ScriptWrapper):
                 'required': True,
             },
             'demo2': {
-                'description': 'The playbook to gather tags',
+                'description': 'A list of values',
                 'required': False,
-                'format': 'A list of values with coma separator',
+                'default': [],
             },
         }
         parameters = {
@@ -34,9 +34,6 @@ class ScriptWrapperQuery(ScriptWrapper):
 
     def query(self):
         p1 = self.get('demo1')
-        p2 = self.get('demo2', [])
-        if isinstance(p2, str):
-            p2 = p2.split(',')
-
+        p2 = self.get('demo2')
         values = ['I', 'love ', 'wapi', p1] + p2
         return self.format_to_semantic_ui_dropdown(values)

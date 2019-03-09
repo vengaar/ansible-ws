@@ -38,7 +38,7 @@ class TestSWSW(unittest.TestCase):
         ]
         self.assertEqual(response['results'], expected)
 
-    def test_json_parameters(self):
+    def test_dict(self):
         parameters = {
             'group': 'database_app1_prod',
             'key': 'countries.dict',
@@ -53,6 +53,19 @@ class TestSWSW(unittest.TestCase):
             {'name': value, 'value': value}
             for value in ['es', 'fr', 'it']
         ]
+        self.assertEqual(response['results'], expected)
+
+    def test_default(self):
+        parameters = {
+            'group': 'foo',
+            'key': 'foo.barr',
+        }
+        request = tests.get_sw2_request(self.query, parameters)
+        pprint.pprint(request)
+        sw2 = ScriptWebServiceWrapper(request, self.config)
+        response = sw2.get_result()
+        pprint.pprint(response)
+        expected = []
         self.assertEqual(response['results'], expected)
 
 

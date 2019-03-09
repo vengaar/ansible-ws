@@ -29,7 +29,7 @@ The exported inventory is put in cache."""
             'inventories': {
                 'description': 'The inventories files to used. If nothing is defined the default ansible inventories are used',
                 'required': False,
-                'format': 'List of inventory separated by coma'
+                'format': 'List of inventory separated by coma',
             },
         }
         parameters = {
@@ -40,7 +40,7 @@ The exported inventory is put in cache."""
         self.add_example('The get list defined in the group {group} under the key {key} and defined in the inventories {inventories}', parameters)
 
     def query(self):
-        inventories = self.get('inventories', [])
+        inventories = self.get('inventories')
         self.cache_config = {
             'discriminant': inventories,
             'category': 'export'
