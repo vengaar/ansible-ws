@@ -18,7 +18,7 @@ The output is formmated for semantic ui dropdown"""
         self.name = 'groups'
         self.default_groups_selection = 'no'
         self.__usages()
-        self._is_valid = 'pattern' in self.parameters
+        self.check_parameters()
 
     def __usages(self):
         self.parameters_description = {

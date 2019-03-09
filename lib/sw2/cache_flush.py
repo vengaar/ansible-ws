@@ -14,9 +14,7 @@ See query cache_info to get existing keys"""
         super().__init__(config, **kwargs)
         self.name = 'cache_flush'
         self.__usages()
-        self._is_valid = ('key' in self.parameters)
-        if self._is_valid:
-            self.cache_file = self.parameters.get('key')
+        self.check_parameters()
 
     def __usages(self):
         self.parameters_description = {
@@ -31,8 +29,9 @@ See query cache_info to get existing keys"""
         self.add_example('To flush the cache {key}', parameters)
 
     def query(self):
-        assert(self.cache_file.startswith(self.cache_prefix))
-        assert(os.path.isfile(self.cache_file))
-        os.remove(self.cache_file)
-        return f'Cache file {self.cache_file} successfully flushed'
+        cache_file = self.get('key')
+        assert(cache_file.startswith(self.cache_prefix))
+        assert(os.path.isfile(cache_file))
+        os.remove(cache_file)
+        return f'Cache file {cache_file} successfully flushed'
 

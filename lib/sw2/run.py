@@ -12,9 +12,8 @@ class ScriptWrapperQuery(ScriptWrapper):
 
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
-        self.name = 'run'
         self.__usages()
-        self._is_valid = ('runid' in self.parameters)
+        self.check_parameters()
 
     def __usages(self):
         self.parameters_description = {

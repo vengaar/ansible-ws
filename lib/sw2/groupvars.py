@@ -14,22 +14,21 @@ The exported inventory is put in cache."""
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
         self.__usages()
-        required = set(['group', 'key'])
-        self._is_valid = required.issubset(set(self.parameters.keys()))
+        self.check_parameters()
 
     def __usages(self):
         self.parameters_description = {
             'group': {
                 'description': 'The name of group to get var',
-                'required': 'true',
+                'required': True,
             },
-            'playbook': {
+            'key': {
                 'description': 'The keys to follow with dot notation',
-                'required': 'true',
+                'required': True,
             },
             'inventories': {
                 'description': 'The inventories files to used. If nothing is defined the default ansible inventories are used',
-                'required': 'false',
+                'required': False,
                 'format': 'List of inventory separated by coma'
             },
         }

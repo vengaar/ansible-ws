@@ -14,7 +14,7 @@ class ScriptWrapperQuery(ScriptWrapper):
         super().__init__(config, **kwargs)
         self.name = 'tags'
         self.__usages()
-        self._is_valid = ('playbook' in self.parameters)
+        self.check_parameters()
         if self._is_valid:
             playbook = self.parameters.get('playbook')
             self.playbook = os.path.expanduser(playbook)

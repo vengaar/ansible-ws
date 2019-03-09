@@ -13,7 +13,7 @@ class ScriptWrapperQuery(ScriptWrapper):
         super().__init__(config, **kwargs)
         self.name = 'tasks'
         self.__usages()
-        self._is_valid = 'demo1' in self.parameters
+        self.check_parameters()
 
     def __usages(self):
         self.parameters_description = {

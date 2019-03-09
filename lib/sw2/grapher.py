@@ -14,12 +14,9 @@ class ScriptWrapperQuery(ScriptWrapper):
         super().__init__(config, **kwargs)
         self.name = 'grapher'
         self.default_format = self.config.get('grapher.format')
+        self.output_folder = config.get('grapher.output')
         self.__usages()
-        self._is_valid = ('host' in self.parameters)
-        if self._is_valid:
-            self.host = self.parameters.get('host')
-            self.format = self.parameters.get('format', self.default_format)
-            self.output_folder = config.get('grapher.output')
+        self.check_parameters()
 
     def __usages(self):
         pass
@@ -49,12 +46,14 @@ class ScriptWrapperQuery(ScriptWrapper):
     def query(self):
         """
         """
+        host = self.parameters.get('host')
+        format = self.parameters.get('format', self.default_format)
         if 'inventory' in self.parameters:
             inventory = f' -i {self.parameters["inventory"]}'
         else:
             inventory = ''
-        img_file = f'{self.output_folder}/{self.host}.{self.format}'
-        command = [f'ansible-inventory-grapher {self.host}{inventory} | dot -T{self.format} > {img_file}']
+        img_file = f'{self.output_folder}/{host}.{format}'
+        command = [f'ansible-inventory-grapher {host}{inventory} | dot -T{format} > {img_file}']
         self.logger.debug(command)
         with open(img_file, 'wb+') as out:
             subprocess.run(command, stdout=subprocess.PIPE, check=True, shell=True)
