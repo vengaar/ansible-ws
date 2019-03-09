@@ -40,15 +40,6 @@ class ScriptWebServiceWrapper():
         }
         return usages
 
-    @property
-    def queries2(self):
-        pattern = os.path.join(os.path.dirname(__file__), '**.py')
-        import glob
-        self.queries = sorted([
-            path
-            for path in glob.glob(pattern)
-        ])        
-
     def __init__(self, request, config):
         self.logger = logging.getLogger(self.__class__.__name__)
         self.logger.debug(request)
