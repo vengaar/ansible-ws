@@ -18,17 +18,7 @@ The output is formmated for semantic ui dropdown"""
         self.name = 'groups'
         self.default_groups_selection = 'no'
         self.__usages()
-
         self._is_valid = 'pattern' in self.parameters
-        if self._is_valid:
-            self.sources = []
-            if 'parameters' in self.parameters:
-                self.sources = self.parameters.get('sources', [])
-            else:
-                if 'sources' in self.parameters:
-                    self.sources = self.parameters['sources'].split(',')
-                else:
-                    self.sources = []
 
     def __usages(self):
         self.parameters_description = {
@@ -58,8 +48,9 @@ The output is formmated for semantic ui dropdown"""
     def query(self):
         """
         """
+        sources = self.get('sources', [])
         self.cache_config = {
-            'discriminant': self.sources,
+            'discriminant': sources,
             'category': 'inventory'
         }
         inventory = self.get_cached_resource(self.get_inventory)

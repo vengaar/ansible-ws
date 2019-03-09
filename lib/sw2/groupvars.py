@@ -11,21 +11,11 @@ class ScriptWrapperQuery(ScriptWrapper):
     """Wrapper on command [ansible-inventory --list --export] to get group variables.
 The exported inventory is put in cache."""
 
-    def __init__(self,config,  **kwargs):
+    def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
         self.__usages()
         required = set(['group', 'key'])
         self._is_valid = required.issubset(set(self.parameters.keys()))
-        if self._is_valid:
-            self.group = self.parameters.get('group')
-            self.key = self.parameters.get('key')
-            self.inventories = []
-            if 'parameters' in self.parameters:
-                self.inventories = self.parameters.get('inventories')
-            else:
-                inventories = self.parameters.get('inventories')
-                if inventories is not None:
-                    self.inventories = inventories.split(',')
 
     def __usages(self):
         self.parameters_description = {
@@ -43,7 +33,7 @@ The exported inventory is put in cache."""
                 'format': 'List of inventory separated by coma'
             },
         }
-        
+
         group = 'database_app1_prod'
         key = 'countries.list'
         inventories = '~/ansible-ws/tests/data/inventories/hosts_database'
@@ -53,18 +43,20 @@ The exported inventory is put in cache."""
         })
 
     def query(self):
-
+        inventories = self.get('inventories', [])
         self.cache_config = {
-            'discriminant': self.inventories,
+            'discriminant': inventories,
             'category': 'export'
         }
         inventory = self.get_cached_resource(self.get_export)
-        
+
+        group = self.get('group')
+        key = self.parameters.get('key')
         values = []
-        if self.group in inventory:
-            if 'vars' in inventory[self.group]:
-                vars = inventory[self.group]['vars']
-                for sub_key in self.key.split('.'):
+        if group in inventory:
+            if 'vars' in inventory[group]:
+                vars = inventory[group]['vars']
+                for sub_key in key.split('.'):
                     vars = vars[sub_key]
                 values = sorted(vars.keys()) if isinstance(vars, dict) else vars
         response = self.format_to_semantic_ui_dropdown(values)
@@ -76,8 +68,8 @@ The exported inventory is put in cache."""
             '--list',
             '--export',
         ]
-        if self.inventories is not None:
-            for inventory in self.inventories:
+        if inventories is not None:
+            for inventory in inventories:
                 cmdline.append('-i')
                 cmdline.append(inventory)
         self.logger.debug(cmdline)

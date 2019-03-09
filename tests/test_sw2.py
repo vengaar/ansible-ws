@@ -21,13 +21,8 @@ class TestSW2(unittest.TestCase):
             'demo1': 'test',
             'demo2': ['foo', 'bar']
         }
-        json_parameters = json.dumps(parameters)
-#         print(json_parameters)
-        request = dict(
-            debug='true',
-            query='demo',
-            parameters=json_parameters
-        )
+        request = tests.get_sw2_request('demo', parameters)
+#         pprint.pprint(request)
         sw2 = ScriptWebServiceWrapper(request, self.config)
         response = sw2.get_result()
 #         pprint.pprint(response)

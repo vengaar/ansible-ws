@@ -19,15 +19,16 @@ class TestSWSW(unittest.TestCase):
         os.path.join(tests.ANSIBLE_WS_PATH_TEST, 'data', 'inventories', 'hosts_database'),
         os.path.join(tests.ANSIBLE_WS_PATH_TEST, 'data', 'inventories', 'hosts_webserver')
     ]
+    query = 'groupvars'
 
     def test_list(self):
-        request = {
-            'debug': True,
-            'query': 'groupvars',
+        parameters = {
             'group': 'database_app1_prod',
             'key': 'countries.list',
-            'inventories': ','.join(self.inventories)
+            'inventories': self.inventories
         }
+        request = tests.get_sw2_request(self.query, parameters)
+#         pprint.pprint(request)
         sw2 = ScriptWebServiceWrapper(request, self.config)
         response = sw2.get_result()
 #         pprint.pprint(response)
@@ -41,18 +42,10 @@ class TestSWSW(unittest.TestCase):
         parameters = {
             'group': 'database_app1_prod',
             'key': 'countries.dict',
-            'inventories': [
-                '~/ansible-ws/tests/data/inventories/hosts_database',
-                '~/ansible-ws/tests/data/inventories/hosts_webserver',
-            ]
+            'inventories': self.inventories
         }
-        json_parameters = json.dumps(parameters)
-#         print(json_parameters)
-        request = dict(
-            debug='true',
-            query='groupvars',
-            parameters=json_parameters
-        )
+        request = tests.get_sw2_request(self.query, parameters)
+#         pprint.pprint(request)
         sw2 = ScriptWebServiceWrapper(request, self.config)
         response = sw2.get_result()
 #         pprint.pprint(response)

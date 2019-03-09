@@ -21,14 +21,8 @@ class TestTags(unittest.TestCase):
         parameters = {
             'playbook': playbook,
         }
-        json_parameters = json.dumps(parameters)
-#         print(json_parameters)
-        request = dict(
-            debug='true',
-            cache='refresh',
-            query='tasks',
-            parameters=json_parameters
-        )
+        request = tests.get_sw2_request('tasks', parameters)
+#         pprint.pprint(request)
         sw2 = ScriptWebServiceWrapper(request, self.config)
         response = sw2.get_result()
 #         pprint.pprint(response)

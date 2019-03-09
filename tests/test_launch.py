@@ -6,7 +6,7 @@ import shutil
 
 import sys
 sys.path.append('.')
-import tests as ansible_ws_tests
+import tests
 import ansible_ws
 from ansible_ws.playbooks_ws import PlaybookContextLaunch, PlaybookContext
 from ansible_ws.ansible_web_service import AnsibleWebServiceConfig
@@ -15,7 +15,7 @@ from sw2 import ScriptWebServiceWrapper
 
 class TestAnsibleLaunch(unittest.TestCase):
 
-    RUNS_DIR = os.path.join(ansible_ws_tests.ANSIBLE_WS_PATH_TEST, 'data', 'runs_tmp')
+    RUNS_DIR = os.path.join(tests.ANSIBLE_WS_PATH_TEST, 'data', 'runs_tmp')
 
     @classmethod
     def tearDownClass(cls):
@@ -24,7 +24,7 @@ class TestAnsibleLaunch(unittest.TestCase):
 
     def test_run(self):
 
-      playbook = os.path.join(ansible_ws_tests.ANSIBLE_WS_PATH_TEST, 'data', 'playbooks', 'tags.yml')
+      playbook = os.path.join(tests.ANSIBLE_WS_PATH_TEST, 'data', 'playbooks', 'tags.yml')
 #     print(playbook)
       ansible_ws_config = AnsibleWebServiceConfig()
       ansible_ws_config.config['ansible']['runs_dir'] = self.RUNS_DIR
@@ -58,11 +58,12 @@ class TestAnsibleLaunch(unittest.TestCase):
       self.assertIsInstance(status['pid'], int)
       self.assertEqual(status['return_code'], 0)
 
-      request = {
-          'debug': 'true',
-          'query': 'run',
+      # SW2
+      parameters = {
           'runid': runid
       }
+      request = tests.get_sw2_request('run', parameters)
+#       pprint.pprint(request)
       sw2 = ScriptWebServiceWrapper(request, ansible_ws_config)
       response = sw2.get_result()
 #       pprint.pprint(response)

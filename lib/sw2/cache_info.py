@@ -17,7 +17,6 @@ This query has no parameter."""
     def query(self):
         response = []
         for file in sorted(glob.glob(f'{self.cache_prefix}*')):
-            print(file)
             file_split = file.split('.')
             data = None
             try:

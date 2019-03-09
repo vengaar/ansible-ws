@@ -11,74 +11,86 @@ import re
 
 class ScriptWebServiceWrapper():
 
-    def get_usage(self):
-        modules = [
-            os.path.splitext(file)[0]
-            for file in os.listdir(os.path.dirname(__file__))
-            if not os.path.basename(file).startswith('__')
-        ]
-        usage = dict(
-            error=f'query parameter is missing. The available queries are {sorted(modules)}',
-            usage='/sw2/query?query={query}&{query_parameters}',
-            help=[
-                'To have the detail of each query, call a query with parameter help',
-                'example: /sw2/query?query=run&help=true'
-            ]
-        )
-        return usage
+    def get_usages(self):
+        data = {
+            'sw2': {
+                'query': f'The query todo // A value in {self.queries}',
+                'debug': 'true/false // To add debug information in response',
+                'cache': 'The cache action todo // See each query to now cache policy',
+                'help': 'true/false // The display help',
+            },
+            'parameters': 'A dict with query parameters // See each query for details'
+        }
+        json.dumps(data)
+        example = {
+            'sw2': {
+                'query': 'tasks',
+                'help': True
+            },
+        }
+        usages = {
+            'usages': 'provide to /sw2/query with json as data',
+            'data': data,
+            'example': f"/sw2/query?{json.dumps(example)}",
+        }
+        return usages
 
-    def __init__(self, query_strings, config):
+    def __init__(self, request, config):
         self.logger = logging.getLogger(self.__class__.__name__)
-        self.query_strings = query_strings
-        self.mode_debug = query_strings.get('debug', 'false') == 'true'
+        self.logger.debug(request)
         self.debug = dict()
         self.meta = dict(
-            query_string=self.query_strings,
+            request=request,
         )
+        self.errors = []
         self.output = dict()
         self._is_valid = True
+        if 'parameters' not in request:
+            request['parameters'] = {}
+        if 'sw2' not in request:
+            self._is_valid = False
+            self.errors.append('No sw2 description found')
+        sw2 = request.get('sw2', {})
+        self.logger.debug(sw2)
+        self.mode_debug = sw2.get('debug', 'false') == 'true'
         if self.mode_debug:
             self.output['debug'] = self.debug
             self.output['meta'] = self.meta
-
-        if 'query' not in self.query_strings:
+        query = sw2.get('query')
+        
+        self.queries = sorted([
+            os.path.splitext(file)[0]
+            for file in os.listdir(os.path.dirname(__file__))
+            if not os.path.basename(file).startswith('__')
+        ])
+        
+        if query not in self.queries: 
             self._is_valid = False
-            self.output['usages'] = self.get_usage()
-        else:
-            parameters = {}
-            query = self.query_strings.get('query')
-            self.logger.debug(query)
-            if 'parameters' in self.query_strings:
-                s_parameters = self.query_strings.get('parameters')
-                self.logger.debug(s_parameters)
-                try :
-                    parameters = json.loads(s_parameters)
-                except Exception as e:
-                    self.logger.error(f'Fail to load parameters for {query}')
-                    self.logger.error(str(e))
-                    self._is_valid = False
-                    self.output['usages'] = 'Parameter parameters must be a valid JSON'
-            query_strings.update(parameters)
-            self.logger.debug(query_strings)
-            if self._is_valid:
-                PluginClass = getattr(importlib.import_module(f'sw2.{query}'), 'ScriptWrapperQuery')
-                self.logger.debug(PluginClass)
-                self.plugin = PluginClass(config, **query_strings)
-                self.logger.debug(self.plugin)
-                if 'help' in query_strings:
-                    self.output["usages"] = self.plugin.usages
-                elif self.plugin.is_valid() :
-                    self.output['results'] = self.plugin.query()
-                else:
-                    self.output["usages"] = self.plugin.usages
-                    self.output["errors"] = self.plugin.errors
+            self.errors.append(f'Unexpected sw2 query. {query} not in {self.queries}')
 
-    def is_valid(self):
-        return self._is_valid and self.plugin.is_valid()
+        if not self._is_valid:
+            self.output['usages'] = self.get_usages()
+            self.output["errors"] = self.errors
+        else:
+            query = sw2.get('query')
+            self.logger.debug(query)
+            PluginClass = getattr(importlib.import_module(f'sw2.{query}'), 'ScriptWrapperQuery')
+            self.logger.debug(PluginClass)
+            self.plugin = PluginClass(config, **request)
+            self.logger.debug(self.plugin)
+            if 'help' in sw2:
+                self.output["usages"] = self.plugin.usages
+            elif self.plugin.is_valid() :
+                self.output['results'] = self.plugin.query()
+            else:
+                self.output["usages"] = self.plugin.usages
+                self.output["errors"] = self.plugin.errors
 
     def get_result(self):
         return self.output
 
+    def is_valid(self):
+        return self._is_valid and self.plugin.is_valid()
 
 class ScriptWrapper():
     """
@@ -152,18 +164,21 @@ class ScriptWrapper():
                 self.__cache_store_data(key, data)
         return data
 
-    def __init__(self, config, **kwargs):
+    def __init__(self, config, **request):
         self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.error(request)
         self.config = config
         self.cache_prefix = self.config.get('cache.prefix')
         self.cache_ttl = self.config.get('cache.ttl')
-        self.parameters = kwargs
+        self.sw2 = request['sw2']
+        self.query_name = self.sw2['query']
+        self.parameters = request['parameters']
         self.logger.debug(self.parameters)
+        self.logger.debug(self.parameters.keys())
         self._is_valid = True
         self.parameters_description = dict()
         self.examples = []
         self.errors = []
-        self.query_name = self.parameters['query']
 
     def add_example(self, description, parameters):
         qs = urllib.parse.urlencode(parameters)
@@ -182,11 +197,11 @@ class ScriptWrapper():
         if self.__doc__ is None:
             usages['description'] = ["No usages defines"]
         else:
-            usages['description'] = self.__doc__.split(os.linesep),
+            usages['description'] = self.__doc__.split(os.linesep)
         return usages
 
-    def get(self, name):
-        return self.parameters[name]
+    def get(self, name, default=None):
+        return self.parameters.get(name, default)
 
     def check_parameters(self):
         """
