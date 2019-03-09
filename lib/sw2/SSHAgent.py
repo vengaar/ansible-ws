@@ -18,14 +18,10 @@ class ScriptWrapperQuery(ScriptWrapper):
                 'required': True,
             }
         }
-        parameters ={
+        parameters = {
             'id': 'ansible-ws-test',
         }
-        self.add_example('To have get info of ssh-agent {id}', parameters)
-        parameters ={
-            'id': 'ansible-ws-test',
-            'action': 'kill'
-        }
+        self.add_example('To get info of ssh-agent {id}', parameters)
 
     def query(self):
         id = self.parameters.get('id')

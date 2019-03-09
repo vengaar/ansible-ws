@@ -22,16 +22,21 @@ class ScriptWebServiceWrapper():
             'parameters': 'A dict with query parameters // See each query for details'
         }
         json.dumps(data)
-        example = {
-            'sw2': {
-                'query': 'tasks',
-                'help': True
-            },
-        }
+        examples = [
+            {
+                'desc': 'Ask help for query tasks',
+                'data': {
+                    'sw2': {
+                        'query': 'tasks',
+                        'help': True
+                    },
+                }
+            }
+        ]
         usages = {
-            'usages': 'provide to /sw2/query with json as data',
+            'usages': 'provide to /sw2/query? with json data',
             'data': data,
-            'example': f"/sw2/query?{json.dumps(example)}",
+            'examples': examples,
         }
         return usages
 
@@ -182,10 +187,17 @@ class ScriptWrapper():
 
     def add_example(self, description, parameters):
         qs = urllib.parse.urlencode(parameters)
+        data = {
+            'sw2': {
+                'query': self.query_name
+            },
+            'parameters': parameters
+        }
+        json.dumps(data)
         self.examples.append({
-            'parameters': parameters,
             'desc': description.format(**parameters),
-            'url': f'/sw2/query?query={self.query_name}&{qs}'
+            'url': '/sw2/query?{data}',
+            'data': data,
         })
 
     @property

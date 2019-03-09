@@ -38,12 +38,13 @@ class ScriptWrapperQuery(ScriptWrapper):
                 'required': False,
             },
         }
-        host = 'db_prod_11'
-        inventory = '~/ansible-ws/tests/data/inventories'
-        self.examples.append({
-            'desc': f'To generate graph of host {host}',
-            'url': f'/sw2/query?query={self.name}&host={host}&inventory={inventory}'
-        })
+        parameters = {
+            'host': 'db_prod_11',
+            'inventory': '~/ansible-ws/tests/data/inventories',
+        }
+        self.add_example('To generate graph of host {host}', parameters)
+
+
 
     def query(self):
         """

@@ -29,7 +29,6 @@ class ScriptWrapperQuery(ScriptWrapper):
         }
         parameters ={
             'id': 'ansible-ws-test',
-            'action': 'add',
             'private_key': '~/ansible-ws/tests/data/agent/key1',
             'passphrase': 'key1'
         }

@@ -28,10 +28,8 @@ class ScriptWrapperQuery(ScriptWrapper):
             },
         }
         playbook = '~/ansible-ws/tests/data/playbooks/tags.yml'
-        self.examples.append({
-            'desc': f'To get tags of playbooks {playbook}',
-            'url': f'/sw2/query?query={self.name}&playbook={playbook}'
-        })
+        parameters = {'playbook': playbook}
+        self.add_example('To get tags of playbook {playbook}', parameters)
 
     def query(self):
         """

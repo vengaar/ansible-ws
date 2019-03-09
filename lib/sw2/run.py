@@ -24,10 +24,10 @@ class ScriptWrapperQuery(ScriptWrapper):
             }
         }
         runid = 'f14529a2-cd83-4d2c-b885-a6184b83f7bc'
-        self.examples.append({
-            'desc': f'To get run {runid}',
-            'url': f'/sw2/query?query={self.name}&runid={runid}'
-        })
+        parameters = {
+            'runid': runid,
+        }
+        self.add_example('To get run {runid}', parameters)
 
     def query(self):
         """

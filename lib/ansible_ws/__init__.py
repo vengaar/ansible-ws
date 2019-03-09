@@ -22,7 +22,7 @@ def get_500_response():
     return status, response_headers, output
 
 def get_json_response(data):
-    json_data = json.dumps(data)
+    json_data = json.dumps(data, indent=2)
     output = json_data.encode('utf-8')
     response_headers = [
         ('Content-type', CONTENT_TYPE_JSON),

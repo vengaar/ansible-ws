@@ -33,14 +33,12 @@ The exported inventory is put in cache."""
                 'format': 'List of inventory separated by coma'
             },
         }
-
-        group = 'database_app1_prod'
-        key = 'countries.list'
-        inventories = '~/ansible-ws/tests/data/inventories/hosts_database'
-        self.examples.append({
-            'desc': f'The get list defined in the group {group} under the key {key} and defined in the inventories {inventories}',
-            'url': f'/sw2/query?query=groupvars&group={group}&key={key}&inventories={inventories}'
-        })
+        parameters = {
+            'group': 'database_app1_prod',
+            'key': 'countries.list',
+            'inventories': '~/ansible-ws/tests/data/inventories/hosts_database',
+        }
+        self.add_example('The get list defined in the group {group} under the key {key} and defined in the inventories {inventories}', parameters)
 
     def query(self):
         inventories = self.get('inventories', [])

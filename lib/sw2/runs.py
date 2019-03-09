@@ -59,18 +59,15 @@ class ScriptWrapperQuery(ScriptWrapper):
                 'format': self.date_pattern
             }
         }
-        pattern = '.*database'
-        sources = '~/ansible-ws/tests/data/inventories/hosts_database'
-        self.examples.append({
-            'desc': f'To get daily runs',
-            'url': f'/sw2/query?query={self.name}'
-        })
+        parameters = {}
+        self.add_example('To get daily runs', parameters)
         date_from = self.today + datetime.timedelta(days=-7)
         date_txt = date_from.strftime(self.date_pattern)
-        self.examples.append({
-            'desc': f'To get runs of the previous week',
-            'url': f'/sw2/query?query={self.name}&from={date_txt}'
-        })
+        parameters = {
+            'from': date_txt,
+        }
+        self.add_example('To get runs of the previous week', parameters)
+
 
     def query(self):
         """

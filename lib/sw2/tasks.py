@@ -23,15 +23,13 @@ The tags are put in cache."""
     def __usages(self):
         self.parameters_description = {
             'playbook': {
-                'description': 'The playbook to gather tags',
+                'description': 'The playbook to gather tasks',
                 'required': True,
             },
         }
         playbook = '~/ansible-ws/tests/data/playbooks/tags.yml'
-        self.examples.append({
-            'desc': f'To get tags of playbook {playbook}',
-            'url': f'/sw2/query?query={self.name}&playbook={playbook}'
-        })
+        parameters = {'playbook': playbook}
+        self.add_example('To get tasks of playbook {playbook}', parameters)
 
     def query(self):
         """

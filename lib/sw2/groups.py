@@ -38,12 +38,11 @@ The output is formmated for semantic ui dropdown"""
                 'values': ['no', 'yes'],
             },
         }
-        pattern = '.*database'
-        sources = '~/ansible-ws/tests/data/inventories/hosts_database'
-        self.examples.append({
-            'desc': f'To get hosts in group.s matching regex {pattern}',
-            'url': f'/sw2/query?query={self.name}&pattern={pattern}&sources={sources}'
-        })
+        parameters = {
+            'pattern': '.*database',
+            'sources': '~/ansible-ws/tests/data/inventories/hosts_database',
+        }
+        self.add_example('To get hosts in group.s matching regex {pattern}', parameters)
 
     def query(self):
         """
