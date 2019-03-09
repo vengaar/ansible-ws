@@ -31,7 +31,7 @@ class ScriptWrapperQuery(ScriptWrapper):
     def query(self):
         """
         """
-        runid = self.parameters.get('runid')
+        runid = self.get('runid')
         pc = PlaybookContext(runid, self.config)
         response = dict(
             status=pc.status,

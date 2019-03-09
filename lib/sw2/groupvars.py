@@ -48,7 +48,7 @@ The exported inventory is put in cache."""
         inventory = self.get_cached_resource(self.get_export)
 
         group = self.get('group')
-        key = self.parameters.get('key')
+        key = self.get('key')
         values = []
         if group in inventory:
             if 'vars' in inventory[group]:

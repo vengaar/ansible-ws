@@ -45,8 +45,8 @@ class ScriptWrapperQuery(ScriptWrapper):
     def query(self):
         """
         """
-        host = self.parameters.get('host')
-        format = self.parameters.get('format', self.default_format)
+        host = self.get('host')
+        format = self.get('format', self.default_format)
         if 'inventory' in self.parameters:
             inventory = f' -i {self.parameters["inventory"]}'
         else:

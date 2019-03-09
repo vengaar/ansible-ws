@@ -24,7 +24,7 @@ class ScriptWrapperQuery(ScriptWrapper):
         self.add_example('To get info of ssh-agent {id}', parameters)
 
     def query(self):
-        id = self.parameters.get('id')
+        id = self.get('id')
         agent = SshAgent(id)
         response = {
            'agent': agent.env_agent,

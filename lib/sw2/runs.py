@@ -21,16 +21,16 @@ class ScriptWrapperQuery(ScriptWrapper):
         self.default_to   = tomorow.strftime(self.date_pattern)
         self.__usages()
 
-        states = self.parameters.get('states', self.parameters_description['states']['default'])
+        states = self.get('states', self.parameters_description['states']['default'])
         self.states = states.split(',')
-        self.playbook = self.parameters.get('playbook', self.parameters_description['playbook']['default'])
+        self.playbook = self.get('playbook', self.parameters_description['playbook']['default'])
         self.regex = re.compile(self.playbook)
 
-        start_txt = self.parameters.get('from', self.parameters_description['from']['default'])
+        start_txt = self.get('from', self.parameters_description['from']['default'])
         start_date = datetime.datetime.strptime(start_txt, self.date_pattern)
         self.start = datetime.datetime.timestamp(start_date)
 
-        end_txt = self.parameters.get('to', self.parameters_description['to']['default'])
+        end_txt = self.get('to', self.parameters_description['to']['default'])
         end_date = datetime.datetime.strptime(end_txt, self.date_pattern)
         self.end = datetime.datetime.timestamp(end_date)
 

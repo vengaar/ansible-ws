@@ -33,8 +33,8 @@ class ScriptWrapperQuery(ScriptWrapper):
         self.add_example('To have list ended with {demo1} + {demo2}', parameters)
 
     def query(self):
-        p1 = self.parameters.get('demo1')
-        p2 = self.parameters.get('demo2', [])
+        p1 = self.get('demo1')
+        p2 = self.get('demo2', [])
         if isinstance(p2, str):
             p2 = p2.split(',')
 

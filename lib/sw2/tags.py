@@ -15,7 +15,7 @@ class ScriptWrapperQuery(ScriptWrapper):
         self.__usages()
         self.check_parameters()
         if self._is_valid:
-            playbook = self.parameters.get('playbook')
+            playbook = self.get('playbook')
             self.playbook = os.path.expanduser(playbook)
 
     def __usages(self):
