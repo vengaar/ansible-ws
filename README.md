@@ -8,10 +8,10 @@ According use ansible cli to avoid dependecies on Ansible python code and versio
     * Start from entry point http://localhost/sw2/query to have full details
     * The queries are :
         * For Ansible CLI wrapper
-            * tags , to get playbook tags (result is cahced)
-            * tasks , to get playbook tasks (result is cahced)
-            * groups, to get invnetories groups and members (result is cahced)
-            * groupvars, to get groups variables (result is cahced)
+            * tags , to get playbook tags (result is cached)
+            * tasks , to get playbook tasks (result is cached)
+            * groups, to get invnetories groups and members (result is cached)
+            * groupvars, to get groups variables (result is cached)
             * launch, to launch a playbook
         * Internal:
             * runs, to get existing runs
