@@ -88,7 +88,7 @@ Test url:
 
 * To have global help
 
-~~~
+~~~bash
 curl  http://127.0.0.1/sw2/query \
       --header "Content-Type: application/json" \
       --silent \
@@ -98,7 +98,7 @@ curl  http://127.0.0.1/sw2/query \
 
 * To have help for query `cache_info`
 
-~~~
+~~~bash
 curl  http://127.0.0.1/sw2/query \
       --header "Content-Type: application/json" \
       --silent \
@@ -113,7 +113,7 @@ curl  http://127.0.0.1/sw2/query \
 
 * To call query `cache_info` (this query has no parameters)
 
-~~~
+~~~bash
 curl  http://127.0.0.1/sw2/query \
       --header "Content-Type: application/json" \
       --silent \
@@ -127,7 +127,7 @@ curl  http://127.0.0.1/sw2/query \
 
 * To query `tasks` with missing parameters give you errors and usages
 
-~~~
+~~~bash
 curl  http://127.0.0.1/sw2/query \
       --header "Content-Type: application/json" \
       --silent \
@@ -137,10 +137,11 @@ curl  http://127.0.0.1/sw2/query \
                   "query": "tasks"
                 }
               }' | jq .
+~~~
 
 * To query `tasks`
 
-~~~
+~~~bash
 curl  http://127.0.0.1/sw2/query \
       --header "Content-Type: application/json" \
       --silent \
