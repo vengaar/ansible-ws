@@ -4,9 +4,9 @@ import unittest
 import pprint
 import json
 import sys
+
 sys.path.append('.')
 import tests
-
 import ansible_ws
 from ansible_ws.ansible_web_service import AnsibleWebServiceConfig
 from sw2 import ScriptWebServiceWrapper
@@ -16,18 +16,20 @@ class TestSW2(unittest.TestCase):
 
     config = AnsibleWebServiceConfig()
 
+    def test(self):
+        sw2 = ScriptWebServiceWrapper({}, self.config)
+        response = sw2.get_result()
+#         pprint.pprint(response)
+        self.assertIsInstance(response['errors'], list)
+        self.assertIsInstance(response['errors'][0], str)
+
     def test_demo(self):
         parameters = {
             'demo1': 'test',
             'demo2': ['foo', 'bar']
         }
-        json_parameters = json.dumps(parameters)
-#         print(json_parameters)
-        request = dict(
-            debug='true',
-            query='demo',
-            parameters=json_parameters
-        )
+        request = tests.get_sw2_request('demo', parameters)
+#         pprint.pprint(request)
         sw2 = ScriptWebServiceWrapper(request, self.config)
         response = sw2.get_result()
 #         pprint.pprint(response)

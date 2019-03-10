@@ -15,10 +15,11 @@ class ScriptWrapperQuery(ScriptWrapper):
         if self._is_valid:
             _playbook = self.get('playbook')
             playbook = os.path.expanduser(_playbook)
-            self.parameters['playbook'] = playbook
+            self._parameters['playbook'] = playbook
             if not os.path.isfile(playbook):
                 self._is_valid = False
                 self.errors.append(f'{playbook} is not a valid file')
+            
 
     def __usages(self):
         self.parameters_description = {
@@ -39,6 +40,7 @@ class ScriptWrapperQuery(ScriptWrapper):
         self.add_example('To launch {cmdline}', parameters)
 
     def query(self):
-        pcl = PlaybookContextLaunch(**self.parameters)
+        self._parameters['ansible_ws_config'] = self.config
+        pcl = PlaybookContextLaunch(**self._parameters)
         pcl.launch()
         return pcl.status

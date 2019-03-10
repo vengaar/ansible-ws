@@ -8,10 +8,10 @@ According use ansible cli to avoid dependecies on Ansible python code and versio
     * Start from entry point http://localhost/sw2/query to have full details
     * The queries are :
         * For Ansible CLI wrapper
-            * tags , to get playbook tags (result is cahced)
-            * tasks , to get playbook tasks (result is cahced)
-            * groups, to get invnetories groups and members (result is cahced)
-            * groupvars, to get groups variables (result is cahced)
+            * tags , to get playbook tags (result is cached)
+            * tasks , to get playbook tasks (result is cached)
+            * groups, to get invnetories groups and members (result is cached)
+            * groupvars, to get groups variables (result is cached)
             * launch, to launch a playbook
         * Internal:
             * runs, to get existing runs
@@ -83,4 +83,76 @@ ansible-playbook setup/playbooks/setup.yml -e "git_version=devel"
 Test url:
 
 * http://localhost/sw2/query
+
+### Examples
+
+* To have global help
+
+~~~bash
+curl  http://127.0.0.1/sw2/query \
+      --header "Content-Type: application/json" \
+      --silent \
+      --request POST \
+      --data '{}' | jq .
+~~~~
+
+* To have help for query `cache_info`
+
+~~~bash
+curl  http://127.0.0.1/sw2/query \
+      --header "Content-Type: application/json" \
+      --silent \
+      --request POST \
+      --data '{
+                "sw2": {
+                  "query": "cache_info",
+                  "help": true
+                }
+              }' | jq .
+~~~
+
+* To call query `cache_info` (this query has no parameters)
+
+~~~bash
+curl  http://127.0.0.1/sw2/query \
+      --header "Content-Type: application/json" \
+      --silent \
+      --request POST \
+      --data '{
+                "sw2": {
+                  "query": "cache_info"
+                }
+              }' | jq .
+~~~
+
+* To query `tasks` with missing parameters give you errors and usages
+
+~~~bash
+curl  http://127.0.0.1/sw2/query \
+      --header "Content-Type: application/json" \
+      --silent \
+      --request POST \
+      --data '{
+                "sw2": {
+                  "query": "tasks"
+                }
+              }' | jq .
+~~~
+
+* To query `tasks`
+
+~~~bash
+curl  http://127.0.0.1/sw2/query \
+      --header "Content-Type: application/json" \
+      --silent \
+      --request POST \
+      --data '{
+                "sw2": {
+                  "query": "tasks"
+                  },
+                "parameters": {
+                  "playbook": "~/ansible-ws/tests/data/playbooks/tags.yml"
+                }
+              }' | jq .
+~~~
 

@@ -19,10 +19,7 @@
         dest: /etc/apache2/conf-available/{{ git_name }}.conf
 
     - name: Enable apache configuration
-      file:
-        src: /etc/apache2/conf-available/{{ git_name }}.conf
-        dest: /etc/apache2/conf-enabled/{{ git_name }}.conf
-        state: link
+      shell: a2enconf {{ git_name }}.conf
 
     - name: Reload apache configuration
       systemd:

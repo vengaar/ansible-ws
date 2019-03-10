@@ -9,6 +9,7 @@ import tests as ansible_ws_tests
 import ansible_ws
 from ansible_ws.ansible_web_service import AnsibleWebServiceConfig
 
+
 class TestAnsibleWebServiceConfig(unittest.TestCase):
 
     def test(self):
@@ -17,6 +18,7 @@ class TestAnsibleWebServiceConfig(unittest.TestCase):
 #         print(config.get('ansible_cmd.playbook'))
         value = config.get('unittest.unittest.unittest')
         self.assertEqual(value, 'unittest')
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)

@@ -16,14 +16,14 @@ class TestRuns(unittest.TestCase):
 
     RUNS_DIR = os.path.join(ansible_ws_tests.ANSIBLE_WS_PATH_TEST, 'data', 'runs')
     ansible_ws_config = AnsibleWebServiceConfig()
+    ansible_ws_config.config['ansible']['runs_dir'] = RUNS_DIR
 
     def test_search_basic(self):
-        self.ansible_ws_config.config['ansible']['runs_dir'] = self.RUNS_DIR
-        request = {
-            'debug': 'true',
-            'query': 'runs',
+        parameters = {
             'from': 'January 1, 2019',
         }
+        request = tests.get_sw2_request('runs', parameters)
+#         pprint.pprint(request)
         sw2 = ScriptWebServiceWrapper(request, self.ansible_ws_config)
         response = sw2.get_result()
 #         pprint.pprint(response)
@@ -31,13 +31,12 @@ class TestRuns(unittest.TestCase):
         self.assertEqual(len(response['results']), 6)
 
     def test_search_state(self):
-        self.ansible_ws_config.config['ansible']['runs_dir'] = self.RUNS_DIR
-        request = {
-            'debug': 'true',
-            'query': 'runs',
+        parameters = {
             'from': 'January 1, 2019',
             'states': 'failed'
         }
+        request = tests.get_sw2_request('runs', parameters)
+#         pprint.pprint(request)
         sw2 = ScriptWebServiceWrapper(request, self.ansible_ws_config)
         response = sw2.get_result()
 #         pprint.pprint(response)

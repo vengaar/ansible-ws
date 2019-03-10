@@ -15,21 +15,30 @@ from sw2 import ScriptWebServiceWrapper
 class TestSWSW(unittest.TestCase):
 
     config = AnsibleWebServiceConfig()
-    parameters = {
-        'sources': [
-            '~/ansible-ws/tests/data/inventories/hosts_database',
-            '~/ansible-ws/tests/data/inventories/hosts_webserver',
-        ]
-    }
-    json_parameters = json.dumps(parameters)
+    sources = [
+        os.path.join(tests.ANSIBLE_WS_PATH_TEST, 'data', 'inventories', 'hosts_database'),
+        os.path.join(tests.ANSIBLE_WS_PATH_TEST, 'data', 'inventories', 'hosts_webserver'),
+    ]
+    query = 'groups'
+
+    def test_default(self):
+        parameters = {
+            'pattern': 'all',
+        }
+        request = tests.get_sw2_request(self.query, parameters)
+#         pprint.pprint(request)
+        sw2 = ScriptWebServiceWrapper(request, self.config)
+        response = sw2.get_result()
+#         pprint.pprint(response)
+        self.assertIsInstance(response['results'], list)
 
     def test_groups_pattern(self):
-        request = dict(
-            debug='true',
-            query='groups',
-            pattern='.*database',
-            parameters=self.json_parameters
-        )
+        parameters = {
+            'pattern': 'database',
+            'sources': self.sources
+        }
+        request = tests.get_sw2_request(self.query, parameters)
+#         pprint.pprint(request)
         sw2 = ScriptWebServiceWrapper(request, self.config)
         response = sw2.get_result()
 #         pprint.pprint(response)
@@ -57,13 +66,13 @@ class TestSWSW(unittest.TestCase):
         self.assertEqual(values, expected)
 
     def test_groups_list(self):
-        request = dict(
-            debug='true',
-            query='groups',
-            pattern='(database_app1_dev|database_app2_prod)',
-            groups_selection='yes',
-            parameters=self.json_parameters
-        )
+        parameters = {
+            'pattern': '(database_app1_dev|database_app2_prod)',
+            'groups_selection': 'yes',
+            'sources': self.sources
+        }
+        request = tests.get_sw2_request(self.query, parameters)
+#         pprint.pprint(request)
         sw2 = ScriptWebServiceWrapper(request, self.config)
         response = sw2.get_result()
 #         pprint.pprint(response)
@@ -84,6 +93,7 @@ class TestSWSW(unittest.TestCase):
         self.assertEqual(values, expected)
         self.assertEqual(response['results'][0]['disabled'], 'yes')
         self.assertEqual(response['results'][3]['disabled'], 'yes')
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)

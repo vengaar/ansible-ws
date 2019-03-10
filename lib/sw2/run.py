@@ -12,9 +12,8 @@ class ScriptWrapperQuery(ScriptWrapper):
 
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
-        self.name = 'run'
         self.__usages()
-        self._is_valid = ('runid' in self.parameters)
+        self.check_parameters()
 
     def __usages(self):
         self.parameters_description = {
@@ -24,15 +23,15 @@ class ScriptWrapperQuery(ScriptWrapper):
             }
         }
         runid = 'f14529a2-cd83-4d2c-b885-a6184b83f7bc'
-        self.examples.append({
-            'desc': f'To get run {runid}',
-            'url': f'/sw2/query?query={self.name}&runid={runid}'
-        })
+        parameters = {
+            'runid': runid,
+        }
+        self.add_example('To get run {runid}', parameters)
 
     def query(self):
         """
         """
-        runid = self.parameters.get('runid')
+        runid = self.get('runid')
         pc = PlaybookContext(runid, self.config)
         response = dict(
             status=pc.status,

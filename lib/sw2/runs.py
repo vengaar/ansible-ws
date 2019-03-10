@@ -14,28 +14,14 @@ class ScriptWrapperQuery(ScriptWrapper):
 
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
-        self.name = 'runs'
         self.date_pattern = '%B %d, %Y'
-        self.today = datetime.datetime.now()
-        tomorow = self.today + datetime.timedelta(days=1)
-        self.default_from = self.today.strftime(self.date_pattern)
-        self.default_to   = tomorow.strftime(self.date_pattern)
         self.__usages()
 
-        states = self.parameters.get('states', self.parameters_description['states']['default'])
-        self.states = states.split(',')
-        self.playbook = self.parameters.get('playbook', self.parameters_description['playbook']['default'])
-        self.regex = re.compile(self.playbook)
-
-        start_txt = self.parameters.get('from', self.parameters_description['from']['default'])
-        start_date = datetime.datetime.strptime(start_txt, self.date_pattern)
-        self.start = datetime.datetime.timestamp(start_date)
-
-        end_txt = self.parameters.get('to', self.parameters_description['to']['default'])
-        end_date = datetime.datetime.strptime(end_txt, self.date_pattern)
-        self.end = datetime.datetime.timestamp(end_date)
-
     def __usages(self):
+        today = datetime.datetime.now()
+        tomorow = today + datetime.timedelta(days=1)
+        default_from = today.strftime(self.date_pattern)
+        default_to   = tomorow.strftime(self.date_pattern)
         self.parameters_description = {
             'states': {
                 'description': 'The states of the runs searched',
@@ -50,54 +36,59 @@ class ScriptWrapperQuery(ScriptWrapper):
             },
             'from': {
                 'description': 'The minimal date when the runs must have started. By default current day.',
-                'default': self.default_from,
+                'default': default_from,
                 'format': self.date_pattern
             },
             'to': {
                 'description': 'The maximal date when the runs must have started. By default tommorow.',
-                'default': self.default_to,
+                'default': default_to,
                 'format': self.date_pattern
             }
         }
-        pattern = '.*database'
-        sources = '~/ansible-ws/tests/data/inventories/hosts_database'
-        self.examples.append({
-            'desc': f'To get daily runs',
-            'url': f'/sw2/query?query={self.name}'
-        })
-        date_from = self.today + datetime.timedelta(days=-7)
+        self.add_example('To get daily runs')
+        date_from = today + datetime.timedelta(days=-7)
         date_txt = date_from.strftime(self.date_pattern)
-        self.examples.append({
-            'desc': f'To get runs of the previous week',
-            'url': f'/sw2/query?query={self.name}&from={date_txt}'
-        })
+        parameters = {
+            'from': date_txt,
+        }
+        self.add_example('To get runs of the previous week', parameters)
+
 
     def query(self):
         """
         """
+        states = self.get('states').split(',')
+        playbook = self.get('playbook')
+        regex = re.compile(playbook)
+        start_txt = self.get('from')
+        start_date = datetime.datetime.strptime(start_txt, self.date_pattern)
+        start = datetime.datetime.timestamp(start_date)
+        end_txt = self.get('to')
+        end_date = datetime.datetime.strptime(end_txt, self.date_pattern)
+        end = datetime.datetime.timestamp(end_date)
         runs_dir = self.config.get('ansible.runs_dir')
         runid_list = os.listdir(runs_dir)
         runs = []
         for runid in runid_list:
             path = os.path.join(runs_dir, runid)
             stat = os.stat(path)
-            self.logger.debug([self.start, stat.st_ctime, self.end])
-            if stat.st_ctime >= self.start and stat.st_ctime <= self.end:
+            self.logger.debug([start, stat.st_ctime, end])
+            if stat.st_ctime >= start and stat.st_ctime <= end:
                 self.logger.debug('run time valid')
                 pc = PlaybookContext(runid, ansible_ws_config=self.config)
                 run_status = pc.status
-                if self.__match(run_status):
+                if self.__match(run_status, states, regex):
                     runs.append(run_status)
             else:
                 self.logger.debug('run time NOT valid')
         response = sorted(runs, key=lambda run: run['begin'], reverse=True)
         return response
 
-    def __match(self, run):
+    def __match(self, run, states, regex):
         match = True
-        if run['state'] not in self.states:
+        if run['state'] not in states:
             match = False
         playbook = os.path.basename(run['description']['playbook'])
-        if self.regex.match(playbook) is None:
+        if regex.match(playbook) is None:
             match = False
         return match

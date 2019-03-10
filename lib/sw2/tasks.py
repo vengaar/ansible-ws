@@ -13,25 +13,22 @@ The tags are put in cache."""
 
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
-        self.name = 'tasks'
         self.__usages()
-        self._is_valid = 'playbook' in self.parameters
+        self.check_parameters()
         if self._is_valid:
-            playbook = self.parameters.get('playbook')
+            playbook = self.get('playbook')
             self.playbook = os.path.expanduser(playbook)
 
     def __usages(self):
         self.parameters_description = {
             'playbook': {
-                'description': 'The playbook to gather tags',
+                'description': 'The playbook to gather tasks',
                 'required': True,
             },
         }
         playbook = '~/ansible-ws/tests/data/playbooks/tags.yml'
-        self.examples.append({
-            'desc': f'To get tags of playbook {playbook}',
-            'url': f'/sw2/query?query={self.name}&playbook={playbook}'
-        })
+        parameters = {'playbook': playbook}
+        self.add_example('To get tasks of playbook {playbook}', parameters)
 
     def query(self):
         """

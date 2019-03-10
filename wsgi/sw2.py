@@ -1,6 +1,7 @@
 import traceback
 import json
 import logging
+import urllib
 from cgi import parse_qs
 
 import ansible_ws
@@ -16,29 +17,37 @@ def application(environ, start_response):
 
     try:
         method = environ['REQUEST_METHOD']
-        if method == 'GET':
-            query_strings = parse_qs(environ['QUERY_STRING'])
-            parameters = {
-                key: value[0]
-                for key, value in query_strings.items()
-            }
-        elif method == 'POST':
-            request_body_size = int(environ.get('CONTENT_LENGTH', 0))
-            request_body = environ['wsgi.input'].read(request_body_size)
-            parameters =  dict(
-                (key.decode("utf-8") , value[0].decode("utf-8"))
-                for key, value in parse_qs(request_body).items()
-            )
-        service = ScriptWebServiceWrapper(parameters, config)
-        response = service.get_result()
-        if service.is_valid():
-            status = ansible_ws.HTTP_200
+        content_type = environ.get('CONTENT_TYPE')
+        if content_type in (ansible_ws.CONTENT_TYPE_JSON, None):
+            if method == 'GET':
+                raw_qs = environ.get('QUERY_STRING')
+                if raw_qs == '':
+                    raw_qs = '{}'
+                qs =  urllib.parse.unquote_plus(raw_qs, encoding='utf-8')
+                parameters = json.loads(qs)
+            elif method == 'POST':
+                request_body_size = int(environ.get('CONTENT_LENGTH', 0))
+                request_body = environ['wsgi.input'].read(request_body_size)
+                parameters = json.loads(request_body)
+            service = ScriptWebServiceWrapper(parameters, config)
+            response = service.get_result()
+            if content_type is None:
+                response['warnings'] = [
+                    f'No content-type found in request. Assume content-type was {ansible_ws.CONTENT_TYPE_JSON}'
+                ]
+            if service.is_valid():
+                status = ansible_ws.HTTP_200
+            else:
+                status = ansible_ws.HTTP_400
         else:
-            status = ansible_ws.HTTP_400
+            status = ansible_ws.HTTP_415
+            response = {
+                'errors': [
+                    f'Unexpected content-type, {content_type} found instead {ansible_ws.CONTENT_TYPE_JSON}'
+                ]
+            }
         response_headers, output = ansible_ws.get_json_response(response)
     except:
         status, response_headers, output = ansible_ws.get_500_response()
-#     cache = ('Cache-Control', 'max-age=60')
-#     response_headers.append(cache)
     start_response(status, response_headers)
     return [output]

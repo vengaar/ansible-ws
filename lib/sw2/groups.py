@@ -15,20 +15,9 @@ The output is formmated for semantic ui dropdown"""
 
     def __init__(self, config, **kwargs):
         super().__init__(config, **kwargs)
-        self.name = 'groups'
         self.default_groups_selection = 'no'
         self.__usages()
-
-        self._is_valid = 'pattern' in self.parameters
-        if self._is_valid:
-            self.sources = []
-            if 'parameters' in self.parameters:
-                self.sources = self.parameters.get('sources', [])
-            else:
-                if 'sources' in self.parameters:
-                    self.sources = self.parameters['sources'].split(',')
-                else:
-                    self.sources = []
+        self.check_parameters()
 
     def __usages(self):
         self.parameters_description = {
@@ -48,30 +37,30 @@ The output is formmated for semantic ui dropdown"""
                 'values': ['no', 'yes'],
             },
         }
-        pattern = '.*database'
-        sources = '~/ansible-ws/tests/data/inventories/hosts_database'
-        self.examples.append({
-            'desc': f'To get hosts in group.s matching regex {pattern}',
-            'url': f'/sw2/query?query={self.name}&pattern={pattern}&sources={sources}'
-        })
+        parameters = {
+            'pattern': '.*database',
+            'sources': '~/ansible-ws/tests/data/inventories/hosts_database',
+        }
+        self.add_example('To get hosts in group.s matching regex {pattern}', parameters)
 
     def query(self):
         """
         """
+        sources = self.get('sources')
         self.cache_config = {
-            'discriminant': self.sources,
+            'discriminant': sources,
             'category': 'inventory'
         }
         inventory = self.get_cached_resource(self.get_inventory)
         groups = inventory['groups']
-        pattern = self.parameters['pattern']
+        pattern = self.get('pattern')
         re_pattern = re.compile(pattern)
         selected_groups = dict(
             (group_name, sorted(groups[group_name]))
             for group_name in groups.keys()
             if re.match(re_pattern, group_name) is not None
         )
-        disabled = self.parameters.get('groups_selection', self.default_groups_selection)
+        disabled = self.get('groups_selection')
         response = []
         for name, hosts in selected_groups.items():
             group = dict(name=f'<i class="orange sitemap icon"></i> {name}', value=name, disabled=disabled)
@@ -91,9 +80,10 @@ The output is formmated for semantic ui dropdown"""
             'var=groups',
             'localhost',
         ]
-        for source in sources:
-            command.append('-i')
-            command.append(source)
+        if sources is not None:
+            for source in sources:
+                command.append('-i')
+                command.append(source)
         self.logger.debug(f'get groups command {command}')
         p = subprocess.run(command, stdout=subprocess.PIPE)
         out = p.stdout.decode('utf-8')
