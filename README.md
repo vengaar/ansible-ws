@@ -84,3 +84,74 @@ Test url:
 
 * http://localhost/sw2/query
 
+### Examples
+
+* To have global help
+
+~~~
+curl  http://127.0.0.1/sw2/query \
+      --header "Content-Type: application/json" \
+      --silent \
+      --request POST \
+      --data '{}' | jq .
+~~~~
+
+* To have help for query `cache_info`
+
+~~~
+curl  http://127.0.0.1/sw2/query \
+      --header "Content-Type: application/json" \
+      --silent \
+      --request POST \
+      --data '{
+                "sw2": {
+                  "query": "cache_info",
+                  "help": true
+                }
+              }' | jq .
+~~~
+
+* To call query `cache_info` (this query has no parameters)
+
+~~~
+curl  http://127.0.0.1/sw2/query \
+      --header "Content-Type: application/json" \
+      --silent \
+      --request POST \
+      --data '{
+                "sw2": {
+                  "query": "cache_info"
+                }
+              }' | jq .
+~~~
+
+* To query `tasks` with missing parameters give you errors and usages
+
+~~~
+curl  http://127.0.0.1/sw2/query \
+      --header "Content-Type: application/json" \
+      --silent \
+      --request POST \
+      --data '{
+                "sw2": {
+                  "query": "tasks"
+                }
+              }' | jq .
+
+* To query `tasks`
+
+~~~
+curl  http://127.0.0.1/sw2/query \
+      --header "Content-Type: application/json" \
+      --silent \
+      --request POST \
+      --data '{
+                "sw2": {
+                  "query": "tasks"
+                  },
+                "parameters": {
+                  "playbook": "~/ansible-ws/tests/data/playbooks/tags.yml"
+                }
+              }' | jq .
+~~~
+
