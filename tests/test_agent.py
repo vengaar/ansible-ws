@@ -1,13 +1,12 @@
 import logging
-import os
 import unittest
 import pprint
+import os
 
 import sys
 sys.path.append('.')
 import tests
-import ansible_ws
-from ansible_ws.ansible_web_service import AnsibleWebServiceConfig
+from ansible_ws import AnsibleWebServiceConfig
 from ansible_ws.ssh_agent import SshAgent
 from sw2 import ScriptWebServiceWrapper
 

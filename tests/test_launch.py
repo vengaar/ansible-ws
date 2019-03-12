@@ -1,16 +1,15 @@
 import logging
-import os
 import unittest
 import pprint
+import os
 import shutil
 import time
 
 import sys
 sys.path.append('.')
 import tests
-import ansible_ws
-from ansible_ws.playbooks_ws import PlaybookContextLaunch, PlaybookContext
-from ansible_ws.ansible_web_service import AnsibleWebServiceConfig
+from ansible_ws import AnsibleWebServiceConfig
+from ansible_ws.launch import PlaybookContextLaunch, PlaybookContext
 from sw2 import ScriptWebServiceWrapper
 
 

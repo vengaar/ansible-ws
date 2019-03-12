@@ -1,20 +1,18 @@
 import logging
-import os
 import unittest
 import pprint
+import os
 
 import sys
 sys.path.append('.')
 import tests
-import tests as ansible_ws_tests
-import ansible_ws
-from ansible_ws.ansible_web_service import AnsibleWebServiceConfig
+from ansible_ws import AnsibleWebServiceConfig
 from sw2 import ScriptWebServiceWrapper
 
 
 class TestRuns(unittest.TestCase):
 
-    RUNS_DIR = os.path.join(ansible_ws_tests.ANSIBLE_WS_PATH_TEST, 'data', 'runs')
+    RUNS_DIR = os.path.join(tests.ANSIBLE_WS_PATH_TEST, 'data', 'runs')
     ansible_ws_config = AnsibleWebServiceConfig()
     ansible_ws_config.config['ansible']['runs_dir'] = RUNS_DIR
 
