@@ -1,14 +1,12 @@
 import logging
-import os
 import unittest
 import pprint
-import json
-import sys
+import os
 
+import sys
 sys.path.append('.')
 import tests
-import ansible_ws
-from ansible_ws.ansible_web_service import AnsibleWebServiceConfig
+from ansible_ws import AnsibleWebServiceConfig
 from sw2 import ScriptWebServiceWrapper
 
 
@@ -35,6 +33,7 @@ class TestSW2(unittest.TestCase):
 #         pprint.pprint(response)
         self.assertEqual(response['results'][3]['name'], 'test')
         self.assertEqual(response['results'][4]['name'], 'foo')
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)

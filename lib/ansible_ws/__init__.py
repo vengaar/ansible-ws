@@ -1,31 +1,23 @@
-import http
-import traceback
-import json
+import logging
+import yaml
 
-HTTP_200 = f'{http.HTTPStatus.OK.value} {http.HTTPStatus.OK.phrase}'
-HTTP_500 = f'{http.HTTPStatus.INTERNAL_SERVER_ERROR.value} {http.HTTPStatus.INTERNAL_SERVER_ERROR.phrase}'
-HTTP_400 = f'{http.HTTPStatus.BAD_REQUEST.value} {http.HTTPStatus.BAD_REQUEST.phrase}'
-HTTP_415 = f'{http.HTTPStatus.UNSUPPORTED_MEDIA_TYPE.value} {http.HTTPStatus.UNSUPPORTED_MEDIA_TYPE.phrase}'
 
-CONTENT_TYPE_JSON = 'application/json'
-CONTENT_TYPE_TEXT = 'text/plain'
+class AnsibleWebServiceConfig(object):
 
-def get_500_response():
-    status = HTTP_500
-    content_type = CONTENT_TYPE_TEXT
-    trace = traceback.format_exc()
-    output = trace.encode('utf-8')
-    response_headers = [
-        ('Content-type', content_type),
-        ('Content-Length', str(len(output)))
-    ]
-    return status, response_headers, output
+    CONFIG_FILE = '/etc/ansible-ws/ansible-ws.yml'
 
-def get_json_response(data):
-    json_data = json.dumps(data, indent=2)
-    output = json_data.encode('utf-8')
-    response_headers = [
-        ('Content-type', CONTENT_TYPE_JSON),
-        ('Content-Length', str(len(output)))
-    ]
-    return response_headers, output
+    def __init__(self, config_file=CONFIG_FILE):
+        self.logger = logging.getLogger(self.__class__.__name__)
+        try:
+            with open(self.CONFIG_FILE) as configfile:
+                self.config = yaml.load(configfile)
+                self.logger.debug(self.config)
+                self.logger.info(f'Configuration file {self.CONFIG_FILE} LOADED')
+        except Exception:
+            self.logger.error(f'Not possible to load configuration file {self.CONFIG_FILE}')
+
+    def get(self, keys):
+        value = self.config
+        for key in keys.split('.'):
+            value = value[key]
+        return value

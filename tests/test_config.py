@@ -1,13 +1,11 @@
 import logging
-import os
 import unittest
 import pprint
 
 import sys
 sys.path.append('.')
-import tests as ansible_ws_tests
-import ansible_ws
-from ansible_ws.ansible_web_service import AnsibleWebServiceConfig
+import tests
+from ansible_ws import AnsibleWebServiceConfig
 
 
 class TestAnsibleWebServiceConfig(unittest.TestCase):

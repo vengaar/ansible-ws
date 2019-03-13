@@ -6,8 +6,7 @@ import time
 import threading
 import logging
 
-import ansible_ws
-from ansible_ws.ansible_web_service import AnsibleWebServiceConfig
+from ansible_ws import AnsibleWebServiceConfig
 from ansible_ws.ssh_agent import SshAgent
 
 class PlaybookContext(object):
@@ -139,21 +138,3 @@ class PlaybookContextLaunch(PlaybookContext):
             self.write_status(self.STATUS_FINISHED)
         self.logger.debug("=== end playbook ===")
 
-if __name__ == '__main__':
-    import sys
-    import argparse
-    logging.basicConfig(level=logging.DEBUG)
-    logger = logging.getLogger(__name__)
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--runid", help="The runid to launch")
-    args = parser.parse_args()    
-    runid = args.runid
-    logger.debug(runid)
-    context = dict(
-        runid=runid
-    )
-    pcl = PlaybookContextLaunch(**context)
-    pid = os.fork()
-    logger.debug(pid)
-    if pid == 0:
-        pcl.run()

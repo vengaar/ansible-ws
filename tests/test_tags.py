@@ -1,21 +1,19 @@
 import logging
-import os
 import unittest
 import pprint
-import json
+import os
+
 import sys
 sys.path.append('.')
 import tests
-
-import ansible_ws
-from ansible_ws.ansible_web_service import AnsibleWebServiceConfig
+from ansible_ws import AnsibleWebServiceConfig
 from sw2 import ScriptWebServiceWrapper
 
 
 class TestSWSW(unittest.TestCase):
-    
+
     config = AnsibleWebServiceConfig()
-        
+
     def test_tags(self):
         playbook = os.path.expanduser('~/ansible-ws/tests/data/playbooks/tags.yml')
         parameters = {
@@ -44,6 +42,7 @@ class TestSWSW(unittest.TestCase):
 #         pprint.pprint(response)
         expected = []
         self.assertEqual(response['results'], expected)
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
