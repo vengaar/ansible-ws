@@ -11,9 +11,8 @@
       - os_version in required.os
 
 - name: Deploy from git
-  when: git_clone
+  when: git_clone|bool
   block:
-
     - name: Create user
       user:
         name: "{{ wsgi_user }}"
@@ -43,7 +42,6 @@
     ssh_private_key_file: "/home/{{ wsgi_user }}/.ssh/ansible-ws"
     ssh_public_key_file: "{{ ssh_private_key_file }}.pub"
   block:
-
     - name: Create default ssh key
       shell: echo "y" | ssh-keygen -f {{ ssh_private_key_file }} -C ansible-ws -P "ansible-ws"
 
@@ -60,7 +58,6 @@
   become: true
   become_user: root
   block:
-
     - name: Ensure working folders exist
       file:
         path: "{{ item }}"
