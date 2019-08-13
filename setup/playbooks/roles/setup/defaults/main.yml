@@ -5,7 +5,7 @@ git_clone: false
 git_version: HEAD
 wsgi_logfile: /home/{{ wsgi_user }}/{{ git_name }}.log
 wsgi_user: "{{ git_name }}"
-wsgi_port: 80
+wsgi_port: 8044
 wsgi_base_url: http://{{ ansible_default_ipv4.address }}:{{ wsgi_port }}
 wsgi_services:
   - name: sw2
