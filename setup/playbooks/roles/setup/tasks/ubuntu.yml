@@ -16,12 +16,16 @@
     - name: Deploy apache configuration
       template:
         src: httpd.conf
-        dest: /etc/apache2/conf-available/{{ git_name }}.conf
+        dest: /etc/apache2/sites-available/wapi.conf
 
-    - name: Enable apache configuration
-      shell: a2enconf {{ git_name }}.conf
+    - name: Use a2* command to enable {{ git_name }} site
+      shell: "{{ item }}"
+      loop:
+        - "a2enmod http2"
+        - "a2enmod headers"
+        - "a2ensite {{ git_name }}.conf"
 
-    - name: Reload apache configuration
+    - name: Reload apache config
       systemd:
         name: apache2
         state: reloaded
