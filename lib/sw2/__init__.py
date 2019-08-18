@@ -171,7 +171,6 @@ class ScriptWrapper():
 
     def __init__(self, config, **request):
         self.logger = logging.getLogger(self.__class__.__name__)
-        self.logger.error(request)
         self.config = config
         self.cache_prefix = self.config.get('cache.prefix')
         self.cache_ttl = self.config.get('cache.ttl')
