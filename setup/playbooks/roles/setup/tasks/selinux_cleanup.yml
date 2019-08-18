@@ -1,0 +1,55 @@
+---
+- name: selinux configuration
+  when:
+    - ansible_selinux_python_present
+    - ansible_selinux.status == "enabled"
+  become: true
+  become_user: root
+  tags:
+    - selinux_cleanup
+  vars:
+    selinux:
+      files:
+        - "{{ wsgi_logfile }}"
+        - "{{ working_dir }}(/.*)?"
+        - "/home/{{ wsgi_user }}/.ansible(/.*)?"
+  block:
+    - name: list se modules
+      shell: semanage module --list
+      register: se_modules_list
+      no_log: true
+
+    - name: Remove sw2 semodule
+      shell: semanage module -r sw2
+      when: se_modules_list.stdout is regex('.*\nsw2\s*.*')
+
+    - name: Set selinux boolean to use home
+      seboolean:
+        name: "{{ item }}"
+        state: no
+        persistent: yes
+      loop:
+        - httpd_read_user_content
+        - httpd_enable_homedirs
+        - httpd_setrlimit
+        - httpd_can_network_connect
+        - daemons_use_tty
+
+    - name: Set context for files
+      sefcontext:
+        target: "{{ item }}"
+        setype: httpd_sys_rw_content_t
+        state: absent
+      loop: "{{ selinux.files }}"
+
+    - name: Restore Linux file context
+      command: restorecon -Rv {{ item.replace("(/.*)?", "") }}
+      loop: "{{ selinux.files }}"
+
+    - name: Remove authorization to listen on tcp port {{ wsgi_port }}
+      seport:
+        ports: "{{ wsgi_port }}"
+        proto: tcp
+        setype: http_port_t
+        state: absent
+...

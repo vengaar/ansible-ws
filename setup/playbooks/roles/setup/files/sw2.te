@@ -1,0 +1,26 @@
+
+module sw2 1.8;
+
+require {
+        type ptmx_t;
+        type httpd_t;
+        type user_home_t;
+        type udev_exec_t;
+        type fixed_disk_device_t;
+        type sshd_key_t;
+        class file { execute execute_no_trans getattr read open ioctl };
+        class blk_file getattr;
+        class chr_file { getattr ioctl open read write };
+}
+
+#============= httpd_t ==============
+# To launch playbook / dynamic inventories
+allow httpd_t user_home_t:file { execute execute_no_trans };
+
+# To use pty for ssh-agent add
+allow httpd_t ptmx_t:chr_file { getattr ioctl open read write };
+
+# For gather_facts
+allow httpd_t fixed_disk_device_t:blk_file getattr;
+allow httpd_t sshd_key_t:file { getattr read open ioctl };
+allow httpd_t udev_exec_t:file getattr;

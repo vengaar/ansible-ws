@@ -41,6 +41,7 @@
   vars:
     ssh_private_key_file: "/home/{{ wsgi_user }}/.ssh/ansible-ws"
     ssh_public_key_file: "{{ ssh_private_key_file }}.pub"
+  when: ssh_private_key_file is not file
   block:
     - name: Create default ssh key
       shell: echo "y" | ssh-keygen -f {{ ssh_private_key_file }} -C ansible-ws -P "ansible-ws"
@@ -60,13 +61,11 @@
   block:
     - name: Ensure working folders exist
       file:
-        path: "{{ item }}"
+        path: "{{ item.value }}"
         state: directory
         owner: "{{ wsgi_user }}"
         group: "{{ wsgi_user }}"
-      loop:
-        - "{{ runs_dir }}"
-        - "{{ graph_dir }}"
+      loop: "{{ working_dirs|dict2items }}"
 
     - name: Update permission to allow apache reach wsgi
       file:
@@ -79,10 +78,32 @@
         path: /etc/{{ git_name }}
         state: directory
 
+    - name: Deploy logging configuration
+      template:
+        src: logging.conf
+        dest: /etc/{{ git_name }}/logging.conf
+
     - name: Create general configuration file
       template:
         src: "{{ git_name }}.yml"
         dest: /etc/{{ git_name }}/{{ git_name }}.yml
+
+- name: selinux configuration
+  when:
+    - ansible_selinux_python_present
+    - ansible_selinux.status == "enabled"
+    - ansible_selinux.mode == "enforcing"
+  become: true
+  become_user: root
+  block:
+    - name: (selinux) Change the httpd_t domain to permissive
+      selinux_permissive:
+        name: httpd_t
+        permissive: true
+
+# - include_tasks: selinux_cleanup.yml
+#   tags:
+#     - selinux_cleanup
 
 - include_tasks: "{{ ansible_distribution|lower }}.yml"
 
