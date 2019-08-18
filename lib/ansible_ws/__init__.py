@@ -10,7 +10,7 @@ class AnsibleWebServiceConfig(object):
         self.logger = logging.getLogger(self.__class__.__name__)
         try:
             with open(self.CONFIG_FILE) as configfile:
-                self.config = yaml.load(configfile)
+                self.config = yaml.safe_load(configfile)
                 self.logger.debug(self.config)
                 self.logger.info(f'Configuration file {self.CONFIG_FILE} LOADED')
         except Exception:
