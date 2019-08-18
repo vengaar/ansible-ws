@@ -32,6 +32,10 @@ class ScriptWrapperQuery(ScriptWrapper):
                 'description': 'The path of playbook to launch.',
                 'required': True,
             },
+            'agent': {
+                'description': 'The is of ssh agent to used.',
+                'required': False,
+            }
         }
         parameters = {
             'cmdline': 'ansible-playbook ~/ansible-ws/tests/data/playbooks/tags.yml',

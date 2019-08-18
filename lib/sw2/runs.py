@@ -85,10 +85,11 @@ class ScriptWrapperQuery(ScriptWrapper):
         return response
 
     def __match(self, run, states, regex):
-        match = True
+        if run['status'] == PlaybookContext.STATUS_READY:
+            return False
         if run['state'] not in states:
-            match = False
+            return False
         playbook = os.path.basename(run['description']['playbook'])
         if regex.match(playbook) is None:
-            match = False
-        return match
+            return False
+        return True

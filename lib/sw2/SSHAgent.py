@@ -25,7 +25,8 @@ class ScriptWrapperQuery(ScriptWrapper):
 
     def query(self):
         id = self.get('id')
-        agent = SshAgent(id)
+        agent_path = self.config.get("agent.path")
+        agent = SshAgent(id, agent_path)
         response = {
            'agent': agent.env_agent,
            'keys': agent.keys,

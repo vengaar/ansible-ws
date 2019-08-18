@@ -26,6 +26,8 @@ class PlaybookContext(object):
         self.logger = logging.getLogger(self.__class__.__name__)
         self.ansible_ws_config = AnsibleWebServiceConfig() if ansible_ws_config is None else ansible_ws_config 
         self.runs_dir = self.ansible_ws_config.get('ansible.runs_dir')
+        self.agent_path = self.ansible_ws_config.get("agent.path")
+        self.agent_id = self.ansible_ws_config.get("agent.id")
         self.runid = runid
         self.folder = os.path.join(self.runs_dir, self.runid)
         self.logger.debug(self.folder)
@@ -120,7 +122,8 @@ class PlaybookContextLaunch(PlaybookContext):
         command = [
           self.description['cmdline']
         ]
-        agent = SshAgent()
+        agent_id = self.description.get('agent', self.agent_id)
+        agent = SshAgent(agent_id, self.agent_path)
         os.environ.update(agent.env_agent)
         os.environ['ANSIBLE_FORCE_COLOR'] = 'true'
         with open(self.file_output, 'w+') as out, open(self.file_error, 'w+') as err:

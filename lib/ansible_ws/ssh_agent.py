@@ -22,14 +22,15 @@ class SshAgent():
             result[name] = value
         return result
 
-    def __init__(self, id=None) -> None:
-
+    def __init__(self, id=None, path=None) -> None:
         self.logger = logging.getLogger(self.__class__.__name__)
         self.user = getpass.getuser()
         self.logger.debug(self.user)
-        home = str(pathlib.Path.home())
         self.id = self.user if id is None else id
-        self.file_agent = os.path.join(home, '.ssh', f'{self.id}.agent')
+        if path is None or not os.path.isdir(path):
+            home = str(pathlib.Path.home())
+            path = os.path.join(home, '.ssh')
+        self.file_agent = os.path.join(path, f'{self.id}.agent')
         self.logger.debug(self.file_agent)
         self.env = copy.deepcopy(os.environ)
         try:
