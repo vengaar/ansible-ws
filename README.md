@@ -1,4 +1,5 @@
-[defaults setup role]: https://github.com/vengaar/ansible-ws/tree/master/setup/playbooks/roles/setup/defaults
+[setup role]: https://github.com/vengaar/ansible-ws/tree/master/setup/playbooks/roles/setup
+[setup role > defaults]: https://github.com/vengaar/ansible-ws/tree/master/setup/playbooks/roles/setup/defaults
 
 # ansible-ws
 
@@ -46,8 +47,15 @@ Use ansible cli to avoid dependecies on Ansible python code and version.
 ## Defaults
 
 * The default settings are available in defaults of ansible setup role
-* See [defaults setup role]
+* See [setup role > defaults]
 * By default ansible-ws run on port `8044` but you can override it with an ansible extra_vars as `-e "wsgi_port=80"`
+
+## About selinux
+
+* As ansible-ws launch playbook, for a simple gather_facts, we need to access to many differents resources.
+* So, I give up to find a policy/configuration working with selinux. (You can see lasts tests about it in [setup role]).
+* So, If you have selinux in `Enforcing` mode we have to set domain `httpd_t` in `Permissive` mode.
+* ***CAUTION*** The domain `httpd_t` is set in `Permissive` mode during setup by the [setup role]
 
 ## Procedure
 
@@ -64,8 +72,6 @@ ansible-playbook ansible-ws/setup/playbooks/setup.yml -v
 ### Fedora > 28
 
 As root on your server
-
-**CAUTION : currently require to have SELinux in Permissive mode**
 
 ~~~~
 dnf install ansible-python
