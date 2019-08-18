@@ -1,6 +1,6 @@
 import logging
 import yaml
-
+from logging.config import fileConfig
 
 class AnsibleWebServiceConfig(object):
 
@@ -15,6 +15,7 @@ class AnsibleWebServiceConfig(object):
                 self.logger.info(f'Configuration file {self.CONFIG_FILE} LOADED')
         except Exception:
             self.logger.error(f'Not possible to load configuration file {self.CONFIG_FILE}')
+        fileConfig(self.get('log.config'))
 
     def get(self, keys):
         value = self.config
