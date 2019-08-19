@@ -3,7 +3,6 @@
   become: true
   become_user: root
   block:
-
     - name: Install dependencies
       dnf:
         name:
@@ -15,48 +14,17 @@
           - python3-pexpect
         state: latest
 
-    - name: Get selinux state
-      command: getenforce
-      register: getenforce
-
-    - name: Manage selinux
-      when: getenforce.stdout == "Enforcing"
-      block:
-
-        - name: Set selinux boolean to use home
-          command: setsebool -P {{ item }} on
-          loop:
-            - httpd_enable_homedirs
-            - httpd_read_user_content
-
-        - name: Create empty log file
-          file:
-            path: "{{ wsgi_logfile }}"
-            state: touch
-            owner: "{{ wsgi_user }}"
-            group: "{{ wsgi_user }}"
-
-        - name: Set context for files
-          sefcontext:
-            target: "{{ item }}"
-            setype: httpd_sys_rw_content_t
-            state: present
-          loop: "{{ selinux.files }}"
-
-        - name: Apply new SELinux file context to log file
-          command: restorecon -iv {{ wsgi_logfile }}
-
     - name: Deploy apache configuration
       template:
         src: httpd.conf
         dest: /etc/httpd/conf.d/{{ git_name }}.conf
 
-#     - name: Manage firewalld
-#       firewalld:
-#         port: "{{ wsgi_port }}/tcp"
-#         permanent: yes
-#         state: enabled
-#         immediate: yes
+    - name: Manage firewalld
+      firewalld:
+        port: "{{ wsgi_port }}/tcp"
+        permanent: yes
+        state: enabled
+        immediate: yes
 
     - name: Reload apache config
       systemd:

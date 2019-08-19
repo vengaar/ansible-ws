@@ -5,22 +5,21 @@ git_clone: false
 git_version: HEAD
 wsgi_logfile: /home/{{ wsgi_user }}/{{ git_name }}.log
 wsgi_user: "{{ git_name }}"
-wsgi_port: 80
+wsgi_port: 8044
 wsgi_base_url: http://{{ ansible_default_ipv4.address }}:{{ wsgi_port }}
 wsgi_services:
   - name: sw2
     alias: sw2/query
 working_dir: "/home/{{ wsgi_user }}/{{ git_name }}@working"
-runs_dir: "{{ working_dir }}/runs"
-graph_dir: "{{ working_dir }}/graphs"
-selinux:
-  files:
-    - "{{ wsgi_logfile }}"
-    - "/home/{{ wsgi_user }}/.ansible/tmp(/.*)?"
+working_dirs:
+  runs: "{{ working_dir }}/runs"
+  graphs: "{{ working_dir }}/graphs"
+  agents: "{{ working_dir }}/.agents"
 os_version: "{{ ansible_distribution }}/{{ ansible_distribution_major_version }}"
 required:
   os:
     - "Fedora/28"
     - "Fedora/29"
+    - "Fedora/30"
     - "Ubuntu/18"
 ...

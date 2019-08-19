@@ -1,9 +1,23 @@
 ---
+- name: Clean old apache config
+  become: true
+  become_user: root
+  vars:
+    - old_apache_config_file: /etc/apache2/conf-available/{{ git_name }}.conf
+  when:
+    - old_apache_config_file is file
+  block:
+    - name: Disable apache config
+      shell: a2disconf {{ git_name }}.conf
+    - name: Remove old apache config file
+      file:
+        path: "{{ old_apache_config_file }}"
+        state: absent
+
 - name: Ubuntu configuration
   become: true
   become_user: root
   block:
-
     - name: Install dependencies
       apt:
         name:
@@ -16,12 +30,16 @@
     - name: Deploy apache configuration
       template:
         src: httpd.conf
-        dest: /etc/apache2/conf-available/{{ git_name }}.conf
+        dest: /etc/apache2/sites-available/{{ git_name }}.conf
 
-    - name: Enable apache configuration
-      shell: a2enconf {{ git_name }}.conf
+    - name: Use a2* command to enable {{ git_name }} site
+      shell: "{{ item }}"
+      loop:
+        - "a2enmod http2"
+        - "a2enmod headers"
+        - "a2ensite {{ git_name }}.conf"
 
-    - name: Reload apache configuration
+    - name: Reload apache config
       systemd:
         name: apache2
         state: reloaded

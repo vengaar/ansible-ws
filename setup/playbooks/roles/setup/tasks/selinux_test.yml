@@ -1,0 +1,49 @@
+---
+- name: selinux configuration
+  become: true
+  become_user: root
+  vars:
+    selinux:
+      files:
+        - "{{ wsgi_logfile }}"
+        - "{{ working_dir }}(/.*)?"
+        - "/home/{{ wsgi_user }}/.ansible(/.*)?"
+  block:
+    - name: Built and load sw2 semodule
+      shell: "{{ item }}"
+      loop:
+        - checkmodule -M -m -o /tmp/sw2.mod {{ role_path }}/files/sw2.te
+        - semodule_package -o /tmp/sw2.pp -m /tmp/sw2.mod
+        - semodule -i /tmp/sw2.pp
+        - semanage module --list | grep sw2
+
+    - name: Set selinux boolean to use home
+      seboolean:
+        name: "{{ item }}"
+        state: yes
+        persistent: yes
+      loop:
+        - httpd_read_user_content
+        - daemons_use_tty
+        - httpd_setrlimit
+        - httpd_can_network_connect
+#         - httpd_enable_homedirs
+
+    - name: Set context for files
+      sefcontext:
+        target: "{{ item }}"
+        setype: httpd_sys_rw_content_t
+        state: present
+      loop: "{{ selinux.files }}"
+
+    - name: Restore Linux file context
+      command: restorecon -Rv {{ item.replace("(/.*)?", "") }}
+      loop: "{{ selinux.files }}"
+
+    - name: Allow Apache to listen on tcp port {{ wsgi_port }}
+      seport:
+        ports: "{{ wsgi_port }}"
+        proto: tcp
+        setype: http_port_t
+        state: present
+...

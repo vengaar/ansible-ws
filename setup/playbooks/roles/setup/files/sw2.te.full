@@ -1,0 +1,69 @@
+
+module sw2 1.0;
+
+
+require {
+        type user_home_t;
+        type udev_exec_t;
+        type httpd_t;
+        class dir { add_name remove_name };
+        class file { create map open read rename unlink write };
+}
+
+#============= httpd_t ==============
+
+#!!!! This avc can be allowed using the boolean 'domain_can_mmap_files'
+allow httpd_t udev_exec_t:file map;
+allow httpd_t udev_exec_t:file { open read };
+allow httpd_t user_home_t:dir { add_name remove_name };
+allow httpd_t user_home_t:file { create rename unlink write };
+
+
+require {
+	type httpd_sys_content_t;
+	type user_home_dir_t;
+	type httpd_tmp_t;
+	type devpts_t;
+	type init_t;
+	type ptmx_t;
+	type httpd_t;
+	type ssh_home_t;
+	type user_home_t;
+	type unreserved_port_t;
+	class dir { add_name create read remove_name rmdir write };
+	class file { create execute execute_no_trans getattr ioctl open read rename unlink write };
+	class process setrlimit;
+	class tcp_socket name_bind;
+	class chr_file { getattr ioctl open read write };
+	class sock_file unlink;
+}
+
+#============= httpd_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t devpts_t:chr_file open;
+
+#!!!! This avc can be allowed using the boolean 'httpd_unified'
+allow httpd_t httpd_sys_content_t:file write;
+allow httpd_t ptmx_t:chr_file { getattr ioctl open read write };
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t self:process setrlimit;
+allow httpd_t ssh_home_t:file write;
+
+#!!!! This avc can be allowed using the boolean 'nis_enabled'
+allow httpd_t unreserved_port_t:tcp_socket name_bind;
+allow httpd_t user_home_dir_t:dir add_name;
+allow httpd_t user_home_dir_t:file { create getattr ioctl open write };
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t user_home_t:dir read;
+allow httpd_t user_home_t:dir { add_name create remove_name rmdir };
+
+#!!!! This avc is allowed in the current policy
+allow httpd_t user_home_t:file read;
+allow httpd_t user_home_t:file { create execute execute_no_trans rename unlink write };
+
+#============= init_t ==============
+allow init_t httpd_tmp_t:dir { read remove_name rmdir write };
+allow init_t httpd_tmp_t:sock_file unlink;
