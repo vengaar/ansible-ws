@@ -60,7 +60,7 @@ The output is formmated for semantic ui dropdown"""
             for group_name in groups.keys()
             if re.match(re_pattern, group_name) is not None
         )
-        disabled = self.get('groups_selection')
+        disabled = self.get('groups_selection') == 'no'
         response = []
         for name, hosts in selected_groups.items():
             group = dict(name=f'<i class="orange sitemap icon"></i> {name}', value=name, disabled=disabled)
