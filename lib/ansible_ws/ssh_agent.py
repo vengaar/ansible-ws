@@ -33,17 +33,15 @@ class SshAgent():
         self.file_agent = os.path.join(path, f'{self.id}.agent')
         self.logger.debug(self.file_agent)
         self.env = copy.deepcopy(os.environ)
-        try:
+        if not os.path.isfile(self.file_agent):
+            self.__create()
+        else:
             with open(self.file_agent) as fstream:
                 self.env_agent = json.load(fstream)
             self.logger.info(f'USE AGENT {self.env_agent}')
             self.env.update(self.env_agent)
             self.pid = int(self.env['SSH_AGENT_PID'])
             self.socket = self.env['SSH_AUTH_SOCK']
-            if not self.__exist():
-                self.__create()
-        except:
-            self.__create()
 
     def __exist(self):
         return psutil.pid_exists(self.pid) and os.path.exists(self.socket)
@@ -60,12 +58,21 @@ class SshAgent():
         self.socket = self.env['SSH_AUTH_SOCK']
 
     def kill(self) -> None:
+        rc = -1
+        output = "pid and socket not valid"
         if self.__exist():
             self.logger.info(f'Killing ssh-agent {self.pid}')
-            p = psutil.Process(self.pid)
-            p.terminate()
-            p.wait()
+            process = subprocess.run(
+                ['ssh-agent', '-k'],
+                env=self.env,
+                stdout=subprocess.PIPE
+            )
+            self.logger.debug(process.returncode)
+            rc = process.returncode
+            output = str(process.stdout, 'utf-8')
+            self.logger.debug(output)
         os.remove(self.file_agent)
+        return rc, output
 
     def load_key(self, private_key, passphrase):
         self.logger.info(f'Load key {private_key}')

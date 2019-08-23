@@ -26,10 +26,12 @@ class ScriptWrapperQuery(ScriptWrapper):
         id = self.get('id')
         agent_path = self.config.get("agent.path")
         agent = SshAgent(id, agent_path)
-        agent.kill()
+        rc, output = agent.kill()
         response = {
            'agent': agent.env_agent,
-           'keys': agent.keys,
+           'keys': None,
            'action': 'kill',
+           'rc': rc,
+           'result': output
         }
         return response
