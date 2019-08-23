@@ -1,37 +1,23 @@
 ---
-
-### ansible ###
 ansible:
-  cmd: ansible-playbook
-  inventories:
-    - ~/ansible-ws/tests/data/inventories/hosts_database
-    - ~/ansible-ws/tests/data/inventories/hosts_webserver
   runs_dir: "{{ working_dirs.runs }}" 
 
-### logs ###
 log:
   config: "/etc/{{ git_name }}/logging.conf"
 
-### cache ###
 cache:
   prefix: "/tmp/.sw2.cache."
   ttl: 60
 
-### agent ###
 agent:
   path: "{{ working_dirs.agents }}"
   id: "{{ git_name }}"
-
-### grapher ###
 
 grapher:
   output: "{{ working_dirs.graphs }}"
   format: png
 
-### unittest ###
-
 unittest:
   unittest:
     unittest: unittest
-
 ...
