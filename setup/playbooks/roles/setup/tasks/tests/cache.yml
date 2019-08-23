@@ -1,0 +1,66 @@
+---
+- name: Test sw2 cache queries
+  vars:
+    test_url: http://127.0.0.1:{{ wsgi_port }}/sw2/query
+    test_sw2_launch:
+    test_sw2_tasks:
+        sw2:
+          query: tasks
+        parameters:
+          playbook: ~/ansible-ws/tests/data/playbooks/tags.yml
+    test_sw2_tags:
+        sw2:
+          query: tags
+        parameters:
+          playbook: ~/ansible-ws/tests/data/playbooks/tags.yml
+  tags:
+    - tests
+  block:
+    - name: Test tasks query
+      uri:
+        url: "{{ test_url }}"
+        method: POST
+        body: "{{ test_sw2_tasks }}"
+        body_format: json
+        headers:
+          "Content-Type": "application/json"
+      register: sw2_query_tasks
+      no_log: true
+#     - debug: var=sw2_query_tasks.json.results
+    - assert:
+        that:
+          - sw2_query_tasks.json.results[i].name == item
+          - sw2_query_tasks.json.results[i].value == item
+      loop:
+        - "task11"
+        - "task12 with long name"
+        - "task13"
+        - "debug"
+        - "task21"
+        - "task22" 
+      loop_control:
+        index_var: i
+
+    - name: Test tags query
+      uri:
+        url: "{{ test_url }}"
+        method: POST
+        body: "{{ test_sw2_tags }}"
+        body_format: json
+        headers:
+          "Content-Type": "application/json"
+      register: sw2_query_tags
+      no_log: true
+#     - debug: var=sw2_query_tags.json.results
+    - assert:
+        that:
+          - sw2_query_tags.json.results[i].name == item
+          - sw2_query_tags.json.results[i].value == item
+      loop:
+        - "tag1"
+        - "tag2"
+        - "tag22"
+        - "tag3" 
+      loop_control:
+        index_var: i
+...

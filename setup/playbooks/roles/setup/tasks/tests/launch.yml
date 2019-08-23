@@ -1,5 +1,5 @@
 ---
-- name: Test sw2 queries
+- name: Test sw2 launch queries
   vars:
     test_url: http://127.0.0.1:{{ wsgi_port }}/sw2/query
     test_sw2_launch:
@@ -53,7 +53,7 @@
           "Content-Type": "application/json"
       register: sw2_query_run_started
       no_log: true
-    - debug: var=sw2_query_run_started.json.results.status
+#     - debug: var=sw2_query_run_started.json.results.status
     - assert:
         that:
           - sw2_query_run_started.json.results.status.begin is number
@@ -76,7 +76,7 @@
           "Content-Type": "application/json"
       register: sw2_query_run_finished
       no_log: true
-    - debug: var=sw2_query_run_finished.json.results.status
+#     - debug: var=sw2_query_run_finished.json.results.status
     - assert:
         that:
           - sw2_query_run_finished.json.results.status.begin is number
@@ -97,7 +97,7 @@
           "Content-Type": "application/json"
       register: sw2_query_runs
       no_log: true
-    - debug: var=sw2_query_runs.json.results[0]
+#     - debug: var=sw2_query_runs.json.results[0]
     - assert:
         that:
           - sw2_query_runs.upgrade == "h2c"

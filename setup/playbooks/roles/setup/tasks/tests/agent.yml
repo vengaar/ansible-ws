@@ -1,0 +1,10 @@
+---
+- name: Test sw2 agent queries
+  vars:
+    test_url: http://127.0.0.1:{{ wsgi_port }}/sw2/query
+  tags:
+    - tests
+  block:
+    - debug:
+        msg: TODO
+...
