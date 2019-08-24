@@ -9,7 +9,7 @@ from . import ScriptWrapper
 
 
 class ScriptWrapperQuery(ScriptWrapper):
-    """Wrapper on [ansible -m debug -a 'var=groups' localhost] to get groups resolved.
+    """Wrapper on [ansible-inventory --list] to get groups.
 The groups are cached.
 The output is formmated for semantic ui dropdown"""
 
@@ -51,15 +51,16 @@ The output is formmated for semantic ui dropdown"""
             'discriminant': sources,
             'category': 'inventory'
         }
-        inventory = self.get_cached_resource(self.get_inventory)
-        groups = inventory['groups']
+        groups = self.get_cached_resource(self.get_inventory)
         pattern = self.get('pattern')
+        if pattern == 'all':
+            pattern = ".*"
         re_pattern = re.compile(pattern)
-        selected_groups = dict(
-            (group_name, sorted(groups[group_name]))
+        selected_groups = {
+            group_name: sorted(groups[group_name]['hosts'])
             for group_name in groups.keys()
             if re.match(re_pattern, group_name) is not None
-        )
+        }
         disabled = self.get('groups_selection') == 'no'
         response = []
         for name, hosts in selected_groups.items():
@@ -73,12 +74,8 @@ The output is formmated for semantic ui dropdown"""
 
     def get_inventory(self, sources):
         command = [
-            'ansible',
-            '-m',
-            'debug',
-            '-a',
-            'var=groups',
-            'localhost',
+            'ansible-inventory',
+            '--list',
         ]
         if sources is not None:
             for source in sources:
@@ -87,8 +84,7 @@ The output is formmated for semantic ui dropdown"""
         self.logger.debug(f'get groups command {command}')
         p = subprocess.run(command, stdout=subprocess.PIPE)
         out = p.stdout.decode('utf-8')
-        lines = out.splitlines()
-        lines[0] = '{'
-        inventory = json.loads(''.join(lines))
-        self.logger.debug(inventory)
+        inventory = json.loads(out)
+        inventory.pop('_meta')
+        inventory.pop('all')
         return inventory
