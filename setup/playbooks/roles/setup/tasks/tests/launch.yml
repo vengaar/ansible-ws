@@ -2,15 +2,6 @@
 - name: Test sw2 launch queries
   vars:
     test_url: http://127.0.0.1:{{ wsgi_port }}/sw2/query
-    test_sw2_launch:
-      sw2:
-        query: launch
-      parameters:
-        cmdline: ansible-playbook ~/ansible-ws/tests/data/playbooks/wait.yml
-        playbook: ~/ansible-ws/tests/data/playbooks/wait.yml
-    test_sw2_runs:
-        sw2:
-          query: runs
   tags:
     - tests
   block:
@@ -18,7 +9,12 @@
       uri:
         url: "{{ test_url }}"
         method: POST
-        body: "{{ test_sw2_launch }}"
+        body:
+          sw2:
+            query: launch
+          parameters:
+            cmdline: ansible-playbook ~/ansible-ws/tests/data/playbooks/wait.yml
+            playbook: ~/ansible-ws/tests/data/playbooks/wait.yml
         body_format: json
         headers:
           "Content-Type": "application/json"
@@ -63,10 +59,7 @@
           - sw2_query_run_started.json.results.status.state == "running"
           - sw2_query_run_started.json.results.status.status == "started"
 
-    - pause:
-        seconds: 20
-
-    - name: Test run query (finished)
+    - name: Test run query untill finished
       uri:
         url: "{{ test_url }}"
         method: POST
@@ -76,6 +69,9 @@
           "Content-Type": "application/json"
       register: sw2_query_run_finished
       no_log: true
+      until: sw2_query_run_finished.json.results.status.status == "finished"
+      retries: 4 
+      delay: 5
 #     - debug: var=sw2_query_run_finished.json.results.status
     - assert:
         that:
@@ -91,7 +87,9 @@
       uri:
         url: "{{ test_url }}"
         method: POST
-        body: "{{ test_sw2_runs }}"
+        body:
+          sw2:
+            query: runs
         body_format: json
         headers:
           "Content-Type": "application/json"
