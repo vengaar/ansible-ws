@@ -31,7 +31,7 @@ Use ansible cli to avoid dependecies on Ansible python code and version.
         * help=true, to have self documentation and examples
     * Only for sw2 using cache
         * cache={cache_action}, with cache_action in ['bypass', 'refresh']
-        * cache_ttl={seconds}, when ttl used, to override cache_ttl defined in global configuration `/etc/ansible-ws/ansible-ws.yml`
+        * cache_ttl={seconds}, to override cache_ttl defined in global configuration `/etc/ansible-ws/ansible-ws.yml`
 
 # Setup
 
