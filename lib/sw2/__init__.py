@@ -140,11 +140,12 @@ class ScriptWrapper():
                 logger.error(f'Failed to flush cache {key}')
                 logger.error(str(e))
 
-    def cache_is_valid(self, key):
+    def cache_is_valid(self, key, cache_ttl):
         if os.path.isfile(key):
             cache_stat = os.stat(key)
             cache_age = time.time() - cache_stat.st_mtime
-            return cache_age < self.cache_ttl
+            self.logger.debug(f'cache_age={cache_age}')
+            return cache_age < min(cache_ttl, self.cache_confing_ttl)
         else:
             return False
 
@@ -152,6 +153,7 @@ class ScriptWrapper():
         discrimimant = self.cache_config['discriminant']
         category = self.cache_config['category']
         cache_action = self.sw2.get('cache', 'read')
+        cache_ttl = self.sw2.get('cache_ttl', self.cache_confing_ttl)
         self.cache_config['action'] = cache_action
         self.logger.debug(f'cache > get {cache_action} > {self.cache_config}')
         if cache_action == 'bypass':
@@ -160,7 +162,7 @@ class ScriptWrapper():
             key = self.__build_key_cache(discrimimant, category)
             if cache_action == 'refresh':
                 self.__cache_flush_data(key)
-            if self.cache_is_valid(key):
+            if self.cache_is_valid(key, cache_ttl):
                 data = self.__cache_get_data(key)
                 if data is None:
                     data = func(discrimimant)
@@ -173,7 +175,7 @@ class ScriptWrapper():
         self.logger = logging.getLogger(self.__class__.__name__)
         self.config = config
         self.cache_prefix = self.config.get('cache.prefix')
-        self.cache_ttl = self.config.get('cache.ttl')
+        self.cache_confing_ttl = self.config.get('cache.ttl')
         self.sw2 = request['sw2']
         self.query_name = self.sw2['query']
         self._parameters = request['parameters']

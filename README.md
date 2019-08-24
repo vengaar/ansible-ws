@@ -11,10 +11,10 @@ Use ansible cli to avoid dependecies on Ansible python code and version.
     * Start from entry point http://localhost:8044/sw2/query to have full details
     * The queries are :
         * For Ansible CLI wrapper
-            * tags , to get playbook tags (result is cached)
-            * tasks , to get playbook tasks (result is cached)
-            * groups, to get invnetories groups and members (result is cached)
-            * groupvars, to get groups variables (result is cached)
+            * tags, to get playbook tags (result is cached, and cache expire when playbook is updated)
+            * tasks, to get playbook tasks (result is cached, and cache expire when playbook is updated)
+            * groups, to get groups and members from inventories (result is cached using ttl)
+            * groupvars, to get groups variables (result is cached using ttl)
             * launch, to launch a playbook
         * Internal:
             * runs, to get existing Ansible runs
@@ -24,13 +24,14 @@ Use ansible cli to avoid dependecies on Ansible python code and version.
                 * SSHAgentAdd
                 * SSHAgentKill
         * Other
-            * demo, to have basic data for a dropdown
+            * demo, to have basic data for demo
             * grapher, wapper on ansible-inventory-grapher
-    * sw2 querie have options:
+    * All sw2 queries have options:
         * debug=true, to have more details on output
         * help=true, to have self documentation and examples
+    * Only for sw2 using cache
         * cache={cache_action}, with cache_action in ['bypass', 'refresh']
-            * Only for sw2 using cache
+        * cache_ttl={seconds}, when ttl used, to override cache_ttl defined in global configuration `/etc/ansible-ws/ansible-ws.yml`
 
 # Setup
 
