@@ -19,7 +19,7 @@ class TestSWSW(unittest.TestCase):
         parameters = {
             'playbook': playbook,
         }
-        request = tests.get_sw2_request('tags', parameters)
+        request = tests.get_sw2_request('tags', parameters, cache='refresh')
 #         pprint.pprint(request)
         sw2 = ScriptWebServiceWrapper(request, self.config)
         response = sw2.get_result()
@@ -30,7 +30,13 @@ class TestSWSW(unittest.TestCase):
         ]
         self.assertEqual(response['results'], expected)
 
-    def test_tags(self):
+        # with cache
+        request['sw2'].pop('cache')
+        sw2 = ScriptWebServiceWrapper(request, self.config)
+        response = sw2.get_result()
+        self.assertEqual(response['results'], expected)
+
+    def test_no_tags(self):
         playbook = os.path.expanduser('~/ansible-ws/tests/data/playbooks/notags.yml')
         parameters = {
             'playbook': playbook,
