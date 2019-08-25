@@ -112,4 +112,13 @@
   loop: "{{ wsgi_services }}"
   loop_control:
     loop_var: service
+
+- name: Launch tests
+  when: wsgi_tests|bool
+  tags:
+    - tests
+  block:
+    - include_tasks: tests/launch.yml
+    - include_tasks: tests/cache.yml
+    - include_tasks: tests/agent.yml
 ...

@@ -12,8 +12,6 @@ class TestAnsibleWebServiceConfig(unittest.TestCase):
 
     def test(self):
         config = AnsibleWebServiceConfig()
-#         print(config.get('runs_dir'))
-#         print(config.get('ansible_cmd.playbook'))
         value = config.get('unittest.unittest.unittest')
         self.assertEqual(value, 'unittest')
 

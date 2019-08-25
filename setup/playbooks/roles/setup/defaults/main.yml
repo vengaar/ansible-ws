@@ -22,4 +22,5 @@ required:
     - "Fedora/29"
     - "Fedora/30"
     - "Ubuntu/18"
+wsgi_tests: false
 ...

@@ -41,13 +41,8 @@ The tags are put in cache."""
         response = self.format_to_semantic_ui_dropdown(tasks)
         return response
 
-    def cache_is_valid(self, key):
-        if os.path.isfile(key):
-            stat_cache = os.stat(key)
-            stat_playbook = os.stat(self.playbook)
-            return stat_cache.st_mtime > stat_playbook.st_mtime
-        else:
-            return False
+    def cache_is_valid(self, key, cache_ttl):
+        return super()._cache_is_valid_mtime(key, cache_ttl)
 
     def get_tasks(self, playbook):
         command = ['ansible-playbook', '--list-tasks', playbook]

@@ -10,7 +10,7 @@ from ansible_ws import AnsibleWebServiceConfig
 from sw2 import ScriptWebServiceWrapper
 
 
-class TestSWSW(unittest.TestCase):
+class TestSw2Groups(unittest.TestCase):
 
     config = AnsibleWebServiceConfig()
     sources = [
@@ -62,6 +62,10 @@ class TestSWSW(unittest.TestCase):
         ]
 #         pprint.pprint(values)
         self.assertEqual(values, expected)
+        self.assertEqual(response['results'][0]['disabled'], True)
+        self.assertEqual(response['results'][3]['disabled'], True)
+        self.assertEqual(response['results'][7]['disabled'], True)
+        self.assertEqual(response['results'][10]['disabled'], True)
 
     def test_groups_list(self):
         parameters = {
@@ -89,11 +93,10 @@ class TestSWSW(unittest.TestCase):
         ]
 #         pprint.pprint(values)
         self.assertEqual(values, expected)
-        self.assertEqual(response['results'][0]['disabled'], 'yes')
-        self.assertEqual(response['results'][3]['disabled'], 'yes')
+        self.assertEqual(response['results'][0]['disabled'], False)
+        self.assertEqual(response['results'][3]['disabled'], False)
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-#     logging.basicConfig(level=logging.ERROR)
     unittest.main()

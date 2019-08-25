@@ -1,0 +1,105 @@
+---
+- name: Test sw2 launch queries
+  vars:
+    test_url: http://127.0.0.1:{{ wsgi_port }}/sw2/query
+  tags:
+    - tests
+  block:
+    - name: Test launch query
+      uri:
+        url: "{{ test_url }}"
+        method: POST
+        body:
+          sw2:
+            query: launch
+          parameters:
+            cmdline: ansible-playbook ~/ansible-ws/tests/data/playbooks/wait.yml
+            playbook: ~/ansible-ws/tests/data/playbooks/wait.yml
+        body_format: json
+        headers:
+          "Content-Type": "application/json"
+      register: sw2_query_launch
+    - assert:
+        that:
+          - sw2_query_launch.upgrade == "h2c"
+          - sw2_query_launch.json.results.begin is none
+          - sw2_query_launch.json.results.end is none
+          - sw2_query_launch.json.results.pid is none
+          - sw2_query_launch.json.results.runid is string
+          - sw2_query_launch.json.results.status == "ready"
+          - sw2_query_launch.json.results.state == "running"
+
+    - set_fact:
+        test_sw2_run:
+          sw2:
+            query: run
+          parameters:
+            runid: "{{ sw2_query_launch.json.results.runid }}"
+
+    - pause:
+        seconds: 5
+
+    - name: Test run query (running)
+      uri:
+        url: "{{ test_url }}"
+        method: POST
+        body: "{{ test_sw2_run }}"
+        body_format: json
+        headers:
+          "Content-Type": "application/json"
+      register: sw2_query_run_started
+      no_log: true
+#     - debug: var=sw2_query_run_started.json.results.status
+    - assert:
+        that:
+          - sw2_query_run_started.json.results.status.begin is number
+          - sw2_query_run_started.json.results.status.end is none
+          - sw2_query_run_started.json.results.status.pid is number
+          - sw2_query_run_started.json.results.status.runid == sw2_query_launch.json.results.runid
+          - sw2_query_run_started.json.results.status.state == "running"
+          - sw2_query_run_started.json.results.status.status == "started"
+
+    - name: Test run query untill finished
+      uri:
+        url: "{{ test_url }}"
+        method: POST
+        body: "{{ test_sw2_run }}"
+        body_format: json
+        headers:
+          "Content-Type": "application/json"
+      register: sw2_query_run_finished
+      no_log: true
+      until: sw2_query_run_finished.json.results.status.status == "finished"
+      retries: 4 
+      delay: 5
+#     - debug: var=sw2_query_run_finished.json.results.status
+    - assert:
+        that:
+          - sw2_query_run_finished.json.results.status.begin is number
+          - sw2_query_run_finished.json.results.status.end is number
+          - sw2_query_run_finished.json.results.status.pid is number
+          - sw2_query_run_finished.json.results.status.return_code == 0
+          - sw2_query_run_finished.json.results.status.runid == sw2_query_launch.json.results.runid
+          - sw2_query_run_finished.json.results.status.state == "succeeded"
+          - sw2_query_run_finished.json.results.status.status == "finished"
+
+    - name: Test runs query
+      uri:
+        url: "{{ test_url }}"
+        method: POST
+        body:
+          sw2:
+            query: runs
+        body_format: json
+        headers:
+          "Content-Type": "application/json"
+      register: sw2_query_runs
+      no_log: true
+#     - debug: var=sw2_query_runs.json.results[0]
+    - assert:
+        that:
+          - sw2_query_runs.upgrade == "h2c"
+          - sw2_query_runs.json.results is not string
+          - sw2_query_runs.json.results is iterable
+          - sw2_query_runs.json.results[0] == sw2_query_run_finished.json.results.status
+...

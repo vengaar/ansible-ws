@@ -1,0 +1,167 @@
+---
+- name: Test sw2 cached queries
+  vars:
+    test_url: http://127.0.0.1:{{ wsgi_port }}/sw2/query
+  tags:
+    - tests
+  block:
+    - name: Test tasks query
+      uri:
+        url: "{{ test_url }}"
+        method: POST
+        body:
+          sw2:
+            query: tasks
+          parameters:
+            playbook: ~/ansible-ws/tests/data/playbooks/tags.yml
+        body_format: json
+        headers:
+          "Content-Type": "application/json"
+      register: sw2_query_tasks
+      no_log: true
+#     - debug: var=sw2_query_tasks.json.results
+    - assert:
+        that:
+          - sw2_query_tasks.json.results|json_query("[].name") == expected_tasks
+          - sw2_query_tasks.json.results|json_query("[].value") == expected_tasks
+      vars:
+        expected_tasks:
+        - "task11"
+        - "task12 with long name"
+        - "task13"
+        - "debug"
+        - "task21"
+        - "task22" 
+
+    - name: Test tags query
+      uri:
+        url: "{{ test_url }}"
+        method: POST
+        body:
+          sw2:
+            query: tags
+          parameters:
+            playbook: ~/ansible-ws/tests/data/playbooks/tags.yml
+        body_format: json
+        headers:
+          "Content-Type": "application/json"
+      register: sw2_query_tags
+      no_log: true
+    - debug: var=sw2_query_tags.json.results
+    - assert:
+        that:
+          - sw2_query_tags.json.results|json_query("[].name") == expected_tags
+          - sw2_query_tags.json.results|json_query("[].value") == expected_tags
+      vars:
+        expected_tags:
+        - "tag1"
+        - "tag2"
+        - "tag22"
+        - "tag3" 
+
+    - name: Test query groups
+      uri:
+        url: "{{ test_url }}"
+        method: POST
+        body:
+          sw2:
+            query: groups
+          parameters:
+            pattern: database
+            sources:
+              - ~/ansible-ws/tests/data/inventories/hosts_database
+              - ~/ansible-ws/tests/data/inventories/hosts_webserver
+        body_format: json
+        headers:
+          "Content-Type": "application/json"
+      register: sw2_query_groups
+      no_log: true
+#     - debug: var=sw2_query_groups.json.results
+    - assert:
+        that:
+          - sw2_query_groups.json.results is not string
+          - sw2_query_groups.json.results|count == 14
+          - sw2_query_groups.json.results[2].value == "server_dev_x2"
+
+    - name: Test query groupsvars
+      uri:
+        url: "{{ test_url }}"
+        method: POST
+        body:
+          sw2:
+            query: groupvars
+          parameters:
+            group: database_app1_prod
+            key: countries.list
+            inventories:
+              - ~/ansible-ws/tests/data/inventories/hosts_database
+              - ~/ansible-ws/tests/data/inventories/hosts_webserver
+        body_format: json
+        headers:
+          "Content-Type": "application/json"
+      register: sw2_query_groupvars
+      no_log: true
+    - debug: var=sw2_query_groupvars.json.results
+    - assert:
+        that:
+          - sw2_query_groupvars.json.results is not string
+          - sw2_query_groupvars.json.results|count == 3
+          - sw2_query_groupvars.json.results|json_query("[].name") == expected_countries
+          - sw2_query_groupvars.json.results|json_query("[].value") == expected_countries
+      vars:
+        expected_countries:
+          - fr
+          - it
+          - es
+
+    - name: Test query cache_info
+      uri:
+        url: "{{ test_url }}"
+        method: POST
+        body:
+          sw2:
+            query: cache_info
+        body_format: json
+        headers:
+          "Content-Type": "application/json"
+      register: sw2_query_cache_info
+      no_log: true
+    - debug: var=sw2_query_cache_info.json.results
+    - assert:
+        that:
+          - sw2_query_cache_info.json.results is not string
+          - sw2_query_cache_info.json.results|count >= 4
+
+    - name: Test query cache_flush
+      uri:
+        url: "{{ test_url }}"
+        method: POST
+        body:
+          sw2:
+            query: cache_flush
+          parameters:
+            key: "{{ item.key }}"
+        body_format: json
+        headers:
+          "Content-Type": "application/json"
+      register: sw2_query_cache_flush
+      no_log: true
+      loop: "{{ sw2_query_cache_info.json.results }}"
+
+    - name: Test query cache_info
+      uri:
+        url: "{{ test_url }}"
+        method: POST
+        body:
+          sw2:
+            query: cache_info
+        body_format: json
+        headers:
+          "Content-Type": "application/json"
+      register: sw2_query_cache_info
+      no_log: true
+    - debug: var=sw2_query_cache_info.json.results
+    - assert:
+        that:
+          - sw2_query_cache_info.json.results == []
+...

@@ -19,7 +19,7 @@ class TestTags(unittest.TestCase):
         parameters = {
             'playbook': playbook,
         }
-        request = tests.get_sw2_request('tasks', parameters)
+        request = tests.get_sw2_request('tasks', parameters, cache='refresh')
 #         pprint.pprint(request)
         sw2 = ScriptWebServiceWrapper(request, self.config)
         response = sw2.get_result()
@@ -37,6 +37,11 @@ class TestTags(unittest.TestCase):
         ]
         self.assertEqual(response['results'], expected)
 
+        ### test with cache
+        request['sw2'].pop('cache')
+        sw2 = ScriptWebServiceWrapper(request, self.config)
+        response = sw2.get_result()
+        self.assertEqual(response['results'], expected)
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
