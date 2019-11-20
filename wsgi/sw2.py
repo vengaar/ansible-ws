@@ -21,6 +21,7 @@ def application(environ, start_response):
         method = environ['REQUEST_METHOD']
         content_type = environ.get('CONTENT_TYPE')
         if content_type in (wsgi_utils.CONTENT_TYPE_JSON, None):
+#         if True:
             if method == 'GET':
                 raw_qs = environ.get('QUERY_STRING')
                 if raw_qs == '':
