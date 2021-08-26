@@ -18,9 +18,5 @@ working_dirs:
 os_version: "{{ ansible_distribution }}/{{ ansible_distribution_major_version }}"
 required:
   os:
-    - "Fedora/28"
-    - "Fedora/29"
-    - "Fedora/30"
-    - "Ubuntu/18"
+    - "Ubuntu/20"
 wsgi_tests: false
-...
