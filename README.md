@@ -39,7 +39,7 @@ Use ansible cli to avoid dependecies on Ansible python code and version.
 
 * For installation
   * Git
-* Python => 3.6
+* Python => 3.8
 * Ansible
 * If you want grapher
   * dnf/apt-get install graphviz
@@ -60,22 +60,12 @@ Use ansible cli to avoid dependecies on Ansible python code and version.
 
 ## Procedure
 
-### Ubuntu >= 18.04.1 LTS
+### Ubuntu >= Ubuntu 20.04.2 LTS
 
 As root on your server
 
 ~~~~
 apt-get install ansible
-git clone https://github.com/vengaar/ansible-ws.git
-ansible-playbook ansible-ws/setup/playbooks/setup.yml -v
-~~~~
-
-### Fedora > 28
-
-As root on your server
-
-~~~~
-dnf install ansible-python
 git clone https://github.com/vengaar/ansible-ws.git
 ansible-playbook ansible-ws/setup/playbooks/setup.yml -v
 ~~~~
