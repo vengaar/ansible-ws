@@ -2,7 +2,7 @@ import traceback
 import json
 import logging
 import urllib
-from cgi import parse_qs
+from urllib.parse import parse_qs
 
 import wsgi_utils
 import ansible_ws
